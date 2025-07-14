@@ -87,9 +87,12 @@ const initializeI18n = async (): Promise<I18nType> => {
       .use(initReactI18next)
       .use(createLanguageDetector() as any)
       .init({
-        resources: {
-          en: { 
-            translation: {
+        resources: (() => {
+          // Start with extraResources (from i18n-resources.ts) which already contains hero, featuredResources, etc.
+          const base = JSON.parse(JSON.stringify(extraResources));
+          // Merge/extend English inline translations into base
+          base.en = base.en || { translation: {} };
+          Object.assign(base.en.translation, {
               noFavoritesMessage: "You haven't favorited any resources yet. Click the heart on a resource to save it here!",
               noResourcesInCategory: 'There are currently no resources in the {{category}} category.',
               clearFilters: 'Clear Filters',
@@ -213,223 +216,12 @@ const initializeI18n = async (): Promise<I18nType> => {
               }
             }
           },
-          es: { 
-            translation: {
-              community: {
-                seo: {
-                  title: 'Recursos de la Comunidad',
-                  description: 'Encuentra tutoriales, recursos y comunidades para la creación de contenido de Minecraft, edición de video y diseño de miniaturas.'
-                },
-                title: {
-                  prefix: 'Creador',
-                  highlight: 'Comunidad'
-                },
-                description: 'Conéctate con otros creadores, obtén comentarios y encuentra recursos en estas comunidades activas de Discord.',
-                tabs: {
-                  tutorials: 'Tutoriales',
-                  servers: 'Servidores de Discord'
-                },
-                tutorials: {
-                  1: {
-                    name: 'Cómo Hacer Miniaturas',
-                    description: 'Aprende a crear miniaturas atractivas para Minecraft que generen clics'
-                  },
-                  2: {
-                    name: 'Cómo Editar en Premiere Pro',
-                    description: 'Tutoriales para editar videos de Minecraft en Adobe Premiere Pro y After Effects'
-                  },
-                  3: {
-                    name: 'Cómo Editar en DaVinci Resolve',
-                    description: 'Tutoriales para editar videos de Minecraft en DaVinci Resolve'
-                  }
-                },
-                servers: {
-                  title: 'Servidores de Discord Recomendados',
-                  description: 'Únete a estas comunidades para conectar con otros creadores, obtener comentarios y aprender nuevas habilidades.',
-                  joinButton: 'Unirse al Servidor',
-                  serverIconAlt: 'Icono del servidor {name}',
-                  servers: {
-                    1: {
-                      description: 'El servidor Creator Coaster será tu mejor amigo durante tu viaje de creación de contenido, con editores profesionales y artistas listos para ayudarte con lo que necesites.'
-                    },
-                    2: {
-                      description: 'Minecraft Design Hub está dirigido por diseñadores calificados con amplia experiencia en la industria GFX, ofreciendo diseños, juegos y soporte comunitario.'
-                    },
-                    3: {
-                      description: 'Thumbnailers es una próspera comunidad para diseñadores de miniaturas de Minecraft de todos los niveles, que ofrece recursos y comentarios para mejorar tus diseños.'
-                    },
-                    4: {
-                      description: 'EditHub es el centro definitivo de creación de contenido para editores, diseñadores y creadores que buscan crecer y mejorar sus habilidades.'
-                    },
-                    5: {
-                      description: 'Nuestro servidor oficial de Discord donde puedes sugerir recursos, contactarnos con preguntas o sugerencias y conectarte con la comunidad.'
-                    }
-                  }
-                },
-                categories: {
-                  editing: 'edición',
-                  design: 'diseño'
-                },
-                common: {
-                  videoCount: '{{count}} videos',
-                  members: 'miembros',
-                  creator: 'Por {{creator}}',
-                  playVideo: 'Reproducir video',
-                  watchOnYouTube: 'Ver en YouTube',
-                  joinServer: 'Unirse al Servidor',
-                  byCreator: 'Por {{creator}}'
-                },
-                toast: {
-                  description: 'Serás redirigido a Discord'
-                }
-              }
-            } 
-          },
-          fr: { 
-            translation: {
-              community: {
-                seo: {
-                  title: 'Ressources Communautaires',
-                  description: 'Trouvez des tutoriels, des ressources et des communautés pour la création de contenu Minecraft, le montage vidéo et la conception de miniatures.'
-                },
-                title: {
-                  prefix: 'Communauté de',
-                  highlight: 'Créateurs'
-                },
-                description: 'Connectez-vous avec d\'autres créateurs, obtenez des commentaires et trouvez des ressources dans ces communautés Discord actives.',
-                tabs: {
-                  tutorials: 'Tutoriels',
-                  servers: 'Serveurs Discord'
-                },
-                tutorials: {
-                  1: {
-                    name: 'Comment Créer des Miniatures',
-                    description: 'Apprenez à créer des miniatures accrocheuses pour Minecraft qui attirent les clics'
-                  },
-                  2: {
-                    name: 'Comment Monter dans Premiere Pro',
-                    description: 'Tutoriels pour monter des vidéos Minecraft dans Adobe Premiere Pro et After Effects'
-                  },
-                  3: {
-                    name: 'Comment Monter dans DaVinci Resolve',
-                    description: 'Tutoriels pour monter des vidéos Minecraft dans DaVinci Resolve'
-                  }
-                },
-                servers: {
-                  title: 'Serveurs Discord Recommandés',
-                  description: 'Rejoignez ces communautés pour vous connecter avec d\'autres créateurs, obtenir des commentaires et acquérir de nouvelles compétences.',
-                  joinButton: 'Rejoindre le Serveur',
-                  serverIconAlt: 'Icône du serveur {name}',
-                  servers: {
-                    1: {
-                      description: 'Le serveur Creator Coaster sera votre meilleur ami tout au long de votre parcours de création de contenu, avec des éditeurs professionnels et des artistes prêts à vous aider dans tous vos besoins !'
-                    },
-                    2: {
-                      description: 'Minecraft Design Hub est géré par des designers qualifiés avec une vaste expérience dans l\'industrie du GFX, offrant des designs, des jeux et un soutien communautaire.'
-                    },
-                    3: {
-                      description: 'Thumbnailers est une communauté florissante pour les concepteurs de miniatures Minecraft de tous niveaux, offrant des ressources et des commentaires pour améliorer vos créations.'
-                    },
-                    4: {
-                      description: 'EditHub est le centre ultime de création de contenu pour les monteurs, designers et créateurs cherchant à se développer et à améliorer leurs compétences.'
-                    },
-                    5: {
-                      description: 'Notre serveur Discord officiel où vous pouvez suggérer des ressources, nous contacter pour des questions ou des suggestions et vous connecter avec la communauté.'
-                    }
-                  }
-                },
-                categories: {
-                  editing: 'montage',
-                  design: 'conception'
-                },
-                common: {
-                  videoCount: '{{count}} vidéos',
-                  members: 'membres',
-                  creator: 'Par {{creator}}',
-                  playVideo: 'Lire la vidéo',
-                  watchOnYouTube: 'Regarder sur YouTube',
-                  joinServer: 'Rejoindre le Serveur',
-                  byCreator: 'Par {{creator}}'
-                },
-                toast: {
-                  description: 'Vous serez redirigé vers Discord'
-                }
-              }
-            } 
-          },
-          nl: { 
-            translation: {
-              community: {
-                seo: {
-                  title: 'Communitybronnen',
-                  description: 'Vind tutorials, bronnen en communities voor het maken van Minecraft-inhoud, videobewerking en het ontwerpen van miniaturen.'
-                },
-                title: {
-                  prefix: 'Maker',
-                  highlight: 'Community'
-                },
-                description: 'Maak verbinding met andere makers, krijg feedback en vind bronnen in deze actieve Discord-community\'s.',
-                tabs: {
-                  tutorials: 'Tutorials',
-                  servers: 'Discord-servers'
-                },
-                tutorials: {
-                  1: {
-                    name: 'Hoe Maak Je Miniaturen',
-                    description: 'Leer hoe je opvallende Minecraft-miniaturen maakt die klikken genereren'
-                  },
-                  2: {
-                    name: 'Hoe Bewerk Je in Premiere Pro',
-                    description: 'Tutorials voor het bewerken van Minecraft-video\'s in Adobe Premiere Pro en After Effects'
-                  },
-                  3: {
-                    name: 'Hoe Bewerk Je in DaVinci Resolve',
-                    description: 'Tutorials voor het bewerken van Minecraft-video\'s in DaVinci Resolve'
-                  }
-                },
-                servers: {
-                  title: 'Aanbevolen Discord-servers',
-                  description: 'Sluit je aan bij deze communities om in contact te komen met andere makers, feedback te krijgen en nieuwe vaardigheden te leren.',
-                  joinButton: 'Word Lid',
-                  serverIconAlt: '{name} serverpictogram',
-                  servers: {
-                    1: {
-                      description: 'De Creator Coaster-server wordt je beste vriend tijdens je reis als contentmaker, met professionele editors en artiesten die je graag helpen met alles wat je nodig hebt!'
-                    },
-                    2: {
-                      description: 'Minecraft Design Hub wordt gerund door gekwalificeerde ontwerpers met uitgebreide ervaring in de GFX-industrie, die ontwerpen, games en gemeenschapsondersteuning bieden.'
-                    },
-                    3: {
-                      description: 'Thumbnailers is een bloeiende community voor Minecraft-miniatuurontwerpers van alle niveaus, die bronnen en feedback biedt om je ontwerpen te verbeteren.'
-                    },
-                    4: {
-                      description: 'EditHub is de ultieme hub voor contentcreatie voor editors, ontwerpers en makers die hun vaardigheden willen ontwikkelen en verbeteren.'
-                    },
-                    5: {
-                      description: 'Onze officiële Discord-server waar je middelen kunt voorstellen, contact met ons kunt opnemen voor vragen of suggesties en verbinding kunt maken met de community.'
-                    }
-                  }
-                },
-                categories: {
-                  editing: 'bewerken',
-                  design: 'ontwerp'
-                },
-                common: {
-                  videoCount: '{{count}} video\'s',
-                  members: 'leden',
-                  creator: 'Door {{creator}}',
-                  playVideo: 'Video afspelen',
-                  watchOnYouTube: 'Bekijken op YouTube',
-                  joinServer: 'Word Lid',
-                  byCreator: 'Door {{creator}}'
-                },
-                toast: {
-                  description: 'Je wordt doorgestuurd naar Discord'
-                }
-              }
-            } 
-          },
-        } as I18nResources,
+          // Keep Spanish, French, Dutch inline resources merging if present below
+          ...['es','fr','nl'].reduce((acc, lng) => {
+            acc[lng] = acc[lng] || { translation: {} };
+            return acc;
+          }, {})
+        }; const merged = { ...base }; return merged; })(),
         fallbackLng: 'en',
         supportedLngs: ['en', 'es', 'fr', 'nl'],
         debug: process.env.NODE_ENV === 'development',
@@ -442,9 +234,9 @@ const initializeI18n = async (): Promise<I18nType> => {
       });
     // Merge additional translation keys defined in src/i18n-resources.ts so that
     // components using keys like `hero.unlockYour` can resolve them correctly
-    Object.entries(extraResources).forEach(([lng, res]) => {
-      i18n.addResourceBundle(lng, 'translation', res.translation, true, true);
-    });
+    // Object.entries(extraResources).forEach(([lng, res]) => {
+    //   i18n.addResourceBundle(lng, 'translation', res.translation, true, true);
+    // });
     return i18n;
   } catch (error) {
     console.error('Failed to initialize i18n:', error);
