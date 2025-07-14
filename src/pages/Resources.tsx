@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -277,14 +277,13 @@ const Community = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Helmet>
-        <title>{t('seo.title')} - Renderdragon</title>
-        <meta name="description" content={t('seo.description')} />
-        <meta property="og:title" content={`${t('seo.title')} - Renderdragon`} />
-        <meta property="og:description" content={t('seo.description')} />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/community.png" />
+        <title>Community Resources - Renderdragon</title>
+        <meta name="description" content="Find tutorials, resources, and communities for Minecraft content creation, video editing, and thumbnail design." />
+        <meta property="og:title" content="Community Resources - Renderdragon" />
+        <meta property="og:description" content="Find tutorials, resources, and communities for Minecraft content creation, video editing, and thumbnail design." />
+        <meta property="og:type" content="website" />
         <meta property="og:url" content="https://renderdragon.org/community" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${t('seo.title')} - Renderdragon`} />
+        <meta name="twitter:title" content="Community Resources - Renderdragon" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/community.png" />
       </Helmet>
       
@@ -294,17 +293,17 @@ const Community = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-vt323 mb-4 text-center">
-              {t('title.prefix')} <span className="text-cow-purple">{t('title.highlight')}</span>
+              Creator <span className="text-cow-purple">Community</span>
             </h1>
             <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-8">
-              {t('description')}
+              Connect with other creators, get feedback, and find resources in these active Discord communities.
             </p>
             
             {isLoading ? <CommunityPageSkeleton /> : (
             <Tabs defaultValue="tutorials" className="w-full">
               <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
-                <TabsTrigger value="tutorials">{t('tabs.tutorials')}</TabsTrigger>
-                <TabsTrigger value="servers">{t('tabs.servers')}</TabsTrigger>
+                <TabsTrigger value="tutorials">Tutorials</TabsTrigger>
+                <TabsTrigger value="servers">Discord Servers</TabsTrigger>
               </TabsList>
 
               <TabsContent value="tutorials">
@@ -365,7 +364,7 @@ const Community = () => {
                                             className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40"
                                           >
                                             <Play className="h-5 w-5 text-white" fill="white" />
-                                            <span className="sr-only">{t('common.playVideo')}</span>
+                                            <span className="sr-only">Play video</span>
                                           </Button>
                                         </div>
                                         <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-white">
@@ -376,10 +375,10 @@ const Community = () => {
                                       <div className="flex-1 min-w-0">
                                         <h3 className="font-medium truncate">{video.title}</h3>
                                         <p className="text-sm text-muted-foreground">
-                                          {t('common.creator', { creator: video.creator })} • {video.duration}
+                                          By {video.creator} • {video.duration}
                                         </p>
                                       </div>
-                                      <Button variant="ghost" size="icon" className="flex-shrink-0" aria-label={t('common.playVideo')}>
+                                      <Button variant="ghost" size="icon" className="flex-shrink-0" aria-label="Play video">
                                         <Play className="h-4 w-4" />
                                       </Button>
                                     </div>
@@ -438,7 +437,7 @@ const Community = () => {
                               </div>
                               <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs flex items-center">
                                 <Users className="h-3 w-3 mr-1" />
-                                {formatMemberCount(server.members)} {t('common.members')}
+                                {formatMemberCount(server.members)} members
                               </span>
                             </div>
                           </div>
@@ -453,7 +452,7 @@ const Community = () => {
                             onClick={() => handleJoinServer(server)}
                             className="w-full pixel-btn-primary flex items-center justify-center"
                           >
-                            {t('common.joinServer')}
+                            Join Server
                             <JoinServerIcon />
                           </Button>
                         </div>
@@ -477,7 +476,7 @@ const Community = () => {
           <DialogHeader>
             <DialogTitle>{selectedVideo?.title}</DialogTitle>
             <DialogDescription>
-              {t('common.byCreator', { creator: selectedVideo?.creator })} • {selectedVideo?.duration}
+              By {selectedVideo?.creator} • {selectedVideo?.duration}
             </DialogDescription>
           </DialogHeader>
           <div className="aspect-video bg-black rounded-lg overflow-hidden">
@@ -501,7 +500,7 @@ const Community = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-2"
               >
-                {t('common.watchOnYouTube')}
+                Watch on YouTube
                 <ExternalLink className="h-4 w-4" />
               </a>
             </Button>
