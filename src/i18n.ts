@@ -1,6 +1,7 @@
 import i18n, { i18n as I18nType } from 'i18next';
 import { initReactI18next, useTranslation as useI18nTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
+import { resources as extraResources } from './i18n-resources';
 
 // Type for our translation resources
 type TranslationResources = {
@@ -439,6 +440,11 @@ const initializeI18n = async (): Promise<I18nType> => {
           useSuspense: false,
         },
       });
+    // Merge additional translation keys defined in src/i18n-resources.ts so that
+    // components using keys like `hero.unlockYour` can resolve them correctly
+    Object.entries(extraResources).forEach(([lng, res]) => {
+      i18n.addResourceBundle(lng, 'translation', res.translation, true, true);
+    });
     return i18n;
   } catch (error) {
     console.error('Failed to initialize i18n:', error);
