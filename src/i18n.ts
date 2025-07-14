@@ -15,6 +15,146 @@ type I18nResources = {
   nl: TranslationResources;
 };
 
+// Create a merged resources object that combines the shared extraResources with
+// additional inline translations that only exist in this file (mostly "community"
+// and "resourceFilters" blocks). We extend **only** the English bundle to avoid
+// duplicating huge blocks for the other languages.
+
+const mergedResources: I18nResources = {
+  ...extraResources,
+  en: {
+    translation: {
+      ...(extraResources.en?.translation || {}),
+      // Inline-only translations
+      noFavoritesMessage: "You haven't favorited any resources yet. Click the heart on a resource to save it here!",
+      noResourcesInCategory: 'There are currently no resources in the {{category}} category.',
+      clearFilters: 'Clear Filters',
+      contributeResources: 'Contribute Resources',
+      checkOldSite: 'Check out the old site',
+      loading: 'Loading...',
+      loadMore: 'Load More',
+      // ---- LONG objects kept as-is ----
+      community: {
+        seo: {
+          title: 'Community Resources',
+          description: 'Find tutorials, resources, and communities for Minecraft content creation, video editing, and thumbnail design.'
+        },
+        title: {
+          prefix: 'Creator',
+          highlight: 'Community'
+        },
+        description: 'Connect with other creators, get feedback, and find resources in these active Discord communities.',
+        tabs: {
+          tutorials: 'Tutorials',
+          servers: 'Discord Servers'
+        },
+        tutorials: {
+          1: {
+            name: 'How to Make Thumbnails',
+            description: 'Learn how to create eye-catching Minecraft thumbnails that get clicks'
+          },
+          2: {
+            name: 'How to Edit in Premiere Pro',
+            description: 'Tutorials for editing Minecraft videos in Adobe Premiere Pro & After Effects'
+          },
+          3: {
+            name: 'How to Edit in DaVinci Resolve',
+            description: 'Tutorials for editing Minecraft videos in DaVinci Resolve'
+          }
+        },
+        servers: {
+          title: 'Recommended Discord Servers',
+          description: 'Join these communities to connect with other creators, get feedback, and learn new skills.',
+          joinButton: 'Join Server',
+          serverIconAlt: '{name} server icon',
+          servers: {
+            1: {
+              description: 'Creator Coaster server will be your best friend throughout your content creation journey, with professional editors & artists ready to help with anything you need!'
+            },
+            2: {
+              description: 'The Minecraft Design Hub is run by qualified designers with extensive background in the GFX industry, offering designs, games, and community support.'
+            },
+            3: {
+              description: 'Thumbnailers is a thriving community for Minecraft thumbnail designers of all skill levels, offering resources and feedback to improve your designs.'
+            },
+            4: {
+              description: 'EditHub is the ultimate content creation hub for editors, designers, and creators looking to grow and improve their skills.'
+            },
+            5: {
+              description: 'Our official Discord server where you can suggest assets, contact us for questions or suggestions, and connect with the community.'
+            }
+          }
+        },
+        categories: {
+          editing: 'editing',
+          design: 'design'
+        },
+        common: {
+          videoCount: '{{count}} videos',
+          members: 'members',
+          creator: 'By {{creator}}',
+          playVideo: 'Play video',
+          watchOnYouTube: 'Watch on YouTube',
+          joinServer: 'Join Server',
+          byCreator: 'By {{creator}}'
+        },
+        toast: {
+          description: "You'll be redirected to Discord"
+        }
+      },
+      resourceFilters: {
+        searchPlaceholder: 'Search for resources...',
+        clearSearch: 'Clear search',
+        filterTitleMobile: 'Filters',
+        filterByCategory: 'Filter by category',
+        all: 'All',
+        music: 'Music',
+        sfx: 'SFX',
+        images: 'Images',
+        animations: 'Animations',
+        fonts: 'Fonts',
+        presets: 'Presets',
+        selectPreset: 'Select preset type',
+        allPresets: 'All Presets',
+        davinciPresets: 'DaVinci Resolve',
+        adobePresets: 'Adobe',
+        sortBy: 'Sort by',
+        sortOptions: {
+          newest: 'Newest',
+          popular: 'Popular',
+        },
+        downloads: 'downloads',
+        attribution: 'Attribution',
+        credit_warning: 'Please credit the creator when using this resource',
+        credit_text: 'Resource by {{author}}',
+        credit_copied: 'Credit copied to clipboard!',
+        copied: 'Copied',
+        copy: 'Copy',
+        no_attribution_required: 'No attribution required',
+        previous: 'Previous',
+        next: 'Next',
+        previous_resource: 'Previous resource',
+        next_resource: 'Next resource',
+        download_resource: 'Download Resource',
+        download_agreement: 'By downloading, you agree to our Terms of Service',
+        credit_required: 'Credit required',
+        no_credit_needed: 'No credit needed',
+        play_preview: 'Play preview',
+        pause_preview: 'Pause preview',
+        no_preview_available: 'No preview available',
+        font: 'Font',
+        no_preset_preview: "Sorry, there's no preview for this preset.",
+        help_create_previews: 'You can help out creating previews for presets by joining our Discord!',
+        preview_not_available: 'Preview not available for this type.',
+        join_our_discord: 'Join our Discord'
+      }
+    }
+  }
+} as I18nResources;
+// End mergedResources
+
+// ---------------------------------------------------------------------------
+
 // Language detection configuration
 const createLanguageDetector = () => ({
   type: 'languageDetector' as const,
@@ -87,141 +227,7 @@ const initializeI18n = async (): Promise<I18nType> => {
       .use(initReactI18next)
       .use(createLanguageDetector() as any)
       .init({
-        resources: (() => {
-          // Start with extraResources (from i18n-resources.ts) which already contains hero, featuredResources, etc.
-          const base = JSON.parse(JSON.stringify(extraResources));
-          // Merge/extend English inline translations into base
-          base.en = base.en || { translation: {} };
-          Object.assign(base.en.translation, {
-              noFavoritesMessage: "You haven't favorited any resources yet. Click the heart on a resource to save it here!",
-              noResourcesInCategory: 'There are currently no resources in the {{category}} category.',
-              clearFilters: 'Clear Filters',
-              contributeResources: 'Contribute Resources',
-              checkOldSite: 'Check out the old site',
-              loading: 'Loading...',
-              loadMore: 'Load More',
-              community: {
-                seo: {
-                  title: 'Community Resources',
-                  description: 'Find tutorials, resources, and communities for Minecraft content creation, video editing, and thumbnail design.'
-                },
-                title: {
-                  prefix: 'Creator',
-                  highlight: 'Community'
-                },
-                description: 'Connect with other creators, get feedback, and find resources in these active Discord communities.',
-                tabs: {
-                  tutorials: 'Tutorials',
-                  servers: 'Discord Servers'
-                },
-                tutorials: {
-                  1: {
-                    name: 'How to Make Thumbnails',
-                    description: 'Learn how to create eye-catching Minecraft thumbnails that get clicks'
-                  },
-                  2: {
-                    name: 'How to Edit in Premiere Pro',
-                    description: 'Tutorials for editing Minecraft videos in Adobe Premiere Pro & After Effects'
-                  },
-                  3: {
-                    name: 'How to Edit in DaVinci Resolve',
-                    description: 'Tutorials for editing Minecraft videos in DaVinci Resolve'
-                  }
-                },
-                servers: {
-                  title: 'Recommended Discord Servers',
-                  description: 'Join these communities to connect with other creators, get feedback, and learn new skills.',
-                  joinButton: 'Join Server',
-                  serverIconAlt: '{name} server icon',
-                  servers: {
-                    1: {
-                      description: 'Creator Coaster server will be your best friend throughout your content creation journey, with professional editors & artists ready to help with anything you need!'
-                    },
-                    2: {
-                      description: 'The Minecraft Design Hub is run by qualified designers with extensive background in the GFX industry, offering designs, games, and community support.'
-                    },
-                    3: {
-                      description: 'Thumbnailers is a thriving community for Minecraft thumbnail designers of all skill levels, offering resources and feedback to improve your designs.'
-                    },
-                    4: {
-                      description: 'EditHub is the ultimate content creation hub for editors, designers, and creators looking to grow and improve their skills.'
-                    },
-                    5: {
-                      description: 'Our official Discord server where you can suggest assets, contact us for questions or suggestions, and connect with the community.'
-                    }
-                  }
-                },
-                categories: {
-                  editing: 'editing',
-                  design: 'design'
-                },
-                common: {
-                  videoCount: '{{count}} videos',
-                  members: 'members',
-                  creator: 'By {{creator}}',
-                  playVideo: 'Play video',
-                  watchOnYouTube: 'Watch on YouTube',
-                  joinServer: 'Join Server',
-                  byCreator: 'By {{creator}}'
-                },
-                toast: {
-                  description: 'You\'ll be redirected to Discord'
-                }
-              },
-              resourceFilters: {
-                searchPlaceholder: 'Search for resources...',
-                clearSearch: 'Clear search',
-                filterTitleMobile: 'Filters',
-                filterByCategory: 'Filter by category',
-                all: 'All',
-                music: 'Music',
-                sfx: 'SFX',
-                images: 'Images',
-                animations: 'Animations',
-                fonts: 'Fonts',
-                presets: 'Presets',
-                selectPreset: 'Select preset type',
-                allPresets: 'All Presets',
-                davinciPresets: 'DaVinci Resolve',
-                adobePresets: 'Adobe',
-                sortBy: 'Sort by',
-                sortOptions: {
-                  newest: 'Newest',
-                  popular: 'Popular',
-                },
-                downloads: 'downloads',
-                attribution: 'Attribution',
-                credit_warning: 'Please credit the creator when using this resource',
-                credit_text: 'Resource by {{author}}',
-                credit_copied: 'Credit copied to clipboard!',
-                copied: 'Copied',
-                copy: 'Copy',
-                no_attribution_required: 'No attribution required',
-                previous: 'Previous',
-                next: 'Next',
-                previous_resource: 'Previous resource',
-                next_resource: 'Next resource',
-                download_resource: 'Download Resource',
-                download_agreement: 'By downloading, you agree to our Terms of Service',
-                credit_required: 'Credit required',
-                no_credit_needed: 'No credit needed',
-                play_preview: 'Play preview',
-                pause_preview: 'Pause preview',
-                no_preview_available: 'No preview available',
-                font: 'Font',
-                no_preset_preview: 'Sorry, there\'s no preview for this preset.',
-                help_create_previews: 'You can help out creating previews for presets by joining our Discord!',
-                preview_not_available: 'Preview not available for this type.',
-                join_our_discord: 'Join our Discord'
-              }
-            }
-          },
-          // Keep Spanish, French, Dutch inline resources merging if present below
-          ...['es','fr','nl'].reduce((acc, lng) => {
-            acc[lng] = acc[lng] || { translation: {} };
-            return acc;
-          }, {})
-        }; const merged = { ...base }; return merged; })(),
+        resources: mergedResources,
         fallbackLng: 'en',
         supportedLngs: ['en', 'es', 'fr', 'nl'],
         debug: process.env.NODE_ENV === 'development',
