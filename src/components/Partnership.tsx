@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
@@ -18,24 +17,23 @@ const cardVariants: any = {
 };
 
 const Partnership = () => {
-  const { t } = useTranslation();
 
   const partners = [
     {
-      name: t('partnership.partners.creatorsKingdom.name'),
-      description: t('partnership.partners.creatorsKingdom.description'),
+      name: "Creators Kingdom",
+      description: "Premium Minecraft content creation community and resources.",
       logo: "https://cdn.bsky.app/img/avatar/plain/did:plc:2v6n63ayh4zfevupgxrkufx4/bafkreibufdbu2k76p5mdnwo64bmptl6g2wnl6imd3wxm3nvkstoqgjkz2q@jpeg",
       url: "https://bsky.app/profile/creatorskingdom.bsky.social",
     },
     {
-      name: t('partnership.partners.progersKitchen.name'),
-      description: t('partnership.partners.progersKitchen.description'),
+      name: "Proger's Kitchen",
+      description: "Community-driven Discord server for content creators and developers.",
       logo: "/assets/progerskitchen.webp",
       url: "https://discord.gg/wXhHe5bVgz",
     },
     {
-      name: t('partnership.partners.decourSmp.name'),
-      description: t('partnership.partners.decourSmp.description'),
+      name: "Decour SMP",
+      description: "Minecraft SMP community with content creation focus.",
       logo: "/assets/Decour.jpg",
       url: "https://dsc.gg/decoursmp",
     },
@@ -50,11 +48,11 @@ const Partnership = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-vt323 mb-4 tracking-wider">
-            {t('partnership.title')}
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white font-vt323">
+            Our Partners
           </h2>
-          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-            {t('partnership.description')}
+          <p className="text-lg text-center text-foreground/80 dark:text-white/80 mb-10">
+            Working together with amazing creators and organizations to bring you the best resources.
           </p>
         </motion.div>
 
@@ -108,7 +106,7 @@ const Partnership = () => {
                 href="/contact"
                 className="font-vt323 inline-block bg-transparent border-2 border-cow-purple text-cow-purple font-bold text-lg py-3 px-8 rounded-lg hover:bg-cow-purple hover:text-white transition-all duration-300 transform hover:scale-105"
             >
-                {t('partnership.becomePartner')}
+                Become a Partner
             </a>
         </motion.div>
       </div>

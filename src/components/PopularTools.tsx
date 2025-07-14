@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Download, Music, Bot, Image, PersonStanding } from 'lucide-react';
@@ -15,40 +14,39 @@ interface Tool {
 }
 
 const PopularTools = () => {
-  const { t } = useTranslation();
 
   const tools: Tool[] = [
     {
       id: 1,
-      title: t('popularTools.tools.musicCopyright.title'),
-      description: t('popularTools.tools.musicCopyright.description'),
+      title: 'Music Copyright Checker',
+      description: 'Check if your music is copyright-free and safe to use in your content.',
       icon: Music,
       path: '/gappa',
       color: 'from-blue-500/80 to-blue-600/80'
     },
     {
       id: 2,
-      title: t('popularTools.tools.videoDownloader.title'),
-      description: t('popularTools.tools.videoDownloader.description'),
+      title: 'Video Downloader',
+      description: 'Download videos from various platforms for your content creation needs.',
       icon: Download,
-      path: '/youtube-downloader',
-      color: 'from-purple-500/80 to-purple-600/80'
-    },
-    {
-      id: 3,
-      title: t('popularTools.tools.backgroundGenerator.title'),
-      description: t('popularTools.tools.backgroundGenerator.description'),
-      icon: Image,
-      path: '/background-generator',
+      path: '/ytdl',
       color: 'from-green-500/80 to-green-600/80'
     },
     {
+      id: 3,
+      title: 'Background Generator',
+      description: 'Create stunning backgrounds and thumbnails for your Minecraft content.',
+      icon: Image,
+      path: '/background-generator',
+      color: 'from-purple-500/80 to-purple-600/80'
+    },
+    {
       id: 4,
-      title: t('popularTools.tools.playerRenderer.title'),
-      description: t('popularTools.tools.playerRenderer.description'),
+      title: 'Player Renderer',
+      description: 'Generate high-quality 3D renders of Minecraft players and skins.',
       icon: PersonStanding,
       path: '/player-renderer',
-      color: 'from-red-500/80 to-red-600/80'
+      color: 'from-orange-500/80 to-orange-600/80'
     }
   ];
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -85,11 +83,11 @@ const PopularTools = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-vt323 mb-4">
-            {t('popularTools.title')} <span className="text-cow-purple">{t('popularTools.titleHighlight')}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white font-vt323">
+            Popular <span className="text-cow-purple">Tools</span>
           </h2>
-          <p className=" max-w-2xl mx-auto">
-            {t('popularTools.description')}
+          <p className="text-lg text-center text-foreground/80 dark:text-white/80 mb-10">
+            Powerful tools to enhance your Minecraft content creation workflow.
           </p>
         </motion.div>
 
@@ -141,7 +139,7 @@ const PopularTools = () => {
                     )}
                     whileHover={{ x: 5 }}
                   >
-                    {t('popularTools.tryItNow')}
+                    Try It Now
                   </motion.div>
                 </div>
               </Link>

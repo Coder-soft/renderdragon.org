@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,7 +7,6 @@ import ResourceCard from '@/components/resources/ResourceCard';
 import ResourceCardSkeleton from './resources/ResourceCardSkeleton';
 
 const FeaturedResources = () => {
-  const { t } = useTranslation();
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [featuredResources, setFeaturedResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,11 +75,11 @@ const FeaturedResources = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-vt323 mb-4">
-            {t('featuredResources.title')} <span className="text-cow-purple">{t('featuredResources.titleHighlight')}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white font-vt323">
+            Featured <span className="text-cow-purple">Resources</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            {t('featuredResources.description')}
+          <p className="text-lg text-center text-foreground/80 dark:text-white/80 mb-10">
+            Discover our most popular and high-quality resources curated for content creators.
           </p>
         </motion.div>
 
@@ -132,8 +130,8 @@ const FeaturedResources = () => {
             to="/resources" 
             className="pixel-btn-secondary inline-flex items-center space-x-2 group"
           >
-            <span>{t('featuredResources.viewAll')}</span>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <span>View All Resources</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </motion.div>
       </div>

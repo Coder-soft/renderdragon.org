@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface Supporter {
   name: string;
@@ -41,9 +41,14 @@ const SupportersList = () => {
   return (
     <div className="w-full py-3 overflow-hidden bg-accent/30 rounded-lg">
       <div className="flex flex-col items-center space-y-2">
-        <div className="text-sm font-medium text-muted-foreground">
-          {useTranslation().t('supporters.recentSupporters')}
-        </div>
+        <motion.h3 
+          className="text-lg font-vt323 mb-4 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Recent Supporters
+        </motion.h3>
         
         <div className="relative h-12 w-full">
           {supporters.map((supporter, index) => (

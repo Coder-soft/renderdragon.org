@@ -1,260 +1,251 @@
-import { useState, useEffect } from 'react';
-import { Copy, Mail, Check, Github, Globe, ExternalLink } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import DonateButton from '@/components/DonateButton';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
+import { Mail, MessageCircle, Clock, Github, Globe, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 interface TeamMember {
   name: string;
-  roleKey: string;
+  role: string;
   avatar: string;
-  socials?: {
-    github?: string;
-    discord?: string;
-    website?: string;
-  };
+  github?: string;
+  website?: string;
+  discord?: string;
 }
 
 const teamMembers: TeamMember[] = [
   {
-    name: 'Coder-soft',
-    roleKey: 'founder',
-    avatar: '/assets/codersoft.png',
-    socials: {
-      github: 'https://github.com/coder-soft',
-      discord: 'https://discordapp.com/users/1094475489734819840',
-      website: 'https://coder-soft.pages.dev/'
-    }
+    name: "ProgerX",
+    role: "Founder & Lead Developer",
+    avatar: "/assets/ProgerX.jpg",
+    github: "https://github.com/progerx",
+    website: "https://progerx.me",
+    discord: "progerx"
   },
   {
     name: 'Clover',
-    roleKey: 'projectLead',
+    role: 'Project Lead',
     avatar: '/assets/clover.jpeg',
-    socials: {
-      github: 'https://github.com/CloverTheBunny',
-      discord: 'https://discordapp.com/users/789997917661560862'
-    }
+    github: 'https://github.com/CloverTheBunny',
+    discord: 'https://discordapp.com/users/789997917661560862'
   },
   {
     name: 'Yamura',
-    roleKey: 'leadProgrammer',
+    role: 'Lead Programmer',
     avatar: '/assets/yamura.png',
-    socials: {
-      github: 'https://github.com/Yxmura',
-      discord: 'https://discordapp.com/users/877933841170432071'
-    }
+    github: 'https://github.com/Yxmura',
+    discord: 'https://discordapp.com/users/877933841170432071'
   },
   {
     name: 'TomatoKing',
-    roleKey: 'kingOfYapping',
+    role: 'King of Yapping',
     avatar: '/assets/tomatoking.png',
-    socials: {
-      discord: 'https://discordapp.com/users/1279190506126966847',
-      website: 'https://tomatosportfolio.netlify.app'
-    }
+    discord: 'https://discordapp.com/users/1279190506126966847',
+    website: 'https://tomatosportfolio.netlify.app'
   },
   {
     name: 'Denji',
-    roleKey: 'guideWriter',
+    role: 'Guide Writer',
     avatar: '/assets/denji.png',
-    socials: {
-      discord: 'https://discordapp.com/users/1114195537093201992',
-      website: 'https://yournotluis.xyz/'
-    }
+    discord: 'https://discordapp.com/users/1114195537093201992',
+    website: 'https://yournotluis.xyz/'
   },
   {
     name: 'IDoTheHax',
-    roleKey: 'originalCreator',
+    role: 'Original Creator',
     avatar: 'https://cdn.discordapp.com/avatars/987323487343493191/3187a33efcddab3592c93ceac0a6016b.webp?size=48',
-    socials: {
-      github: 'https://github.com/idothehax',
-      website: 'https://idothehax.com/',
-      discord: 'https://discordapp.com/users/987323487343493191'
-    }
+    github: 'https://github.com/idothehax',
+    website: 'https://idothehax.com/',
+    discord: 'https://discordapp.com/users/987323487343493191'
   },
   {
     name: 'VOVOplay',
-    roleKey: 'animator',
+    role: 'Animator',
     avatar: '/assets/VOVOplay.png',
-    socials: {
-      website: 'https://vovomotion.com/',
-      discord: 'https://discordapp.com/users/758322333437394944'
-    }
+    website: 'https://vovomotion.com/',
+    discord: 'https://discordapp.com/users/758322333437394944'
   }
 ];
 
 const Contact = () => {
-  const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
   const [activeCard, setActiveCard] = useState<number | null>(null);
-  const email = 'contact@renderdragon.org';
 
-  const copyToClipboard = () => {
+  const copyEmail = () => {
+    const email = 'contact@renderdragon.org';
     navigator.clipboard.writeText(email);
-    setCopied(true);
-    toast.success(t('contact.messages.emailCopied'));
+    setEmailCopied(true);
+    toast.success('Email copied to clipboard!');
     
     setTimeout(() => {
-      setCopied(false);
+      setEmailCopied(false);
     }, 2000);
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <Helmet>
-        <title>{t('contact.seo.title')}</title>
-        <meta name="description" content={t('contact.seo.description')} />
-        <meta property="og:title" content={t('contact.seo.title')} />
-        <meta property="og:description" content={t('contact.seo.description')} />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/contact.png" />
+        <title>Contact - Renderdragon</title>
+        <meta name="description" content="Get in touch with the Renderdragon team. Contact us for support, partnerships, or any questions about our free Minecraft content creation resources." />
+        <meta property="og:title" content="Contact - Renderdragon" />
+        <meta property="og:description" content="Get in touch with the Renderdragon team. Contact us for support, partnerships, or any questions about our free Minecraft content creation resources." />
+        <meta property="og:type" content="website" />
         <meta property="og:url" content="https://renderdragon.org/contact" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Contact - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/contact.png" />
+        <meta name="twitter:description" content="Get in touch with the Renderdragon team. Contact us for support, partnerships, or any questions about our free Minecraft content creation resources." />
       </Helmet>
-      <Navbar />
-      
-      <main className="flex-grow pt-24 pb-16 cow-grid-bg">
+
+      <main className="min-h-screen bg-background pt-24 pb-12">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
-              <span className="text-cow-purple">{t('contact.pageTitle')}</span>
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 font-vt323">
+              <span className="text-cow-purple">Contact</span>
             </h1>
-            
-            <div className="bg-card pixel-corners border-2 border-primary/50 p-8 mb-12">
-              <div className="mb-8">
-                <h2 className="text-2xl font-vt323 mb-4">{t('contact.sections.getInTouch')}</h2>
-                <p className="text-muted-foreground mb-6">
-                  {t('contact.messages.welcome')}
-                </p>
-                
-                <div className="flex items-center space-x-4">
-                  <Mail className="h-5 w-5 text-primary" />
-                  <span className="font-medium">{email}</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={copyToClipboard}
-                    className="flex items-center space-x-1 h-8 text-xs pixel-corners"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="h-3.5 w-3.5" />
-                        <span>{t('contact.buttons.copied')}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" />
-                        <span>{t('contact.buttons.copy')}</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="mb-8">
-                <h2 className="text-2xl font-vt323 mb-4">{t('contact.sections.joinCommunity')}</h2>
-                <p className="text-muted-foreground mb-4">
-                  {t('contact.messages.connect')}
-                </p>
-                
-                <a 
-                  href="https://discord.renderdragon.org" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="pixel-btn-primary inline-flex items-center space-x-2"
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h2 className="text-2xl font-vt323 mb-4">Get in Touch</h2>
+              <p className="text-muted-foreground mb-6">
+                We'd love to hear from you! Whether you have questions about our resources, need support, or want to discuss partnerships, we're here to help.
+              </p>
+
+              <div className="space-y-4">
+                <Button
+                  onClick={copyEmail}
+                  variant="outline"
+                  className="w-full justify-start"
                 >
-                  <span>{t('contact.buttons.joinDiscord')}</span>
-                  <img className="w-4 h-4" src="/assets/discord_icon.png" alt="Discord" />
+                  <Mail className="w-5 h-5 mr-3" />
+                  <span className="flex-1 text-left">contact@renderdragon.org</span>
+                  {emailCopied ? (
+                    <span>Copied!</span>
+                  ) : (
+                    <span>Copy</span>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <h2 className="text-2xl font-vt323 mb-4">Join Our Community</h2>
+              <p className="text-muted-foreground mb-6">
+                Connect with other creators, get the latest updates, and be part of our growing community.
+              </p>
+
+              <Button
+                asChild
+                className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white"
+              >
+                <a href="https://discord.gg/renderdragon" target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="w-5 h-5 mr-3" />
+                  <span>Join Discord Server</span>
                 </a>
-              </div>
-              
-              <div>
-                <h2 className="text-2xl font-vt323 mb-4">{t('contact.sections.supportHours')}</h2>
-                <p className="text-muted-foreground">
-                  {t('contact.messages.support')}
-                </p>
-              </div>
-            </div>
+              </Button>
+            </motion.div>
+          </div>
+
+          <motion.div
+            className="mt-16 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <h2 className="text-2xl font-vt323 mb-4">Support Hours</h2>
+            <p className="text-muted-foreground">
+              We typically respond within 24-48 hours. For urgent matters, please reach out via Discord for faster support.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="mt-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            <h2 className="text-2xl font-vt323 mb-6 text-center">Meet the Team</h2>
             
-            <div>
-              <h2 className="text-2xl font-vt323 mb-6 text-center">{t('contact.sections.meetTeam')}</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {teamMembers.map((member, index) => (
-                  <div 
-                    key={index} 
-                    className={`bg-card hover:bg-accent/20 border border-border hover:border-cow-purple transition-all duration-300 rounded-lg p-4 flex flex-col items-center text-center
-                      ${activeCard === index ? 'scale-105 shadow-lg shadow-cow-purple/20' : ''}`}
-                    onMouseEnter={() => setActiveCard(index)}
-                    onMouseLeave={() => setActiveCard(null)}
-                  >
-                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4 pixel-corners border-2 border-cow-purple">
-                      <img 
-                        src={member.avatar} 
-                        alt={member.name} 
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                    <h3 className="text-lg font-medium">{member.name}</h3>
-                    <p className="text-sm text-cow-purple font-bold mb-2">
-                      {t(`contact.team.roles.${member.roleKey}`)}
-                    </p>
-                    
-                    {/* socials */}
-                    {member.socials && (
-                      <div className="flex space-x-3 mt-auto">
-                        {member.socials.github && (
-                          <a 
-                            href={member.socials.github} 
-                            target="_blank" 
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {teamMembers.map((member, index) => (
+                <motion.div
+                  key={member.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                >
+                  <Card className="overflow-hidden">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden bg-muted">
+                        <img
+                          src={member.avatar}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <h3 className="font-semibold text-lg mb-2">{member.name}</h3>
+                      <p className="text-muted-foreground text-sm mb-4">{member.role}</p>
+                      
+                      <div className="flex justify-center space-x-3">
+                        {member.github && (
+                          <a
+                            href={member.github}
+                            target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-secondary hover:bg-primary hover:text-primary-foreground p-2 rounded-md transition-colors"
-                            aria-label={`${member.name} ${t('contact.socials.github')}`}
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            aria-label={`${member.name} GitHub`}
                           >
-                            <img className="w-4 h-4" src="/assets/github_icon.png" alt="GitHub" loading="lazy" />
+                            <Github className="w-5 h-5" />
                           </a>
                         )}
-                        {member.socials.website && (
-                          <a 
-                            href={member.socials.website} 
-                            target="_blank" 
+                        {member.website && (
+                          <a
+                            href={member.website}
+                            target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-secondary hover:bg-primary hover:text-primary-foreground p-2 rounded-md transition-colors"
-                            aria-label={`${member.name} ${t('contact.socials.website')}`}
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            aria-label={`${member.name} Website`}
                           >
-                            <img className="w-4 h-4" src="/assets/domain_icon.png" alt="Website" loading="lazy" />
+                            <Globe className="w-5 h-5" />
                           </a>
                         )}
-                        {member.socials.discord && (
-                          <a 
-                            href={member.socials.discord} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="bg-secondary hover:bg-primary hover:text-primary-foreground p-2 rounded-md transition-colors"
-                            aria-label={`${member.name} ${t('contact.socials.discord')}`}
+                        {member.discord && (
+                          <span
+                            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                            aria-label={`${member.name} Discord`}
+                            onClick={() => {
+                              navigator.clipboard.writeText(member.discord!);
+                              toast.success(`Discord handle copied: ${member.discord}`);
+                            }}
                           >
-                            <img className="w-4 h-4" src="/assets/discord_icon.png" alt="Discord" loading="lazy" />
-                          </a>
+                            <Users className="w-5 h-5" />
+                          </span>
                         )}
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </main>
-      
-      <Footer />
-      <DonateButton />
-    </div>
+    </>
   );
 };
 
