@@ -96,22 +96,51 @@ const YouTubeDownloader: React.FC = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-        const res = await fetch(`/api/info?url=${encodeURIComponent(youtubeUrl)}`, {
-          signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        let res;
+        try {
+          res = await fetch(`/api/info?url=${encodeURIComponent(youtubeUrl)}`, {
+            signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        } catch (fetchError) {
+          clearTimeout(timeoutId);
+          // Check if the error contains rate limiting information
+          if (fetchError instanceof Error && (fetchError.message.includes('Status code: 429') || fetchError.message.includes('Too Many Requests'))) {
+            throw new Error('Rate limit exceeded - YouTube is blocking too many requests. Please wait a few minutes before trying again.');
+          }
+          throw fetchError;
+        }
 
         clearTimeout(timeoutId);
-        const responseText = await res.text();
+        
+        // Read response text first, then handle based on status
+        let responseText = '';
+        try {
+          responseText = await res.text();
+        } catch (readError) {
+          console.error('Error reading response:', readError);
+          throw new Error('Failed to read server response. Please try again.');
+        }
 
         if (!res.ok) {
+          console.log(`API Error - Status: ${res.status}, Response: ${responseText}`);
+          
           // Handle specific HTTP status codes with enhanced rate limiting logic
           if (res.status === 504) {
             throw new Error('Server timeout - The service is temporarily unavailable. Please try again in a few minutes.');
           } else if (res.status === 503) {
-            throw new Error('Service unavailable - The server is temporarily overloaded. Please try again later.');
+            // For 503 errors, try to parse the JSON response to get better error message
+            try {
+              const errorJson = JSON.parse(responseText);
+              if (errorJson.error === 'YouTube Bot Detection Active') {
+                throw new Error('YouTube is currently blocking automated requests. This is temporary - please try again in a few minutes or use demo mode.');
+              }
+              throw new Error(errorJson.message || errorJson.error || 'Service unavailable - The server is temporarily overloaded. Please try again later.');
+            } catch (parseError) {
+              throw new Error('Service unavailable - The server is temporarily overloaded. Please try again later.');
+            }
           } else if (res.status === 429) {
             // For rate limiting, provide more specific guidance and longer wait times
             const retryAfter = res.headers.get('Retry-After');
@@ -121,11 +150,11 @@ const YouTubeDownloader: React.FC = () => {
             throw new Error('Access denied - YouTube may be blocking requests. Please try again later.');
           }
 
-          // Try to parse error response
-          let errorMessage = responseText;
+          // Try to parse error response for other status codes
+          let errorMessage = `Request failed with status ${res.status}`;
           try {
             const errorJson = JSON.parse(responseText);
-            errorMessage = errorJson.error || errorJson.message || responseText;
+            errorMessage = errorJson.error || errorJson.message || errorMessage;
           } catch (e) {
             // If it's HTML (like the 504 error page), provide a user-friendly message
             if (responseText.includes('<!DOCTYPE html>')) {
@@ -133,6 +162,9 @@ const YouTubeDownloader: React.FC = () => {
             } else if (responseText.includes('Status code:')) {
               // Handle cases where the error is just "Status code: XXX"
               errorMessage = `Request failed with status ${res.status}. Please try again later.`;
+            } else if (responseText.trim()) {
+              // Use the response text if it's available
+              errorMessage = `${errorMessage}: ${responseText}`;
             }
           }
           
@@ -147,7 +179,7 @@ const YouTubeDownloader: React.FC = () => {
       } catch (err: unknown) {
         console.error(`Attempt ${attempt} failed:`, err);
 
-                 if (err instanceof Error) {
+                          if (err instanceof Error) {
            // Handle AbortError (timeout)
            if (err.name === 'AbortError') {
              const timeoutMsg = 'Request timed out - The server is taking too long to respond. Please try again.';
@@ -168,30 +200,50 @@ const YouTubeDownloader: React.FC = () => {
              } else {
                toast.warning(`${networkMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
              }
-                        } else if (err.message.includes('Rate limit exceeded')) {
-              // Handle rate limiting with longer delays and fewer retries
-              const rateLimitMsg = 'Rate limit exceeded - YouTube is blocking too many requests.';
-              
-              if (attempt === MAX_RETRIES) {
-                toast.error(`${rateLimitMsg} Please wait several minutes before trying again.`, {
-                  duration: 10000,
-                  action: {
-                    label: 'Try Demo Mode',
-                    onClick: () => {
-                      const demoUrl = youtubeUrl + (youtubeUrl.includes('?') ? '&' : '?') + 'demo=true';
-                      setYoutubeUrl(demoUrl);
-                      toast.info('Demo mode enabled - this will show sample data to test the interface.');
-                    }
-                  }
-                });
-                break;
-              } else {
-                toast.warning(`${rateLimitMsg} Waiting longer before retry... (${attempt}/${MAX_RETRIES})`);
-                // Use much longer delay for rate limiting (30 seconds to 2 minutes)
-                await new Promise(resolve => setTimeout(resolve, 30000 + (attempt * 30000)));
-                continue;
-              }
-            } else {
+           } else if (err.message.includes('Rate limit exceeded') || err.message.includes('Status code: 429') || err.message.includes('Too Many Requests')) {
+             // Handle rate limiting with longer delays and fewer retries
+             const rateLimitMsg = 'Rate limit exceeded - YouTube is blocking too many requests.';
+             
+             if (attempt === MAX_RETRIES) {
+               toast.error(`${rateLimitMsg} Please wait several minutes before trying again.`, {
+                 duration: 10000,
+                 action: {
+                   label: 'Try Demo Mode',
+                   onClick: () => {
+                     const demoUrl = youtubeUrl + (youtubeUrl.includes('?') ? '&' : '?') + 'demo=true';
+                     setYoutubeUrl(demoUrl);
+                     toast.info('Demo mode enabled - this will show sample data to test the interface.');
+                   }
+                 }
+               });
+               break;
+             } else {
+               toast.warning(`${rateLimitMsg} Waiting longer before retry... (${attempt}/${MAX_RETRIES})`);
+               // Use much longer delay for rate limiting (30 seconds to 2 minutes)
+               await new Promise(resolve => setTimeout(resolve, 30000 + (attempt * 30000)));
+               continue;
+             }
+           } else if (err.message.includes('YouTube is currently blocking') || err.message.includes('Bot Detection Active')) {
+             // Handle YouTube bot detection errors
+             const botMsg = 'YouTube is currently blocking automated requests. This is temporary.';
+             
+             if (attempt === MAX_RETRIES) {
+               toast.error(`${botMsg} Please try again later or use demo mode.`, {
+                 duration: 10000,
+                 action: {
+                   label: 'Try Demo Mode',
+                   onClick: () => {
+                     const demoUrl = youtubeUrl + (youtubeUrl.includes('?') ? '&' : '?') + 'demo=true';
+                     setYoutubeUrl(demoUrl);
+                     toast.info('Demo mode enabled - this will show sample data to test the interface.');
+                   }
+                 }
+               });
+               break;
+             } else {
+               toast.warning(`${botMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
+             }
+           } else {
              // Other errors
              if (attempt === MAX_RETRIES) {
                toast.error(`Failed to fetch video info: ${err.message}`);
@@ -212,7 +264,7 @@ const YouTubeDownloader: React.FC = () => {
          }
 
                    // Wait before retrying (except on the last attempt and rate limiting cases)
-          if (attempt < MAX_RETRIES && !(err instanceof Error && err.message.includes('Rate limit exceeded'))) {
+          if (attempt < MAX_RETRIES && !(err instanceof Error && (err.message.includes('Rate limit exceeded') || err.message.includes('Status code: 429') || err.message.includes('Too Many Requests')))) {
             await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * attempt));
           }
       }
