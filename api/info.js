@@ -336,8 +336,21 @@ This is a common issue affecting all YouTube downloaders and is not specific to 
       errorMessage = 'Video is unavailable or private';
     } else if (err.message?.includes('Sign in to confirm') || err.message?.includes('bot')) {
       errorMessage = 'YouTube is currently blocking automated requests. Please try again later or use demo mode.';
-    } else if (err.message?.includes('rate limit')) {
+    } else if (err.message?.includes('rate limit') || err.message?.includes('Status code: 429') || err.message?.includes('Too Many Requests')) {
       errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+      // Return 429 status for rate limiting errors
+      return new Response(JSON.stringify({ 
+        error: errorMessage,
+        message: errorMessage,
+        retryAfter: 60 // Suggest 60 seconds wait time
+      }), {
+        status: 429,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Retry-After': '60'
+        },
+      });
     } else if (err.message?.includes('timeout')) {
       errorMessage = 'Request timed out. Please try again.';
     } else if (err.message?.includes('not found') || err.message?.includes('ERROR')) {

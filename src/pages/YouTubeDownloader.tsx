@@ -107,13 +107,16 @@ const YouTubeDownloader: React.FC = () => {
         const responseText = await res.text();
 
         if (!res.ok) {
-          // Handle specific HTTP status codes
+          // Handle specific HTTP status codes with enhanced rate limiting logic
           if (res.status === 504) {
             throw new Error('Server timeout - The service is temporarily unavailable. Please try again in a few minutes.');
           } else if (res.status === 503) {
             throw new Error('Service unavailable - The server is temporarily overloaded. Please try again later.');
           } else if (res.status === 429) {
-            throw new Error('Rate limit exceeded - Please wait a moment before trying again.');
+            // For rate limiting, provide more specific guidance and longer wait times
+            const retryAfter = res.headers.get('Retry-After');
+            const waitTime = retryAfter ? `${retryAfter} seconds` : 'a few minutes';
+            throw new Error(`Rate limit exceeded - YouTube is blocking too many requests. Please wait ${waitTime} before trying again.`);
           } else if (res.status === 403) {
             throw new Error('Access denied - YouTube may be blocking requests. Please try again later.');
           }
@@ -127,6 +130,9 @@ const YouTubeDownloader: React.FC = () => {
             // If it's HTML (like the 504 error page), provide a user-friendly message
             if (responseText.includes('<!DOCTYPE html>')) {
               errorMessage = `Server error (${res.status}) - Please try again in a few minutes.`;
+            } else if (responseText.includes('Status code:')) {
+              // Handle cases where the error is just "Status code: XXX"
+              errorMessage = `Request failed with status ${res.status}. Please try again later.`;
             }
           }
           
@@ -141,51 +147,74 @@ const YouTubeDownloader: React.FC = () => {
       } catch (err: unknown) {
         console.error(`Attempt ${attempt} failed:`, err);
 
-        if (err instanceof Error) {
-          // Handle AbortError (timeout)
-          if (err.name === 'AbortError') {
-            const timeoutMsg = 'Request timed out - The server is taking too long to respond. Please try again.';
-            
-            if (attempt === MAX_RETRIES) {
-              toast.error(timeoutMsg);
-              break;
+                 if (err instanceof Error) {
+           // Handle AbortError (timeout)
+           if (err.name === 'AbortError') {
+             const timeoutMsg = 'Request timed out - The server is taking too long to respond. Please try again.';
+             
+             if (attempt === MAX_RETRIES) {
+               toast.error(timeoutMsg);
+               break;
+             } else {
+               toast.warning(`${timeoutMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
+             }
+           } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+             // Network errors
+             const networkMsg = 'Network error - Please check your internet connection and try again.';
+             
+             if (attempt === MAX_RETRIES) {
+               toast.error(networkMsg);
+               break;
+             } else {
+               toast.warning(`${networkMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
+             }
+                        } else if (err.message.includes('Rate limit exceeded')) {
+              // Handle rate limiting with longer delays and fewer retries
+              const rateLimitMsg = 'Rate limit exceeded - YouTube is blocking too many requests.';
+              
+              if (attempt === MAX_RETRIES) {
+                toast.error(`${rateLimitMsg} Please wait several minutes before trying again.`, {
+                  duration: 10000,
+                  action: {
+                    label: 'Try Demo Mode',
+                    onClick: () => {
+                      const demoUrl = youtubeUrl + (youtubeUrl.includes('?') ? '&' : '?') + 'demo=true';
+                      setYoutubeUrl(demoUrl);
+                      toast.info('Demo mode enabled - this will show sample data to test the interface.');
+                    }
+                  }
+                });
+                break;
+              } else {
+                toast.warning(`${rateLimitMsg} Waiting longer before retry... (${attempt}/${MAX_RETRIES})`);
+                // Use much longer delay for rate limiting (30 seconds to 2 minutes)
+                await new Promise(resolve => setTimeout(resolve, 30000 + (attempt * 30000)));
+                continue;
+              }
             } else {
-              toast.warning(`${timeoutMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
-            }
-          } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-            // Network errors
-            const networkMsg = 'Network error - Please check your internet connection and try again.';
-            
-            if (attempt === MAX_RETRIES) {
-              toast.error(networkMsg);
-              break;
-            } else {
-              toast.warning(`${networkMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
-            }
-          } else {
-            // Other errors
-            if (attempt === MAX_RETRIES) {
-              toast.error(`Failed to fetch video info: ${err.message}`);
-              break;
-            } else {
-              toast.warning(`Attempt ${attempt} failed: ${err.message}. Retrying...`);
-            }
-          }
-        } else {
-          const genericMsg = 'An unexpected error occurred. Please try again.';
-          
-          if (attempt === MAX_RETRIES) {
-            toast.error(genericMsg);
-            break;
-          } else {
-            toast.warning(`${genericMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
-          }
-        }
+             // Other errors
+             if (attempt === MAX_RETRIES) {
+               toast.error(`Failed to fetch video info: ${err.message}`);
+               break;
+             } else {
+               toast.warning(`Attempt ${attempt} failed: ${err.message}. Retrying...`);
+             }
+           }
+         } else {
+           const genericMsg = 'An unexpected error occurred. Please try again.';
+           
+           if (attempt === MAX_RETRIES) {
+             toast.error(genericMsg);
+             break;
+           } else {
+             toast.warning(`${genericMsg} Retrying... (${attempt}/${MAX_RETRIES})`);
+           }
+         }
 
-        // Wait before retrying (except on the last attempt)
-        if (attempt < MAX_RETRIES) {
-          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * attempt));
-        }
+                   // Wait before retrying (except on the last attempt and rate limiting cases)
+          if (attempt < MAX_RETRIES && !(err instanceof Error && err.message.includes('Rate limit exceeded'))) {
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * attempt));
+          }
       }
     }
 
@@ -448,7 +477,7 @@ const YouTubeDownloader: React.FC = () => {
             <div className="pixel-card mb-8">
               <div className="flex flex-col md:flex-row gap-4">
                 <Input
-                  placeholder="Paste YouTube URL here"
+                  placeholder="Paste YouTube URL here (add ?demo=true for demo mode)"
                   value={youtubeUrl}
                   onChange={handleUrlChange}
                   className={`pixel-corners flex-grow ${urlError ? 'border-red-500' : ''}`}
@@ -468,6 +497,11 @@ const YouTubeDownloader: React.FC = () => {
               {urlError && (
                 <p className="text-red-500 text-xs mt-2 flex items-center">
                   <AlertCircle className="h-3 w-3 mr-1" /> Please enter a valid YouTube URL
+                </p>
+              )}
+              {youtubeUrl.includes('demo=true') && (
+                <p className="text-blue-600 text-xs mt-2 flex items-center">
+                  <Info className="h-3 w-3 mr-1" /> Demo mode enabled - this will show sample data for testing
                 </p>
               )}
             </div>
