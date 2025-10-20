@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from "framer-motion";
-import { Shield, AlertTriangle, CheckCircle, XCircle, Clock, Database, TrendingUp, RefreshCw } from "lucide-react";
+import { IconShield, IconAlertTriangle, IconCircleCheck, IconCircleX, IconClock, IconDatabase, IconTrendingUp, IconRefresh } from '@tabler/icons-react';
 import { Button } from './ui/button';
 import { CopyrightResult } from '@/types/copyright';
 
@@ -26,13 +26,13 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, onReset }) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'safe':
-        return <CheckCircle className="w-6 h-6" />;
+        return <IconCircleCheck className="w-6 h-6" />;
       case 'no monetization':
-        return <AlertTriangle className="w-6 h-6" />;
+        return <IconAlertTriangle className="w-6 h-6" />;
       case 'unsafe':
-        return <XCircle className="w-6 h-6" />;
+        return <IconCircleX className="w-6 h-6" />;
       default:
-        return <AlertTriangle className="w-6 h-6" />;
+        return <IconAlertTriangle className="w-6 h-6" />;
     }
   };
 
@@ -145,15 +145,15 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, onReset }) => {
                 transition={{ delay: 0.5 }}
               >
                 <div className="flex items-center space-x-1">
-                  <TrendingUp className="w-4 h-4" />
+                  <IconTrendingUp className="w-4 h-4" />
                   <span>Risk: <span className={`font-semibold ${getRiskColor(result.riskAssessment)}`}>{result.riskAssessment}</span></span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <Clock className="w-4 h-4" />
+                  <IconClock className="w-4 h-4" />
                   <span>Processed in {result.processingTime}</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <Database className="w-4 h-4" />
+                  <IconDatabase className="w-4 h-4" />
                   <span>{result.sourceStats.coverage}% source coverage</span>
                 </div>
               </motion.div>
@@ -327,7 +327,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, onReset }) => {
           size="lg"
           className="border-2 border-blue-400 text-white hover:text-white hover:bg-blue-400/20 backdrop-blur-md bg-white/10"
         >
-          <RefreshCw className="mr-2 h-5 w-5" />
+          <IconRefresh className="mr-2 h-5 w-5" />
           Scan Another Track
         </Button>
       </motion.div>

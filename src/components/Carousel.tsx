@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import type { JSX } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 // replace icons with your own if needed
-import { Circle, Code, FileText, Layers, Layout } from 'lucide-react';
+import { IconCircle, IconCode, IconFileText, IconLayers, IconLayout } from '@tabler/icons-react';
 import './Carousel.css';
 
 export interface CarouselItem {
@@ -28,31 +28,31 @@ export interface CarouselItem {
     title: 'Text Animations',
     description: 'Cool text animations for your projects.',
     id: 1,
-    icon: <FileText className="carousel-icon" />
+    icon: <IconFileText className="carousel-icon" />
   },
   {
     title: 'Animations',
     description: 'Smooth animations for your projects.',
     id: 2,
-    icon: <Circle className="carousel-icon" />
+    icon: <IconCircle className="carousel-icon" />
   },
   {
     title: 'Components',
     description: 'Reusable components for your projects.',
     id: 3,
-    icon: <Layers className="carousel-icon" />
+    icon: <IconLayers className="carousel-icon" />
   },
   {
     title: 'Backgrounds',
     description: 'Beautiful backgrounds and patterns for your projects.',
     id: 4,
-    icon: <Layout className="carousel-icon" />
+    icon: <IconLayout className="carousel-icon" />
   },
   {
     title: 'Common UI',
     description: 'Common UI components are coming soon!',
     id: 5,
-    icon: <Code className="carousel-icon" />
+    icon: <IconCode className="carousel-icon" />
   }
   ];
 

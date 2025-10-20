@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Download, Music, Bot, Image, PersonStanding } from 'lucide-react';
+import { IconDownload, IconMusic, IconRobot, IconPhoto, IconUser } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 
 interface Tool {
@@ -19,7 +19,7 @@ const PopularTools = () => {
       id: 1,
       title: 'Music Copyright Checker',
       description: 'Check if a song is copyrighted before using it in your videos.',
-      icon: Music,
+      icon: IconMusic,
       path: '/gappa',
       color: 'from-blue-500/80 to-blue-600/80'
     },
@@ -27,7 +27,7 @@ const PopularTools = () => {
       id: 2,
       title: 'YouTube Tools',
       description: 'Download YouTube thumbnails and see detail analytics of a video.',
-      icon: Download,
+      icon: IconDownload,
       path: '/youtube-downloader',
       color: 'from-purple-500/80 to-purple-600/80'
     },
@@ -35,7 +35,7 @@ const PopularTools = () => {
       id: 3,
       title: 'Background Generator',
       description: 'Create unique and stunning backgrounds for your thumbnails.',
-      icon: Image,
+      icon: IconPhoto,
       path: '/background-generator',
       color: 'from-green-500/80 to-green-600/80'
     },
@@ -43,7 +43,7 @@ const PopularTools = () => {
       id: 4,
       title: 'Player Renderer',
       description: 'Render a 3D model of a Minecraft player skin.',
-      icon: PersonStanding,
+      icon: IconUser,
       path: '/player-renderer',
       color: 'from-red-500/80 to-red-600/80'
     }

@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Plus, Search } from "lucide-react";
+import { IconLoader2, IconPlus, IconSearch } from '@tabler/icons-react';
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -282,7 +282,7 @@ const ShowcasePage: React.FC = () => {
           <div className="flex-1" />
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
+              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -313,7 +313,7 @@ const ShowcasePage: React.FC = () => {
                   }
                 }}
               >
-                <Plus className="mr-2 h-4 w-4" /> Create Showcase
+                <IconPlus className="mr-2 h-4 w-4" /> Create Showcase
               </Button>
               <DialogContent className="bg-popover/90 border-white/10">
                 <DialogHeader>
@@ -425,7 +425,7 @@ const ShowcasePage: React.FC = () => {
                             if (item.status === 'uploading') {
                               return (
                                 <div className="flex flex-col items-center gap-2 text-white/70">
-                                  <Loader2 className="h-6 w-6 animate-spin" />
+                                  <IconLoader2 className="h-6 w-6 animate-spin" />
                                   <div className="text-xs">Uploading {item.name}</div>
                                 </div>
                               );
@@ -456,7 +456,7 @@ const ShowcasePage: React.FC = () => {
                         <div className="mt-2 flex flex-wrap gap-2">
                           {uploadQueue.map((q, i) => (
                             <div key={`q-${i}`} className={`h-16 w-16 pixel-corners border ${currentPreviewIdx === i ? 'border-cow-purple' : 'border-white/10'} bg-background/40 flex items-center justify-center text-[10px] text-white/70`} onClick={() => setCurrentPreviewIdx(i)}>
-                              {q.status === 'uploading' ? <Loader2 className="h-4 w-4 animate-spin" /> : q.kind}
+                              {q.status === 'uploading' ? <IconLoader2 className="h-4 w-4 animate-spin" /> : q.kind}
                             </div>
                           ))}
                           {uploaded.map((u, i) => (
@@ -488,7 +488,7 @@ const ShowcasePage: React.FC = () => {
                     <div className="flex gap-2">
                       <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                       <Button className="bg-cow-purple hover:bg-cow-purple/90 disabled:opacity-70" onClick={() => void onCreate()} disabled={!user || authLoading || submitting || !tag || hasPendingUploads}>
-                        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Publish"}
+                        {submitting ? <IconLoader2 className="h-4 w-4 animate-spin" /> : "Publish"}
                       </Button>
                     </div>
                   </div>
@@ -500,7 +500,7 @@ const ShowcasePage: React.FC = () => {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-cow-purple" />
+            <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center text-white/70 min-h-[40vh] py-16">

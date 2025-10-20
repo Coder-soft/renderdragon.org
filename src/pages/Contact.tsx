@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Copy, Mail, Check, Github, Globe, ExternalLink } from "lucide-react";
+import { IconCopy, IconMail, IconCheck, IconBrandGithub, IconGlobe, IconExternalLink } from '@tabler/icons-react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -146,7 +146,7 @@ const Contact = () => {
                 </p>
 
                 <div className="flex items-center space-x-4">
-                  <Mail className="h-5 w-5 text-primary" />
+                  <IconMail className="h-5 w-5 text-primary" />
                   <span className="font-medium">{email}</span>
                   <Button
                     variant="outline"
@@ -156,12 +156,12 @@ const Contact = () => {
                   >
                     {copied ? (
                       <>
-                        <Check className="h-3.5 w-3.5" />
+                        <IconCheck className="h-3.5 w-3.5" />
                         <span>Copied</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="h-3.5 w-3.5" />
+                        <IconCopy className="h-3.5 w-3.5" />
                         <span>Copy</span>
                       </>
                     )}

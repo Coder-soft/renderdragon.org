@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Heart } from 'lucide-react';
+import { IconHeart } from '@tabler/icons-react';
 
 interface Supporter {
   name: string;
@@ -59,7 +59,7 @@ const SupportersList = () => {
               }}
             >
               <div className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-cow-purple" />
+                <IconHeart className="h-4 w-4 text-cow-purple" />
                 <span className={`font-medium ${getNameColor(supporter.amount)}`}>
                   {supporter.name}
                 </span>

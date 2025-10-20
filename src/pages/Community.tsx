@@ -1,15 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import {
-  Play,
-  ChevronRight,
-  Users,
-  Star,
-  TrendingUp,
-  Clock,
-  Eye,
-} from "lucide-react";
+import { IconPlayerPlay, IconChevronRight, IconUsers, IconStar, IconTrendingUp, IconClock, IconEye } from '@tabler/icons-react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -368,14 +360,14 @@ const Community = () => {
                   value="videos"
                   className="text-lg font-vt323 data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
                 >
-                  <Play className="w-5 h-5 mr-2" />
+                  <IconPlayerPlay className="w-5 h-5 mr-2" />
                   Tutorials
                 </TabsTrigger>
                 <TabsTrigger
                   value="servers"
                   className="text-lg font-vt323 data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
                 >
-                  <Users className="w-5 h-5 mr-2" />
+                  <IconUsers className="w-5 h-5 mr-2" />
                   Servers
                 </TabsTrigger>
               </TabsList>
@@ -431,7 +423,7 @@ const Community = () => {
                                   {category.description}
                                 </p>
                               </div>
-                              <ChevronRight
+                              <IconChevronRight
                                 className={`h-5 w-5 transition-transform duration-200 ${
                                   openCategories.includes(category.id)
                                     ? "transform rotate-90"
@@ -462,7 +454,7 @@ const Community = () => {
                                           size="icon"
                                           className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40"
                                         >
-                                          <Play
+                                          <IconPlayerPlay
                                             className="h-5 w-5 text-white"
                                             fill="white"
                                           />
@@ -548,7 +540,7 @@ const Community = () => {
 
                           <div className="flex items-center justify-between mb-4">
                             <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs flex items-center">
-                              <Users className="h-3 w-3 mr-1" />
+                              <IconUsers className="h-3 w-3 mr-1" />
                               {formatMemberCount(server.members)} members
                             </span>
                           </div>
@@ -592,7 +584,7 @@ const Community = () => {
                 {selectedVideo?.creator}
               </Badge>
               <Badge variant="outline" className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+                <IconClock className="w-3 h-3" />
                 {selectedVideo?.duration}
               </Badge>
             </DialogDescription>

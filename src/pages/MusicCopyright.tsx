@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Music, Search, AlertCircle, RefreshCcw, Info, Youtube } from 'lucide-react';
+import { IconMusic, IconSearch, IconAlertCircle, IconRefresh, IconInfoCircle, IconBrandYoutube } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -169,7 +169,7 @@ const MusicCopyright = () => {
             </p>
             
             <Alert className="mb-8 pixel-corners">
-              <Info className="h-4 w-4" />
+              <IconInfoCircle className="h-4 w-4" />
               <AlertTitle>Disclaimer</AlertTitle>
               <AlertDescription>
                 This tool provides general information and is not a guarantee against copyright claims.
@@ -218,12 +218,12 @@ const MusicCopyright = () => {
               >
                 {isLoading ? (
                   <>
-                    <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
+                    <IconRefresh className="h-4 w-4 mr-2 animate-spin" />
                     <span>Analyzing...</span>
                   </>
                 ) : (
                   <>
-                    <Search className="h-4 w-4 mr-2" />
+                    <IconSearch className="h-4 w-4 mr-2" />
                     <span>Check Copyright</span>
                   </>
                 )}
@@ -238,7 +238,7 @@ const MusicCopyright = () => {
             
             {!isLoading && !result && searchAttempted && (
               <div className="text-center py-8">
-                <AlertCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <IconAlertCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-lg text-muted-foreground">No results found</p>
                 <p className="text-sm text-muted-foreground mt-2">Try a different search term or check the spelling</p>
               </div>

@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Download, Upload } from 'lucide-react';
+import { IconDownload, IconUpload } from '@tabler/icons-react';
 import { useResources } from '@/hooks/useResources';
 import { Resource } from '@/types/resources';
 import { TextSettings } from '@/types/textGenerator';
@@ -488,7 +488,7 @@ const TextGenerator = () => {
                   className="w-full pixel-corners bg-cow-purple hover:bg-cow-purple/80"
                   onClick={handleDownload}
                 >
-                  <Download className="h-4 w-4 mr-2" />
+                  <IconDownload className="h-4 w-4 mr-2" />
                   Download Text
                 </Button>
               </div>

@@ -1,17 +1,7 @@
 import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Filter, 
-  Music, 
-  FileAudio,
-  Image, 
-  Video, 
-  FileText,
-  X,
-  Search,
-  Heart
-} from 'lucide-react';
+import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart } from '@tabler/icons-react';
 import {
   Select,
   SelectContent,
@@ -73,7 +63,7 @@ const ResourceFilters = ({
               className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
               onClick={onClearSearch}
             >
-              <X className="h-4 w-4" />
+              <IconX className="h-4 w-4" />
               <span className="sr-only">Clear search</span>
             </Button>
           )}
@@ -120,7 +110,7 @@ const MobileFilters = ({
     <Sheet>
       <SheetTrigger asChild>
         <Button size="icon" className="pixel-corners">
-          <Filter className="h-4 w-4" />
+          <IconFilter className="h-4 w-4" />
           <span className="sr-only">Filter</span>
         </Button>
       </SheetTrigger>
@@ -142,7 +132,7 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('music')}
               className="justify-start pixel-corners"
             >
-              <Music className="h-4 w-4 mr-2" />
+              <IconMusic className="h-4 w-4 mr-2" />
               Music
             </Button>
             <Button
@@ -150,7 +140,7 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('sfx')}
               className="justify-start pixel-corners"
             >
-              <FileAudio className="h-4 w-4 mr-2" />
+              <IconFileMusic className="h-4 w-4 mr-2" />
               SFX
             </Button>
             <Button
@@ -158,7 +148,7 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('images')}
               className="justify-start pixel-corners"
             >
-              <Image className="h-4 w-4 mr-2" />
+              <IconPhoto className="h-4 w-4 mr-2" />
               Images
             </Button>
             <Button
@@ -166,7 +156,7 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('animations')}
               className="justify-start pixel-corners"
             >
-              <Video className="h-4 w-4 mr-2" />
+              <IconVideo className="h-4 w-4 mr-2" />
               Animations
             </Button>
             <Button
@@ -174,7 +164,7 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('fonts')}
               className="justify-start pixel-corners"
             >
-              <FileText className="h-4 w-4 mr-2" />
+              <IconFileText className="h-4 w-4 mr-2" />
               Fonts
             </Button>
             <Button
@@ -182,7 +172,7 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('presets')}
               className="justify-start pixel-corners"
             >
-              <FileText className="h-4 w-4 mr-2" />
+              <IconFileText className="h-4 w-4 mr-2" />
               Presets
             </Button>
             <Button

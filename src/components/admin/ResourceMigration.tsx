@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Database, Upload } from 'lucide-react';
+import { IconAlertCircle, IconDatabase, IconUpload } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { migrateJsonResourcesToSupabase } from '@/utils/migrateResources';
 
@@ -39,13 +39,13 @@ const ResourceMigration = () => {
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Database className="h-5 w-5" />
+          <IconDatabase className="h-5 w-5" />
           Resource Migration
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+          <IconAlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
           <div className="text-sm text-yellow-800">
             <p className="font-medium">Warning:</p>
             <p>This will migrate all resources from the JSON file to the Supabase database and replace any existing resources.</p>
@@ -73,12 +73,12 @@ const ResourceMigration = () => {
         >
           {isLoading ? (
             <>
-              <Upload className="h-4 w-4 mr-2 animate-spin" />
+              <IconUpload className="h-4 w-4 mr-2 animate-spin" />
               Migrating Resources...
             </>
           ) : (
             <>
-              <Upload className="h-4 w-4 mr-2" />
+              <IconUpload className="h-4 w-4 mr-2" />
               Migrate JSON Resources to Database
             </>
           )}

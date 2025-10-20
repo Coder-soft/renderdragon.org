@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Copy, RefreshCw, Loader2 } from 'lucide-react';
+import { IconDownload, IconCopy, IconRefresh, IconLoader2 } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
@@ -198,7 +198,7 @@ const PlayerRenderer = () => {
                   disabled={!username || isFetching}
                 >
                   {isFetching ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <IconLoader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     'Generate'
                   )}
@@ -215,7 +215,7 @@ const PlayerRenderer = () => {
                   }}
                   disabled={isFetching}
                 >
-                  <RefreshCw className="h-4 w-4" />
+                  <IconRefresh className="h-4 w-4" />
                 </Button>
               </form>
             </motion.div>
@@ -272,14 +272,14 @@ const PlayerRenderer = () => {
                         onClick={() => handleDownload(renderUrls.mineatar.full(playerData.id), 'body')}
                         disabled={isLoading}
                       >
-                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                        {isLoading ? <IconLoader2 className="h-4 w-4 animate-spin" /> : <IconDownload className="h-4 w-4 mr-2" />}
                         Save
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => copyUrl(renderUrls.mineatar.full(playerData.id))}
                       >
-                        <Copy className="h-4 w-4" />
+                        <IconCopy className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
@@ -301,14 +301,14 @@ const PlayerRenderer = () => {
                         onClick={() => handleDownload(renderUrls.nmsr.face(playerData.id), 'head')}
                         disabled={isLoading}
                       >
-                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                        {isLoading ? <IconLoader2 className="h-4 w-4 animate-spin" /> : <IconDownload className="h-4 w-4 mr-2" />}
                         Save
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => copyUrl(renderUrls.nmsr.face(playerData.id))}
                       >
-                        <Copy className="h-4 w-4" />
+                        <IconCopy className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
@@ -331,14 +331,14 @@ const PlayerRenderer = () => {
                         onClick={() => handleDownload(renderUrls.nmsr.bust(playerData.id), 'render')}
                         disabled={isLoading}
                       >
-                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                        {isLoading ? <IconLoader2 className="h-4 w-4 animate-spin" /> : <IconDownload className="h-4 w-4 mr-2" />}
                         Save
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => copyUrl(renderUrls.nmsr.bust(playerData.id))}
                       >
-                        <Copy className="h-4 w-4" />
+                        <IconCopy className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
@@ -361,14 +361,14 @@ const PlayerRenderer = () => {
                         onClick={() => handleDownload(renderUrls.nmsr.fullbody(playerData.id), 'fullbody')}
                         disabled={isLoading}
                       >
-                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                        {isLoading ? <IconLoader2 className="h-4 w-4 animate-spin" /> : <IconDownload className="h-4 w-4 mr-2" />}
                         Save
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => copyUrl(renderUrls.nmsr.fullbody(playerData.id))}
                       >
-                        <Copy className="h-4 w-4" />
+                        <IconCopy className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>

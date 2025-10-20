@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { Shield } from 'lucide-react';
+import { IconShield } from '@tabler/icons-react';
 import AdminPageSkeleton from '@/components/skeletons/AdminPageSkeleton';
 
 const AdminResourcesManager = lazy(() => import('@/components/admin/AdminResourcesManager'));
@@ -54,7 +54,7 @@ const Admin = () => {
             className="max-w-7xl mx-auto"
           >
             <div className="flex items-center gap-3 mb-8">
-              <Shield className="h-8 w-8 text-cow-purple" />
+              <IconShield className="h-8 w-8 text-cow-purple" />
               <h1 className="text-4xl md:text-5xl font-vt323">
                 Admin <span className="text-cow-purple">Panel</span>
               </h1>

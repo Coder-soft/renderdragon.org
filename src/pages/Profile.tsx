@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { IconLoader2 } from '@tabler/icons-react';
 import { formatDistanceToNow } from "date-fns";
 
 // Reuse types similar to Showcase page
@@ -113,7 +113,7 @@ const ProfilePage: React.FC = () => {
 
         {loading ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-6 w-6 animate-spin text-cow-purple" />
+            <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
           </div>
         ) : !profile ? (
           <div className="text-center text-white/70 py-24">Profile not found.</div>

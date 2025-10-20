@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { useAuth } from '@/hooks/useAuth';
-import { LogOut, Heart, User, Settings } from 'lucide-react';
+import { IconLogout, IconHeart, IconUser, IconSettings } from '@tabler/icons-react';
 import { useProfile } from '@/hooks/useProfile';
 
 interface UserMenuProps {
@@ -105,17 +105,17 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link to="/account">
-            <Settings className="mr-2 h-4 w-4" />
+            <IconSettings className="mr-2 h-4 w-4" />
             <span>Account Settings</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onShowFavorites} className="cursor-pointer">
-          <Heart className="mr-2 h-4 w-4" />
+          <IconHeart className="mr-2 h-4 w-4" />
           <span>My Favorites</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
-          <LogOut className="mr-2 h-4 w-4" />
+          <IconLogout className="mr-2 h-4 w-4" />
           <span>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

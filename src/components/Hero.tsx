@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { ArrowRight, Music } from "lucide-react"
+import { IconArrowRight, IconMusic } from '@tabler/icons-react'
 import { useIsMobile } from "@/hooks/use-mobile"
 import * as motion from "motion/react-client"
 
@@ -225,7 +225,7 @@ const Hero = () => {
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
               >
-                <ArrowRight className="w-4 h-4" />
+                <IconArrowRight className="w-4 h-4" />
               </motion.span>
               Browse Resources
             </Link>
@@ -246,7 +246,7 @@ const Hero = () => {
                 animate={{ rotate: [0, 10, 0] }}
                 transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
               >
-                <Music className="w-4 h-4" />
+                <IconMusic className="w-4 h-4" />
               </motion.span>
               Check Music Copyright
             </Link>

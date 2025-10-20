@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
-import { ChevronRight, Play, Users } from 'lucide-react';
+import { IconChevronRight, IconPlayerPlay, IconUsers } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -344,7 +344,7 @@ const Community = () => {
                                 {category.description}
                               </p>
                             </div>
-                            <ChevronRight className={`h-5 w-5 transition-transform duration-200 ${
+                            <IconChevronRight className={`h-5 w-5 transition-transform duration-200 ${
                               openCategories.includes(category.id) ? 'transform rotate-90' : ''
                             }`} />
                           </div>
@@ -372,7 +372,7 @@ const Community = () => {
                                           size="icon" 
                                           className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40"
                                         >
-                                          <Play className="h-5 w-5 text-white" fill="white" />
+                                          <IconPlayerPlay className="h-5 w-5 text-white" fill="white" />
                                           <span className="sr-only">Play</span>
                                         </Button>
                                       </div>
@@ -441,7 +441,7 @@ const Community = () => {
                                 ))}
                               </div>
                               <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs flex items-center">
-                                <Users className="h-3 w-3 mr-1" />
+                                <IconUsers className="h-3 w-3 mr-1" />
                                 {formatMemberCount(server.members)} members
                               </span>
                             </div>

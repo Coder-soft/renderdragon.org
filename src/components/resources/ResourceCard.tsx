@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import {
-  Music,
-  Image,
-  Video,
-  FileText,
-  FileAudio,
-  Check,
-  Heart,
-} from 'lucide-react';
+import { IconMusic, IconPhoto, IconVideo, IconFileText, IconFileMusic, IconCheck, IconHeart } from '@tabler/icons-react';
 import { Resource } from '@/types/resources';
 import { cn } from '@/lib/utils';
 import { useUserFavorites } from '@/hooks/useUserFavorites';
@@ -59,18 +51,18 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'music':
-        return <Music className="h-5 w-5" />;
+        return <IconMusic className="h-5 w-5" />;
       case 'sfx':
-        return <FileAudio className="h-5 w-5" />;
+        return <IconFileMusic className="h-5 w-5" />;
       case 'images':
-        return <Image className="h-5 w-5" />;
+        return <IconPhoto className="h-5 w-5" />;
       case 'animations':
-        return <Video className="h-5 w-5" />;
+        return <IconVideo className="h-5 w-5" />;
       case 'fonts':
       case 'presets':
-        return <FileText className="h-5 w-5" />;
+        return <IconFileText className="h-5 w-5" />;
       default:
-        return <FileText className="h-5 w-5" />;
+        return <IconFileText className="h-5 w-5" />;
     }
   };
 
@@ -204,7 +196,7 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
             transition: { duration: 0.3 }
           } : undefined}
         >
-          <Heart className="h-5 w-5" fill={isFavorite ? "currentColor" : "none"} />
+          <IconHeart className="h-5 w-5" fill={isFavorite ? "currentColor" : "none"} />
         </motion.button>
       </div>
 
@@ -229,7 +221,7 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
             className="text-xs bg-green-500/10 text-green-500 px-2 py-1 rounded-md inline-flex items-center"
             whileHover={{ scale: 1.05 }}
           >
-            <Check className="h-3 w-3 mr-1" />
+            <IconCheck className="h-3 w-3 mr-1" />
             <span>No credit needed</span>
           </motion.div>
         )}

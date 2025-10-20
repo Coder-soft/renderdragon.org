@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, PenTool, Film, Code, Gamepad } from 'lucide-react';
+import { IconArrowUpRight, IconPencil, IconMovie, IconCode, IconDeviceGamepad2 } from '@tabler/icons-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -152,9 +152,9 @@ const Utils = () => {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'graphic-design':
-        return <PenTool className="h-5 w-5" />;
+        return <IconPencil className="h-5 w-5" />;
       case 'editing':
-        return <Film className="h-5 w-5" />;
+        return <IconMovie className="h-5 w-5" />;
       case 'minecraft-shaders':
         return <img className='h-5 w-5 grayscale' src="/assets/minecraft_icon.png" alt="shader" />;
       case 'minecraft-mods':
@@ -254,7 +254,7 @@ const Utils = () => {
                               }}
                             >
                               Visit Website
-                              <ArrowUpRight className="ml-1 h-4 w-4" />
+                              <IconArrowUpRight className="ml-1 h-4 w-4" />
                             </motion.div>
                           </CardContent>
                         </Card>

@@ -10,19 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ResourcePreview from './ResourcePreview';
-import { 
-  Download, 
-  Copy, 
-  Check, 
-  Github, 
-  Music, 
-  Image, 
-  Video, 
-  FileText, 
-  FileAudio,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
+import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconMusic, IconPhoto, IconVideo, IconFileText, IconFileMusic, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -113,19 +101,19 @@ const ResourceDetailDialog = ({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'music':
-        return <Music className="h-5 w-5" />;
+        return <IconMusic className="h-5 w-5" />;
       case 'sfx':
-        return <FileAudio className="h-5 w-5" />;
+        return <IconFileMusic className="h-5 w-5" />;
       case 'images':
-        return <Image className="h-5 w-5" />;
+        return <IconPhoto className="h-5 w-5" />;
       case 'animations':
-        return <Video className="h-5 w-5" />;
+        return <IconVideo className="h-5 w-5" />;
       case 'fonts':
-        return <FileText className="h-5 w-5" />;
+        return <IconFileText className="h-5 w-5" />;
       case 'presets':
-        return <FileText className="h-5 w-5" />;
+        return <IconFileText className="h-5 w-5" />;
       default:
-        return <FileText className="h-5 w-5" />;
+        return <IconFileText className="h-5 w-5" />;
     }
   };
 
@@ -194,7 +182,7 @@ const ResourceDetailDialog = ({
               </Badge>
               
               <Badge variant="outline" className="bg-blue-500/10 text-blue-500">
-                <Download className="h-3 w-3 mr-1" />
+                <IconDownload className="h-3 w-3 mr-1" />
                 {downloadCount || 0} downloads
               </Badge>
             </div>
@@ -225,12 +213,12 @@ const ResourceDetailDialog = ({
                   >
                     {copied ? (
                       <>
-                        <Check className="h-3.5 w-3.5" />
+                        <IconCheck className="h-3.5 w-3.5" />
                         <span>Copied</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="h-3.5 w-3.5" />
+                        <IconCopy className="h-3.5 w-3.5" />
                         <span>Copy</span>
                       </>
                     )}
@@ -239,7 +227,7 @@ const ResourceDetailDialog = ({
               </div>
             ) : (
               <div className="flex items-center text-green-500">
-                <Check className="h-5 w-5 mr-2" />
+                <IconCheck className="h-5 w-5 mr-2" />
                 <span>
                   No attribution required! You're free to use this resource
                   without crediting.
@@ -258,7 +246,7 @@ const ResourceDetailDialog = ({
                 onClick={handlePrevious}
                 disabled={!hasPrevious}
               >
-                <ChevronLeft className="h-4 w-4 md:mr-2" />
+                <IconChevronLeft className="h-4 w-4 md:mr-2" />
                 <span className="hidden md:inline">Previous</span>
                 <span className="sr-only">Previous resource</span>
               </Button>
@@ -267,7 +255,7 @@ const ResourceDetailDialog = ({
                 onClick={() => onDownload(resource)}
                 className="pixel-btn-primary flex items-center justify-center gap-2"
               >
-                <Download className="h-5 w-5" />
+                <IconDownload className="h-5 w-5" />
                 <span>Download Resource</span>
               </Button>
 
@@ -278,7 +266,7 @@ const ResourceDetailDialog = ({
                 disabled={!hasNext}
               >
                 <span className="hidden md:inline">Next</span>
-                <ChevronRight className="h-4 w-4 md:ml-2" />
+                <IconChevronRight className="h-4 w-4 md:ml-2" />
                 <span className="sr-only">Next resource</span>
               </Button>
             </div>

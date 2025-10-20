@@ -1,15 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  ChevronDown, 
-  Menu, 
-  X, 
-  Sun,
-  Moon,
-  Skull,
-  ExternalLink
-} from 'lucide-react';
+import { IconChevronDown, IconMenu2, IconX, IconSun, IconMoon, IconSkull, IconExternalLink } from '@tabler/icons-react';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from '@/components/ui/button';
 import {
@@ -286,7 +278,7 @@ const Navbar = () => {
                 onClick={dismissBanner}
                 className="ml-3 text-white/80 hover:text-white"
               >
-                <X className="w-4 h-4" />
+                <IconX className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -354,7 +346,7 @@ const Navbar = () => {
                       >
                         {/* no icons on desktop */}
                         <span>{link.name}</span>
-                        <ChevronDown className="w-4 h-4" />
+                        <IconChevronDown className="w-4 h-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent 
@@ -377,7 +369,7 @@ const Navbar = () => {
                                 {(subLink as NavLink).tag && (
                                   <TagBadge label={(subLink as NavLink).tag!} />
                                 )}
-                                <ExternalLink className="w-5 h-5 ml-auto pl-2 opacity-80" />
+                                <IconExternalLink className="w-5 h-5 ml-auto pl-2 opacity-80" />
                               </a>
                             ) : (
                               <Link 
@@ -429,7 +421,7 @@ const Navbar = () => {
                   size="icon"
                   className="md:hidden"
                 >
-                  <Menu className="h-6 w-6" />
+                  <IconMenu2 className="h-6 w-6" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </DrawerTrigger>
@@ -472,7 +464,7 @@ const Navbar = () => {
                               <span>{link.name}</span>
                               {link.tag && <TagBadge label={link.tag} />}
                             </div>
-                            <ChevronDown 
+                            <IconChevronDown 
                               className={`w-4 h-4 transition-transform duration-300 ${
                                 openMobileCollapsible === link.name ? 'rotate-180' : ''
                               }`} 
@@ -494,7 +486,7 @@ const Navbar = () => {
                                     {(subLink as NavLink).tag && (
                                       <TagBadge label={(subLink as NavLink).tag!} />
                                     )}
-                                    <ExternalLink className="w-5 h-5 ml-auto pl-2 opacity-80" />
+                                    <IconExternalLink className="w-5 h-5 ml-auto pl-2 opacity-80" />
                                   </a>
                                 ) : (
                                   <Link 

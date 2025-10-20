@@ -12,7 +12,7 @@ import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, Heart, Grid, Search } from 'lucide-react';
+import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 import DonateButton from '@/components/DonateButton';
 
@@ -337,7 +337,7 @@ const ResourcesHub = () => {
               size="icon"
               aria-label="Scroll to top"
             >
-              <ArrowUp className="h-5 w-5" />
+              <IconArrowUp className="h-5 w-5" />
             </Button>
           </motion.div>
         )}

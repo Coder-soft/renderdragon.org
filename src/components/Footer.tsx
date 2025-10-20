@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, ChevronDown, Check } from 'lucide-react';
+import { IconShoppingCart, IconChevronDown, IconCheck } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 import { Menu, Transition } from '@headlessui/react';
@@ -259,7 +259,7 @@ const Footer = () => {
               className="ml-4 p-2 bg-white/10 hover:bg-white/20 rounded-md transition-all duration-1000"
               disabled={cartClicked}
             >
-              <ShoppingCart className="h-5 w-5" />
+              <IconShoppingCart className="h-5 w-5" />
             </button>
           </div>
         </div>

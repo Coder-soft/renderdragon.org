@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { IconArrowRight } from '@tabler/icons-react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cardVariants: any = {
@@ -81,7 +81,7 @@ const Partnership = () => {
                       loading="lazy"
                     />
                     <div className="absolute -bottom-1 -right-1 bg-cow-purple text-white p-1 rounded-full border-2 border-background">
-                      <ArrowRight className="w-4 h-4" />
+                      <IconArrowRight className="w-4 h-4" />
                     </div>
                   </div>
                   <h3 className="text-2xl font-vt323 mb-2">{partner.name}</h3>

@@ -1,21 +1,20 @@
+"use client";
 
-"use client"
-
-import { useEffect } from "react"
-import { Link } from "react-router-dom"
-import { motion } from "framer-motion"
-import { Home, Compass, Pickaxe } from "lucide-react"
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
-import DonateButton from "@/components/DonateButton"
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { IconHome, IconCompass, IconTool } from "@tabler/icons-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import DonateButton from "@/components/DonateButton";
 
 const NotFound = () => {
   useEffect(() => {
     console.error(
       "404 Error: User attempted to access non-existent route:",
       typeof window !== "undefined" ? window.location.pathname : "",
-    )
-  }, [])
+    );
+  }, []);
 
   // Staggered animation for children elements
   const containerVariants = {
@@ -27,7 +26,7 @@ const NotFound = () => {
         delayChildren: 0.3,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
@@ -36,14 +35,14 @@ const NotFound = () => {
       opacity: 1,
       transition: { duration: 0.6 },
     },
-  }
+  };
 
   // Minecraft block hover effect
   const blockHover = {
     scale: 1.05,
     rotate: [0, -1, 1, -1, 0],
     transition: { duration: 0.4 },
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -99,7 +98,10 @@ const NotFound = () => {
           initial="hidden"
           animate="visible"
         >
-          <motion.div className="text-cow-purple mb-4 relative" variants={itemVariants}>
+          <motion.div
+            className="text-cow-purple mb-4 relative"
+            variants={itemVariants}
+          >
             <motion.div
               className="text-9xl drop-shadow-lg font-vt323"
               animate={{
@@ -131,7 +133,7 @@ const NotFound = () => {
                 delay: 1,
               }}
             >
-              <Pickaxe className="h-12 w-12 text-gray-600" />
+              <IconPickaxe className="h-12 w-12 text-gray-600" />
             </motion.div>
           </motion.div>
 
@@ -142,18 +144,24 @@ const NotFound = () => {
             Uh oh! This chunk failed to load.
           </motion.h1>
 
-          <motion.p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto" variants={itemVariants}>
-            The page you're trying to reach doesn't exist — or it may have been lost in the Nether. Try heading back or
-            explore something new.
+          <motion.p
+            className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto"
+            variants={itemVariants}
+          >
+            The page you're trying to reach doesn't exist — or it may have been
+            lost in the Nether. Try heading back or explore something new.
           </motion.p>
 
-          <motion.div className="flex flex-col sm:flex-row justify-center items-center gap-4" variants={itemVariants}>
+          <motion.div
+            className="flex flex-col sm:flex-row justify-center items-center gap-4"
+            variants={itemVariants}
+          >
             <motion.div whileHover={blockHover} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/"
                 className="pixel-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
-                <Home className="h-5 w-5" />
+                <IconHome className="h-5 w-5" />
                 <span>Return to Home</span>
               </Link>
             </motion.div>
@@ -163,7 +171,7 @@ const NotFound = () => {
                 to="/resources"
                 className="pixel-btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
-                <Compass className="h-5 w-5" />
+                <IconCompass className="h-5 w-5" />
                 <span>Explore Resources</span>
               </Link>
             </motion.div>
@@ -180,12 +188,20 @@ const NotFound = () => {
             <motion.div
               className="absolute -top-3 -left-3 w-6 h-6 bg-cow-purple/20 rounded-sm"
               animate={{ rotate: [0, 360] }}
-              transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
             />
             <motion.div
               className="absolute -bottom-3 -right-3 w-6 h-6 bg-cow-purple/20 rounded-sm"
               animate={{ rotate: [360, 0] }}
-              transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
             />
 
             <p className="text-sm text-muted-foreground">
@@ -209,7 +225,7 @@ const NotFound = () => {
       <Footer />
       <DonateButton />
     </div>
-  )
-}
+  );
+};
 
-export default NotFound
+export default NotFound;

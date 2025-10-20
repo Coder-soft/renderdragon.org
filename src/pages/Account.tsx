@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
-import { User, Mail, Calendar, LogOut } from 'lucide-react';
+import { IconUser, IconMail, IconCalendar, IconLogout } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import AccountPageSkeleton from '@/components/skeletons/AccountPageSkeleton';
@@ -134,7 +134,7 @@ const Account = () => {
             className="max-w-2xl mx-auto"
           >
             <div className="flex items-center gap-3 mb-8">
-              <User className="h-8 w-8 text-cow-purple" />
+              <IconUser className="h-8 w-8 text-cow-purple" />
               <h1 className="text-4xl md:text-5xl font-vt323">
                 My <span className="text-cow-purple">Account</span>
               </h1>
@@ -152,7 +152,7 @@ const Account = () => {
                   <div>
                     <h2 className="text-2xl font-vt323">{displayName || 'User'}</h2>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
+                      <IconMail className="h-4 w-4" />
                       {user.email}
                     </div>
                   </div>
@@ -209,14 +209,14 @@ const Account = () => {
                     
                     <div className="space-y-3 text-sm">
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <IconMail className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">Email:</span>
                         <span>{user.email}</span>
                       </div>
                       
                       {user.created_at && (
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <IconCalendar className="h-4 w-4 text-muted-foreground" />
                           <span className="font-medium">Member since:</span>
                           <span>{new Date(user.created_at).toLocaleDateString()}</span>
                         </div>
@@ -239,7 +239,7 @@ const Account = () => {
                       onClick={handleSignOut}
                       className="pixel-corners border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
+                      <IconLogout className="h-4 w-4 mr-2" />
                       Sign Out
                     </Button>
                   </div>

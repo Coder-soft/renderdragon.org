@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { IconEye, IconEyeOff, IconMail, IconLock, IconUser } from '@tabler/icons-react';
 import { OAuthProviders } from './OAuthProviders';
 
 interface AuthDialogProps {
@@ -143,7 +143,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               Email *
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <IconMail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
@@ -169,7 +169,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                   Display Name *
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <IconUser className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="displayName"
                     type="text"
@@ -189,7 +189,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               Password *
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <IconLock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -207,9 +207,9 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <IconEyeOff className="h-4 w-4" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <IconEye className="h-4 w-4" />
                 )}
               </Button>
             </div>
@@ -245,7 +245,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                   />
                 ) : (
                   <>
-                    <User className="mr-2 h-4 w-4" />
+                    <IconUser className="mr-2 h-4 w-4" />
                     {isLogin ? 'Sign In' : 'Create Account'}
                   </>
                 )}

@@ -4,7 +4,7 @@ import { useResources } from '@/hooks/useResources';
 import { useDownloadCounts } from '@/hooks/useDownloadCounts';
 import ResourceCard from './ResourceCard';
 import ResourceCardSkeleton from './ResourceCardSkeleton';
-import { Heart } from 'lucide-react';
+import { IconHeart } from '@tabler/icons-react';
 
 const FavoritesTab = () => {
   const {favorites, isLoading: favoritesLoading } = useUserFavorites();
@@ -32,7 +32,7 @@ const FavoritesTab = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center py-12"
       >
-        <Heart className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <IconHeart className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <h3 className="text-lg font-vt323 mb-2">No favorites yet</h3>
         <p className="text-muted-foreground">
           Start exploring resources and add them to your favorites!

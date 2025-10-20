@@ -1,5 +1,5 @@
 import React from 'react';
-import { Quote } from 'lucide-react';
+import { IconQuote } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 interface Testimonial {
@@ -122,7 +122,7 @@ const Testimonials = () => {
 
               {/* Card Content */}
               <div className="p-6 relative">
-                <Quote className="absolute top-4 left-4 text-cow-purple/10 w-10 h-10" />
+                <IconQuote className="absolute top-4 left-4 text-cow-purple/10 w-10 h-10" />
                 <blockquote className="relative z-10 pl-2">
                   <p className="italic text-foreground/80">"{testimonial.content}"</p>
                 </blockquote>

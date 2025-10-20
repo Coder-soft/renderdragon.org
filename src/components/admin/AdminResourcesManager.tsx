@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Search, Edit, Trash2, Download, Calendar } from 'lucide-react';
+import { IconPlus, IconSearch, IconEdit, IconTrash, IconDownload, IconCalendar } from '@tabler/icons-react';
 import { Resource } from '@/types/resources';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -146,7 +146,7 @@ const AdminResourcesManager = () => {
           }}
           className="pixel-btn-primary"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <IconPlus className="h-4 w-4 mr-2" />
           Add Resource
         </Button>
       </div>
@@ -166,7 +166,7 @@ const AdminResourcesManager = () => {
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <IconSearch className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search resources..."
             value={searchTerm}
@@ -213,7 +213,7 @@ const AdminResourcesManager = () => {
                       setDialogOpen(true);
                     }}
                   >
-                    <Edit className="h-3 w-3" />
+                    <IconEdit className="h-3 w-3" />
                   </Button>
                   <Button
                     size="sm"
@@ -221,7 +221,7 @@ const AdminResourcesManager = () => {
                     onClick={() => setDeleteDialog({ open: true, resource })}
                     className="text-red-600 hover:text-red-700"
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <IconTrash className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
@@ -258,7 +258,7 @@ const AdminResourcesManager = () => {
                 )}
                 {resource.created_at && (
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
+                    <IconCalendar className="h-3 w-3" />
                     <span>{new Date(resource.created_at).toLocaleDateString()}</span>
                   </div>
                 )}

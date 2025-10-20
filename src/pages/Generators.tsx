@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Helmet } from 'react-helmet-async';
-import { MessageSquare, Twitter, Tag } from 'lucide-react';
+import { IconMessage, IconBrandTwitter, IconTag } from '@tabler/icons-react';
 import DonateButton from '@/components/DonateButton';
 import TweetGenerator from '@/components/generators/TweetGenerator';
 import YouTubeCommentGenerator from '@/components/generators/YouTubeCommentGenerator';
@@ -41,15 +41,15 @@ const Generators = () => {
             <Tabs defaultValue="tweet" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="tweet" className="flex items-center gap-2">
-                  <Twitter className="h-4 w-4" />
+                  <IconBrandTwitter className="h-4 w-4" />
                   Tweet Generator
                 </TabsTrigger>
                 <TabsTrigger value="comment" className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
+                  <IconMessage className="h-4 w-4" />
                   YouTube Comment
                 </TabsTrigger>
                 <TabsTrigger value="nametag" className="flex items-center gap-2">
-                  <Tag className="h-4 w-4" />
+                  <IconTag className="h-4 w-4" />
                   Minecraft Nametag
                 </TabsTrigger>
               </TabsList>

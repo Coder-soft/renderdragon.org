@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Bot, Command } from 'lucide-react';
+import { IconRobot, IconCommand } from '@tabler/icons-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -106,7 +106,7 @@ const Renderbot = () => {
                     ease: "easeInOut"
                   }}
                 >
-                  <Bot className="w-12 h-12 text-cow-purple" />
+                  <IconRobot className="w-12 h-12 text-cow-purple" />
                 </motion.div>
               </div>
               <h1 className="text-4xl md:text-5xl font-vt323 mb-4">
@@ -143,7 +143,7 @@ const Renderbot = () => {
                     <Card className="h-full border-2 border-cow-purple/20 hover:border-cow-purple/40 transition-colors pixel-corners">
                       <CardHeader>
                         <CardTitle className="flex items-center space-x-2">
-                          <Command className="w-5 h-5 text-cow-purple" />
+                          <IconCommand className="w-5 h-5 text-cow-purple" />
                           <span className="font-mono">{command.name}</span>
                         </CardTitle>
                       </CardHeader>

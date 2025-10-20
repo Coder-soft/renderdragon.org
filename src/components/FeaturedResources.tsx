@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { IconArrowRight } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { Resource } from '@/types/resources';
 import ResourceCard from '@/components/resources/ResourceCard';
@@ -131,7 +131,7 @@ const FeaturedResources = () => {
             className="pixel-btn-secondary inline-flex items-center space-x-2 group"
           >
             <span>View All</span>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <IconArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
       </div>

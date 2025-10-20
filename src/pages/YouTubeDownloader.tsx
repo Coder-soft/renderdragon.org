@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonateButton from '@/components/DonateButton';
-import { Download, AlertCircle, RefreshCcw, Youtube, Info } from 'lucide-react';
+import { IconDownload, IconAlertCircle, IconRefresh, IconBrandYoutube, IconInfoCircle } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -267,7 +267,7 @@ const YouTubeDownloader: React.FC = () => {
             </p>
 
             <Alert className="mb-8 pixel-corners">
-              <Info className="h-4 w-4" />
+              <IconInfoCircle className="h-4 w-4" />
               <AlertTitle>Important Notice</AlertTitle>
               <AlertDescription>
                 This tool is for educational purposes only. You are responsible for ensuring you have the right to download
@@ -286,18 +286,18 @@ const YouTubeDownloader: React.FC = () => {
                 <Button onClick={handleFetchInfo} disabled={isLoadingInfo} className="pixel-btn-primary flex items-center">
                   {isLoadingInfo ? (
                     <>
-                      <RefreshCcw className="h-4 w-4 mr-2 animate-spin" /> <span>Processing...</span>
+                      <IconRefresh className="h-4 w-4 mr-2 animate-spin" /> <span>Processing...</span>
                     </>
                   ) : (
                     <>
-                      <Youtube className="h-4 w-4 mr-2" /> <span>Fetch Video Info</span>
+                      <IconBrandYoutube className="h-4 w-4 mr-2" /> <span>Fetch Video Info</span>
                     </>
                   )}
                 </Button>
               </div>
               {urlError && (
                 <p className="text-red-500 text-xs mt-2 flex items-center">
-                  <AlertCircle className="h-3 w-3 mr-1" /> Please enter a valid YouTube URL or 11-character ID
+                  <IconAlertCircle className="h-3 w-3 mr-1" /> Please enter a valid YouTube URL or 11-character ID
                 </p>
               )}
             </div>
@@ -337,11 +337,11 @@ const YouTubeDownloader: React.FC = () => {
                     <Button onClick={handleDownloadThumbnail} disabled={isDownloadingThumb} className="w-full pixel-btn-primary flex items-center justify-center">
                       {isDownloadingThumb ? (
                         <>
-                          <RefreshCcw className="h-5 w-5 mr-2 animate-spin" /> <span>Downloading...</span>
+                          <IconRefresh className="h-5 w-5 mr-2 animate-spin" /> <span>Downloading...</span>
                         </>
                       ) : (
                         <>
-                          <Download className="h-5 w-5 mr-2" /> <span>Download Thumbnail</span>
+                          <IconDownload className="h-5 w-5 mr-2" /> <span>Download Thumbnail</span>
                         </>
                       )}
                     </Button>

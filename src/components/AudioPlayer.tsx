@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward } from 'lucide-react';
+import { IconPlayerPlay, IconPlayerPause, IconVolume, IconVolumeOff, IconPlayerSkipBack, IconPlayerSkipForward } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
@@ -153,7 +153,7 @@ const AudioPlayer = ({ src, className }: AudioPlayerProps) => {
               className="h-8 w-8"
               onClick={restart}
             >
-              <SkipBack size={16} />
+              <IconPlayerSkipBack size={16} />
             </Button>
             
             <Button 
@@ -162,7 +162,7 @@ const AudioPlayer = ({ src, className }: AudioPlayerProps) => {
               className="h-10 w-10 rounded-full"
               onClick={togglePlay}
             >
-              {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+              {isPlaying ? <IconPlayerPause size={18} /> : <IconPlayerPlay size={18} className="ml-0.5" />}
             </Button>
             
             <Button 
@@ -171,7 +171,7 @@ const AudioPlayer = ({ src, className }: AudioPlayerProps) => {
               className="h-8 w-8"
               onClick={skipForward}
             >
-              <SkipForward size={16} />
+              <IconPlayerSkipForward size={16} />
             </Button>
           </div>
           
@@ -182,7 +182,7 @@ const AudioPlayer = ({ src, className }: AudioPlayerProps) => {
               className="h-8 w-8"
               onClick={toggleMute}
             >
-              {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              {isMuted || volume === 0 ? <IconVolumeOff size={16} /> : <IconVolume size={16} />}
             </Button>
             
             <Slider
