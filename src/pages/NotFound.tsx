@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { IconHome, IconCompass, IconTool } from "@tabler/icons-react";
+import { IconHome, IconCompass, IconTool, IconPickaxe } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DonateButton from "@/components/DonateButton";

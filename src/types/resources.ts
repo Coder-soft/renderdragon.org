@@ -1,9 +1,10 @@
 
+
 export interface Resource {
   id: number;
   title: string;
   category: 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets';
-  subcategory?: 'davinci' | 'adobe';
+  subcategory?: string;
   credit?: string;
   filetype?: string;
   software?: string;

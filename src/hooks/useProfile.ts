@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -20,15 +20,7 @@ export const useProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-    }
-  }, [user]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -48,7 +40,7 @@ export const useProfile = () => {
         display_name: data.display_name || null,
         first_name: data.first_name || null,
         last_name: data.last_name || null,
-        avatar_url: (data as any).avatar_url || null,
+        avatar_url: (data as { avatar_url?: string | null }).avatar_url || null,
         created_at: data.created_at,
         updated_at: data.updated_at,
       };
@@ -60,7 +52,15 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    } else {
+      setProfile(null);
+    }
+  }, [user, fetchProfile]);
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return;

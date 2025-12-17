@@ -75,13 +75,13 @@ export async function createShowcase(params: {
 
   if (params.assets.length > 0) {
     const toInsert = params.assets.map((a, idx) => ({
-      showcase_id: (showcase as any).id as string,
+      showcase_id: (showcase as { id: string }).id,
       kind: a.kind,
       url: a.url,
       provider: a.provider,
       position: idx,
     }));
-    const { error: aErr } = await sb.from("showcase_assets").insert(toInsert as any[]);
+    const { error: aErr } = await sb.from("showcase_assets").insert(toInsert);
     if (aErr) throw aErr;
   }
 

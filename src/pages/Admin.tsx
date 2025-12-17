@@ -9,6 +9,7 @@ import { IconShield } from '@tabler/icons-react';
 import AdminPageSkeleton from '@/components/skeletons/AdminPageSkeleton';
 
 const AdminResourcesManager = lazy(() => import('@/components/admin/AdminResourcesManager'));
+const AdminBlogsManager = lazy(() => import('@/components/admin/AdminBlogsManager'));
 
 const Admin = () => {
   const { user, loading } = useAuth();
@@ -42,9 +43,9 @@ const Admin = () => {
         <title>Admin Panel - Renderdragon</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      
+
       <Navbar />
-      
+
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <motion.div
@@ -59,14 +60,19 @@ const Admin = () => {
                 Admin <span className="text-cow-purple">Panel</span>
               </h1>
             </div>
-            
+
             <Suspense fallback={<AdminPageSkeleton />}>
-              <AdminResourcesManager />
+              <div className="space-y-12">
+                <AdminBlogsManager />
+                <div className="h-px bg-border/50" />
+                <AdminResourcesManager />
+              </div>
             </Suspense>
+
           </motion.div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
