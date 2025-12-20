@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { IconHome, IconCompass, IconTool, IconPickaxe } from "@tabler/icons-react";
+import { IconHome, IconCompass, IconTool, IconPick } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DonateButton from "@/components/DonateButton";
@@ -133,7 +133,7 @@ const NotFound = () => {
                 delay: 1,
               }}
             >
-              <IconPickaxe className="h-12 w-12 text-gray-600" />
+              <IconPick className="h-12 w-12 text-gray-600" />
             </motion.div>
           </motion.div>
 
