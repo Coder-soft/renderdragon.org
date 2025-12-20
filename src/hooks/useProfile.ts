@@ -104,9 +104,30 @@ export const useProfile = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase.auth.admin.deleteUser(user.id);
+      // Get the current session to send the access token
+      const { data: { session } } = await supabase.auth.getSession();
 
-      if (error) throw error;
+      if (!session?.access_token) {
+        throw new Error('No active session');
+      }
+
+      // Call the server-side API endpoint which has access to the service role key
+      const response = await fetch('/api/deleteAccount', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete account');
+      }
+
+      // Sign out locally after successful deletion
+      await supabase.auth.signOut();
 
       toast.success("Account deleted successfully");
       return { success: true };

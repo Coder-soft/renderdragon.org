@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { IconHeart } from '@tabler/icons-react';
 import { supporters } from '@/data/supporters';
 
 const SupportersList = () => {
@@ -18,6 +20,9 @@ const SupportersList = () => {
   };
 
   useEffect(() => {
+    // Guard against empty supporters array to avoid division by zero
+    if (supporters.length === 0) return;
+
     const interval = setInterval(() => {
       setPreviousIndex(currentIndex);
       setCurrentIndex((current) => (current + 1) % supporters.length);

@@ -4,22 +4,21 @@ import { cn } from '@/lib/utils';
 import PixelSvgIcon from './PixelSvgIcon';
 
 export function ThemeToggle({ className }: { className?: string }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return localStorage.getItem('theme') as 'light' | 'dark' ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  });
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    const storedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (storedTheme) {
-      setTheme(storedTheme);
-      document.documentElement.classList.toggle('dark', storedTheme === 'dark');
-    } else if (prefersDark) {
-      setTheme('dark');
-      document.documentElement.classList.add('dark');
-    }
+    const resolvedTheme = (storedTheme && ['light', 'dark'].includes(storedTheme))
+      ? (storedTheme as 'light' | 'dark')
+      : (prefersDark ? 'dark' : 'light');
+    setTheme(resolvedTheme);
+    document.documentElement.classList.toggle('dark', resolvedTheme === 'dark');
+    setMounted(true);
   }, []);
+
+  if (!mounted) return null;
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';

@@ -6,6 +6,7 @@ import infoHandler from './api/info.js';
 import downloadHandler from './api/download.js';
 import downloadThumbnailHandler from './api/downloadThumbnail.js';
 import generateTitlesHandler from './api/generateTitles.js';
+import deleteAccountHandler from './api/deleteAccount.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
 
@@ -16,43 +17,44 @@ app.use(cors());
 app.use(express.json());
 
 const createAdapter = (handler) => (req, res) => {
-    const vercelReq = {
-      method: req.method,
-      headers: req.headers,
-      body: req.body,
-      url: `http://${req.headers.host}${req.originalUrl}`,
-    };
+  const vercelReq = {
+    method: req.method,
+    headers: req.headers,
+    body: req.body,
+    url: `http://${req.headers.host}${req.originalUrl}`,
+  };
 
-    handler(vercelReq).then(response => {
-        if (!response) {
-            if (!res.headersSent) {
-                res.status(500).send("Handler returned no response.");
-            }
-            return;
-        }
+  handler(vercelReq).then(response => {
+    if (!response) {
+      if (!res.headersSent) {
+        res.status(500).send("Handler returned no response.");
+      }
+      return;
+    }
 
-        res.status(response.status);
-        response.headers.forEach((value, key) => {
-            res.setHeader(key, value);
-        });
-
-        if (response.body) {
-            Readable.fromWeb(response.body).pipe(res);
-        } else {
-            res.end();
-        }
-    }).catch(error => {
-        console.error("Handler error:", error);
-        if (!res.headersSent) {
-            res.status(500).json({ message: 'Internal Server Error' });
-        }
+    res.status(response.status);
+    response.headers.forEach((value, key) => {
+      res.setHeader(key, value);
     });
+
+    if (response.body) {
+      Readable.fromWeb(response.body).pipe(res);
+    } else {
+      res.end();
+    }
+  }).catch(error => {
+    console.error("Handler error:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
 };
 
 app.all('/api/info', createAdapter(infoHandler));
 app.all('/api/download', createAdapter(downloadHandler));
 app.all('/api/downloadThumbnail', createAdapter(downloadThumbnailHandler));
 app.all('/api/generateTitles', createAdapter(generateTitlesHandler));
+app.all('/api/deleteAccount', createAdapter(deleteAccountHandler));
 // UploadThing route
 app.use(
   '/api/uploadthing',

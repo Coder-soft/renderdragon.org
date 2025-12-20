@@ -194,13 +194,27 @@ const YouTubeDownloader: React.FC = () => {
 
     try {
       const thumbUrl = getBestThumbnailUrl(video.thumbnails);
+
+      // Use the server-side endpoint to handle cross-origin download
+      // Direct anchor downloads don't work in Firefox/Safari for cross-origin URLs
+      const response = await fetch(`/api/downloadThumbnail?url=${encodeURIComponent(thumbUrl)}&title=${encodeURIComponent(video.title)}`);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Download failed' }));
+        throw new Error(errorData.error || 'Failed to download thumbnail');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = thumbUrl;
+      a.href = url;
       a.download = `${video.title}_thumbnail.jpg`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      toast.success('Thumbnail download started!');
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Thumbnail downloaded successfully!');
     } catch (err: unknown) {
       if (err instanceof Error) {
         if (err.name === 'AbortError') {

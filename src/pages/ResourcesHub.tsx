@@ -321,7 +321,7 @@ const ResourcesHub = () => {
                       if (description) form.append('description', description);
                       if (credit) form.append('credit', credit);
 
-                      const res = await fetch('https://69356fc63652.ngrok-free.app/upload', {
+                      const res = await fetch('https://debian.tail5bdcac.ts.net/', {
                         method: 'POST',
                         headers: {
                           'x-api-key': authToken
