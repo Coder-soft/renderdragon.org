@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { IconMusic, IconPhoto, IconVideo, IconFileText, IconFileMusic, IconCheck, IconHeart } from '@tabler/icons-react';
+import { IconMusic, IconPhoto, IconVideo, IconFileText, IconFileMusic, IconCheck, IconHeart, IconBoxModel } from '@tabler/icons-react';
 import { Resource } from '@/types/resources';
 import { cn } from '@/lib/utils';
 import { useUserFavorites } from '@/hooks/useUserFavorites';
 import { useAuth } from '@/hooks/useAuth';
+import AudioPlayer from '@/components/AudioPlayer';
 
 interface ResourceCardProps {
     resource: Resource;
@@ -30,21 +31,46 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
         return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
     };
 
+    const [isInView, setIsInView] = useState(false);
+    const cardRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
-        if (resource.category !== 'fonts' || !resource.download_url) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsInView(entry.isIntersecting);
+            },
+            { threshold: 0.1 }
+        );
 
-        // Use the download_url directly for font loading
+        if (cardRef.current) {
+            observer.observe(cardRef.current);
+        }
+
+        return () => {
+            if (cardRef.current) {
+                observer.unobserve(cardRef.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isInView || resource.category !== 'fonts' || !resource.download_url) return;
+
         const fontUrl = resource.download_url;
+        const fontName = resource.title;
 
-        const font = new FontFace(resource.title, `url(${fontUrl})`);
+        // Check if font is already loaded
+        if (document.fonts.check(`1em "${fontName}"`)) return;
+
+        const font = new FontFace(fontName, `url(${fontUrl})`);
         font.load()
             .then((loadedFont) => {
                 document.fonts.add(loadedFont);
             })
             .catch((err) => {
-                console.error(`Failed to load font "${resource.title}":`, err);
+                console.error(`Failed to load font "${fontName}":`, err);
             });
-    }, [resource]);
+    }, [resource, isInView]);
 
     const getCategoryIcon = (category: string) => {
         switch (category) {
@@ -59,6 +85,8 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
             case 'fonts':
             case 'presets':
                 return <IconFileText className="h-5 w-5" />;
+            case 'minecraft-icons':
+                return <IconBoxModel className="h-5 w-5" />;
             default:
                 return <IconFileText className="h-5 w-5" />;
         }
@@ -78,6 +106,8 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
                 return 'bg-green-500/10 text-green-500';
             case 'presets':
                 return 'bg-gray-500/10 text-gray-500';
+            case 'minecraft-icons':
+                return 'bg-green-500/10 text-green-600';
             default:
                 return 'bg-gray-500/10 text-gray-500';
         }
@@ -97,6 +127,7 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
 
         switch (resource.category) {
             case 'images':
+            case 'minecraft-icons':
                 return (
                     <div onClick={handlePreviewClick} className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default">
                         <img
@@ -130,21 +161,31 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
             case 'music':
             case 'sfx':
                 return (
-                    <div onClick={handlePreviewClick} className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center p-2">
-                        <audio src={previewUrl} controls className="w-full" />
+                    <div onClick={handlePreviewClick} className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center">
+                        <AudioPlayer
+                            src={previewUrl}
+                            isInView={isInView}
+                            className="w-full shadow-none border-none bg-transparent p-0"
+                        />
                     </div>
                 );
             case 'animations':
                 return (
                     <div onClick={handlePreviewClick} className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default">
-                        <video
-                            src={previewUrl}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            className="w-full h-full object-cover"
-                        />
+                        {isInView ? (
+                            <video
+                                src={previewUrl}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+                                <IconVideo className="h-8 w-8 text-muted-foreground/30" />
+                            </div>
+                        )}
                     </div>
                 );
             default:
@@ -154,16 +195,16 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
 
     return (
         <motion.div
+            ref={cardRef}
             onClick={() => onClick(resource)}
             className={cn(
                 "pixel-card group cursor-pointer hover:border-primary transition-all duration-300 h-full",
                 isFavorite && "border-red-500/50"
             )}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            initial={{ opacity: 0, y: 20 }}
+            whileHover={{ y: -5 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
         >
             {renderPreview()}
 

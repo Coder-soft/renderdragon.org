@@ -26,10 +26,10 @@ interface ResourceDetailDialogProps {
   isFavoritesView?: boolean; // Added prop to indicate favorites view
 }
 
-const ResourceDetailDialog = ({ 
-  resource, 
-  onClose, 
-  onDownload, 
+const ResourceDetailDialog = ({
+  resource,
+  onClose,
+  onDownload,
   downloadCount,
   loadedFonts,
   setLoadedFonts,
@@ -59,7 +59,7 @@ const ResourceDetailDialog = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!resource || isFavoritesView) return;
-      
+
       if (e.key === 'ArrowLeft' && hasPrevious) {
         handlePrevious();
       } else if (e.key === 'ArrowRight' && hasNext) {
@@ -151,11 +151,11 @@ const ResourceDetailDialog = ({
 
   const getGithubURL = (resource: Resource) => {
     if (!resource || !resource.filetype) return '';
-    
+
     const titleLowered = resource.title
       .toLowerCase()
       .replace(/ /g, '%20');
-    
+
     return `https://github.com/Yxmura/resources_renderdragon/blob/main/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
   };
 
@@ -168,7 +168,7 @@ const ResourceDetailDialog = ({
           <DialogTitle className="text-2xl font-vt323">
             {resource.title}
           </DialogTitle>
-          <DialogDescription className="flex items-center gap-2">
+          <DialogDescription asChild className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <Badge
                 variant="outline"
@@ -180,7 +180,7 @@ const ResourceDetailDialog = ({
                   <span className="ml-1">({resource.subcategory})</span>
                 )}
               </Badge>
-              
+
               <Badge variant="outline" className="bg-blue-500/10 text-blue-500">
                 <IconDownload className="h-3 w-3 mr-1" />
                 {downloadCount || 0} downloads
@@ -235,9 +235,9 @@ const ResourceDetailDialog = ({
               </div>
             )}
           </div>
-          
+
           <ResourcePreview resource={resource} />
-          
+
           {!isFavoritesView && (
             <div className="flex items-center gap-2 justify-between">
               <Button

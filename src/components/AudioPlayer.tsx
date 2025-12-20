@@ -1,105 +1,103 @@
-
-import { useState, useRef, useEffect } from 'react';
-import { IconPlayerPlay, IconPlayerPause, IconVolume, IconVolumeOff, IconPlayerSkipBack, IconPlayerSkipForward } from '@tabler/icons-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import WaveSurfer from 'wavesurfer.js';
+import {
+  IconPlayerPlay,
+  IconPlayerPause,
+  IconPlayerSkipBack,
+  IconPlayerSkipForward,
+  IconLoader2
+} from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 
 interface AudioPlayerProps {
   src: string;
   className?: string;
+  isInView?: boolean;
 }
 
-const AudioPlayer = ({ src, className }: AudioPlayerProps) => {
+const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.75);
-  const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const previousVolume = useRef(volume);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const wavesurfer = useRef<WaveSurfer | null>(null);
 
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+    if (!containerRef.current) return;
 
-    const setAudioData = () => {
-      setDuration(audio.duration);
-    };
+    const ws = WaveSurfer.create({
+      container: containerRef.current,
+      waveColor: 'rgba(139, 92, 246, 0.2)', // Soft cow-purple
+      progressColor: '#8b5cf6', // Solid cow-purple
+      cursorColor: '#8b5cf6',
+      cursorWidth: 2,
+      barWidth: 2,
+      barRadius: 4,
+      height: 60,
+      barGap: 3,
+      normalize: true,
+      hideScrollbar: true,
+    });
 
-    const setAudioTime = () => {
-      setCurrentTime(audio.currentTime);
-    };
+    let isMounted = true;
+    wavesurfer.current = ws;
 
-    const handleEnded = () => {
-      setIsPlaying(false);
-      setCurrentTime(0);
-    };
+    setIsLoading(true);
+    ws.load(src).catch((err) => {
+      if (err.name === 'AbortError') return;
+      console.error('WaveSurfer load error:', err);
+    });
 
-    // Add event listeners
-    audio.addEventListener('loadeddata', setAudioData);
-    audio.addEventListener('timeupdate', setAudioTime);
-    audio.addEventListener('ended', handleEnded);
+    ws.on('ready', () => {
+      if (!isMounted) return;
+      setDuration(ws.getDuration());
+      setIsLoading(false);
+      setIsReady(true);
+    });
 
-    // Initialize the audio
-    audio.load();
+    ws.on('audioprocess', () => {
+      if (!isMounted) return;
+      setCurrentTime(ws.getCurrentTime());
+    });
+
+    ws.on('play', () => isMounted && setIsPlaying(true));
+    ws.on('pause', () => isMounted && setIsPlaying(false));
+    ws.on('finish', () => isMounted && setIsPlaying(false));
 
     return () => {
-      // Clean up
-      audio.removeEventListener('loadeddata', setAudioData);
-      audio.removeEventListener('timeupdate', setAudioTime);
-      audio.removeEventListener('ended', handleEnded);
+      isMounted = false;
+      ws.destroy();
     };
   }, [src]);
 
+  // Handle visibility
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    // Update volume
-    audio.volume = isMuted ? 0 : volume;
-  }, [volume, isMuted]);
-
-  const togglePlay = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.pause();
-    } else {
-      audio.play();
+    if (!isInView && isPlaying) {
+      wavesurfer.current?.pause();
     }
-    setIsPlaying(!isPlaying);
-  };
+  }, [isInView, isPlaying]);
 
-  const toggleMute = () => {
-    if (isMuted) {
-      setVolume(previousVolume.current);
-    } else {
-      previousVolume.current = volume;
-      setVolume(0);
-    }
-    setIsMuted(!isMuted);
-  };
+  const togglePlay = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!wavesurfer.current) return;
+    wavesurfer.current.playPause();
+  }, []);
 
-  const handleTimeChange = (value: number[]) => {
-    const audio = audioRef.current;
-    if (!audio) return;
+  const skipForward = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!wavesurfer.current) return;
+    wavesurfer.current.setTime(Math.min(wavesurfer.current.getCurrentTime() + 5, duration));
+  }, [duration]);
 
-    const newTime = value[0];
-    audio.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
-  const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0];
-    setVolume(newVolume);
-    if (newVolume === 0) {
-      setIsMuted(true);
-    } else if (isMuted) {
-      setIsMuted(false);
-    }
-  };
+  const skipBackward = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!wavesurfer.current) return;
+    wavesurfer.current.setTime(Math.max(wavesurfer.current.getCurrentTime() - 5, 0));
+  }, []);
 
   const formatTime = (seconds: number) => {
     if (isNaN(seconds)) return '0:00';
@@ -108,90 +106,66 @@ const AudioPlayer = ({ src, className }: AudioPlayerProps) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const restart = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      setCurrentTime(0);
-      if (!isPlaying) {
-        audioRef.current.play();
-        setIsPlaying(true);
-      }
-    }
-  };
-
-  const skipForward = () => {
-    if (audioRef.current) {
-      const newTime = Math.min(audioRef.current.currentTime + 10, duration);
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-    }
-  };
-
   return (
-    <div className={cn("w-full rounded-lg bg-muted/50 p-4", className)}>
-      <audio ref={audioRef} src={src} />
-      
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium">{formatTime(currentTime)}</span>
-          <span className="text-xs font-medium">{formatTime(duration)}</span>
+    <div className={cn(
+      "w-full rounded-xl bg-card border-2 border-primary/10 p-5 shadow-lg group/player transition-all duration-300 hover:border-primary/30",
+      className
+    )}>
+      <div className="flex flex-col space-y-4">
+        {/* Waveform Container */}
+        <div className="relative h-[60px] w-full bg-muted/20 rounded-lg overflow-hidden flex items-center justify-center">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/60 backdrop-blur-[1px]">
+              <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
+              <span className="ml-2 text-xs font-vt323 tracking-wider text-muted-foreground">LOADING WAVEFORM...</span>
+            </div>
+          )}
+          <div ref={containerRef} className="w-full" />
         </div>
-        
-        <Slider
-          value={[currentTime]}
-          max={duration || 100}
-          step={0.1}
-          onValueChange={handleTimeChange}
-          className="cursor-pointer"
-        />
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8"
-              onClick={restart}
+
+        {/* Controls and Info */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
+              onClick={skipBackward}
+              disabled={!isReady}
             >
-              <IconPlayerSkipBack size={16} />
+              <IconPlayerSkipBack size={18} fill="currentColor" className="opacity-70" />
             </Button>
-            
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="h-10 w-10 rounded-full"
+
+            <Button
+              size="icon"
+              className="h-12 w-12 rounded-full bg-cow-purple hover:bg-cow-purple-dark text-white shadow-md hover:scale-105 transition-all duration-200"
               onClick={togglePlay}
+              disabled={!isReady}
             >
-              {isPlaying ? <IconPlayerPause size={18} /> : <IconPlayerPlay size={18} className="ml-0.5" />}
+              {isPlaying ? (
+                <IconPlayerPause size={24} fill="currentColor" />
+              ) : (
+                <IconPlayerPlay size={24} fill="currentColor" className="ml-1" />
+              )}
             </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8"
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
               onClick={skipForward}
+              disabled={!isReady}
             >
-              <IconPlayerSkipForward size={16} />
+              <IconPlayerSkipForward size={18} fill="currentColor" className="opacity-70" />
             </Button>
           </div>
-          
-          <div className="flex items-center w-28 space-x-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8"
-              onClick={toggleMute}
-            >
-              {isMuted || volume === 0 ? <IconVolumeOff size={16} /> : <IconVolume size={16} />}
-            </Button>
-            
-            <Slider
-              value={[isMuted ? 0 : volume]}
-              max={1}
-              step={0.01}
-              onValueChange={handleVolumeChange}
-              className="cursor-pointer"
-            />
+
+          <div className="flex flex-col items-center flex-grow">
+            <div className="flex items-center gap-1.5 font-geist-mono text-[13px] font-medium tracking-tight text-muted-foreground">
+              <span className="text-foreground">{formatTime(currentTime)}</span>
+              <span className="opacity-30">/</span>
+              <span>{formatTime(duration)}</span>
+            </div>
           </div>
         </div>
       </div>

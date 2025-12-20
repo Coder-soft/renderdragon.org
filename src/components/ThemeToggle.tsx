@@ -34,17 +34,17 @@ export function ThemeToggle({ className }: { className?: string }) {
       size="icon"
       onClick={toggleTheme}
       className={cn(
-        'relative overflow-hidden transition-colors animate-glow rounded-full w-10 h-10',
+        'relative overflow-hidden transition-colors rounded-full w-10 h-10',
         className
       )}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
       style={{ transform: 'none' }}
     >
       <span className="absolute inset-0 flex items-center justify-center">
-        <span className="flex items-center justify-center w-full h-full transition-all duration-300 absolute top-0 left-0" style={{zIndex: theme === 'light' ? 2 : 1, opacity: theme === 'light' ? 1 : 0, transform: theme === 'light' ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-90deg)'}}>
+        <span className="flex items-center justify-center w-full h-full transition-all duration-300 absolute top-0 left-0" style={{ zIndex: theme === 'light' ? 2 : 1, opacity: theme === 'light' ? 1 : 0, transform: theme === 'light' ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-90deg)' }}>
           <PixelSvgIcon name="sun" className="h-5 w-5" />
         </span>
-        <span className="flex items-center justify-center w-full h-full transition-all duration-300 absolute top-0 left-0" style={{zIndex: theme === 'dark' ? 2 : 1, opacity: theme === 'dark' ? 1 : 0, transform: theme === 'dark' ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(90deg)'}}>
+        <span className="flex items-center justify-center w-full h-full transition-all duration-300 absolute top-0 left-0" style={{ zIndex: theme === 'dark' ? 2 : 1, opacity: theme === 'dark' ? 1 : 0, transform: theme === 'dark' ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(90deg)' }}>
           <PixelSvgIcon name="moon" className="h-5 w-5" />
         </span>
       </span>

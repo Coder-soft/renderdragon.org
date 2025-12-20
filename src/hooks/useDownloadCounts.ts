@@ -40,9 +40,9 @@ export const useDownloadCounts = () => {
 
       const { error } = await supabase
         .from('downloads')
-        .upsert({ 
-          resource_id: resourceId, 
-          count: newCount 
+        .upsert({
+          resource_id: resourceId,
+          count: newCount
         }, {
           onConflict: 'resource_id'
         });

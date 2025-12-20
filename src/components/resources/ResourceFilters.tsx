@@ -41,7 +41,7 @@ const ResourceFilters = ({
   onOpenSubmit
 }: ResourceFiltersProps) => {
   return (
-    <div className="mb-8 flex flex-col md:flex-row gap-4">
+    <div className={`mb-8 flex gap-4 ${isMobile ? 'flex-row items-center' : 'flex-col'}`}>
       <div className="relative flex-grow">
         <form onSubmit={(e) => onSearchSubmit(e)} className="relative w-full">
           <Input
@@ -54,12 +54,12 @@ const ResourceFilters = ({
             }}
             className="pixel-input w-full pr-10"
           />
-          
+
           {searchQuery && (
-            <Button 
-              type="button" 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
               className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
               onClick={onClearSearch}
             >
@@ -67,13 +67,13 @@ const ResourceFilters = ({
               <span className="sr-only">Clear search</span>
             </Button>
           )}
-          
+
           <Button type="submit" className="sr-only">Search</Button>
         </form>
       </div>
 
       {isMobile ? (
-        <MobileFilters 
+        <MobileFilters
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
           onCategoryChange={onCategoryChange}
@@ -81,7 +81,7 @@ const ResourceFilters = ({
           onOpenSubmit={onOpenSubmit}
         />
       ) : (
-        <DesktopFilters 
+        <DesktopFilters
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
           onCategoryChange={onCategoryChange}
@@ -93,8 +93,8 @@ const ResourceFilters = ({
   );
 };
 
-const MobileFilters = ({ 
-  selectedCategory, 
+const MobileFilters = ({
+  selectedCategory,
   selectedSubcategory,
   onCategoryChange,
   onSubcategoryChange,
@@ -176,13 +176,21 @@ const MobileFilters = ({
               Presets
             </Button>
             <Button
+              variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
+              onClick={() => onCategoryChange('minecraft-icons')}
+              className="justify-start pixel-corners"
+            >
+              <img src="/assets/mci_icon.png" className="h-4 w-4 mr-2" alt="MCI" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+              Minecraft Icons
+            </Button>
+            <Button
               variant="default"
               onClick={onOpenSubmit}
               className="justify-start pixel-corners font-vt323"
             >
               Submit your resources
             </Button>
-            
+
 
             {selectedCategory === 'presets' && (
               <div className="mt-2 ml-2">
@@ -201,6 +209,38 @@ const MobileFilters = ({
                 </Select>
               </div>
             )}
+
+            {selectedCategory === 'minecraft-icons' && (
+              <div className="mt-2 ml-2">
+                <Select
+                  value={selectedSubcategory || "all"}
+                  onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select icon type" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="all">All Icons</SelectItem>
+                    <SelectItem value="1. Swords">Swords</SelectItem>
+                    <SelectItem value="2. Pickaxes">Pickaxes</SelectItem>
+                    <SelectItem value="3. Axes">Axes</SelectItem>
+                    <SelectItem value="4. Shovels">Shovels</SelectItem>
+                    <SelectItem value="5. Hoes">Hoes</SelectItem>
+                    <SelectItem value="10. Items">Items</SelectItem>
+                    <SelectItem value="10. Food">Food</SelectItem>
+                    <SelectItem value="11. Materials">Materials</SelectItem>
+                    <SelectItem value="14. Potions">Potions</SelectItem>
+                    <SelectItem value="15. Projectiles">Projectiles</SelectItem>
+                    <SelectItem value="16. Dyes">Dyes</SelectItem>
+                    <SelectItem value="21. Decoration">Decoration</SelectItem>
+                    <SelectItem value="22. Coral">Coral</SelectItem>
+                    <SelectItem value="23. Flowers">Flowers</SelectItem>
+                    <SelectItem value="26. Redstone">Redstone</SelectItem>
+                    <SelectItem value="30. Legacy spawn eggs">Spawn Eggs</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         </div>
       </SheetContent>
@@ -208,8 +248,8 @@ const MobileFilters = ({
   );
 };
 
-const DesktopFilters = ({ 
-  selectedCategory, 
+const DesktopFilters = ({
+  selectedCategory,
   selectedSubcategory,
   onCategoryChange,
   onSubcategoryChange,
@@ -280,14 +320,15 @@ const DesktopFilters = ({
         Presets
       </Button>
       <Button
-        variant="default"
+        variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
         size="sm"
-        onClick={onOpenSubmit}
-        className="h-10 pixel-corners font-vt323"
+        onClick={() => onCategoryChange('minecraft-icons')}
+        className="h-10 pixel-corners"
       >
-        Submit your resources
+        Minecraft Icons
       </Button>
-      
+
+
 
       {selectedCategory === 'presets' && (
         <Select
@@ -301,6 +342,36 @@ const DesktopFilters = ({
             <SelectItem value="all">All Presets</SelectItem>
             <SelectItem value="davinci">Davinci Resolve</SelectItem>
             <SelectItem value="adobe">Adobe Products</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+
+      {selectedCategory === 'minecraft-icons' && (
+        <Select
+          value={selectedSubcategory || "all"}
+          onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+        >
+          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+            <SelectValue placeholder="Select icon type" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px]">
+            <SelectItem value="all">All Icons</SelectItem>
+            <SelectItem value="1. Swords">Swords</SelectItem>
+            <SelectItem value="2. Pickaxes">Pickaxes</SelectItem>
+            <SelectItem value="3. Axes">Axes</SelectItem>
+            <SelectItem value="4. Shovels">Shovels</SelectItem>
+            <SelectItem value="5. Hoes">Hoes</SelectItem>
+            <SelectItem value="10. Items">Items</SelectItem>
+            <SelectItem value="10. Food">Food</SelectItem>
+            <SelectItem value="11. Materials">Materials</SelectItem>
+            <SelectItem value="14. Potions">Potions</SelectItem>
+            <SelectItem value="15. Projectiles">Projectiles</SelectItem>
+            <SelectItem value="16. Dyes">Dyes</SelectItem>
+            <SelectItem value="21. Decoration">Decoration</SelectItem>
+            <SelectItem value="22. Coral">Coral</SelectItem>
+            <SelectItem value="23. Flowers">Flowers</SelectItem>
+            <SelectItem value="26. Redstone">Redstone</SelectItem>
+            <SelectItem value="30. Legacy spawn eggs">Spawn Eggs</SelectItem>
           </SelectContent>
         </Select>
       )}

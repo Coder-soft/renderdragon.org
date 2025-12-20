@@ -47,7 +47,7 @@ const Footer = () => {
       document.body.removeChild(canvas);
     }, 3000);
 
-    toast('Made with ❤️ by Yamura!', {
+    toast('Made with ❤️ by Renderdragon Team!', {
       description: 'And a little help from the community.',
       position: "bottom-center",
       duration: 3000,
@@ -159,11 +159,6 @@ const Footer = () => {
                 <Link to="/showcase" className="text-white/70 hover:text-white transition-colors flex items-center">
                   <span>Community Assets</span>
                   <span className="ml-1 px-1.5 py-0.5 bg-cow-purple text-white text-[10px] rounded align-middle">NEW</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/guides" className="text-white/70 hover:text-white transition-colors">
-                  Guides
                 </Link>
               </li>
               <li>

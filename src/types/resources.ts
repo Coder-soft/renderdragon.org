@@ -3,7 +3,7 @@
 export interface Resource {
   id: number;
   title: string;
-  category: 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets';
+  category: 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets' | 'minecraft-icons';
   subcategory?: string;
   credit?: string;
   filetype?: string;
@@ -24,4 +24,5 @@ export interface ResourcesData {
   animations: Resource[];
   fonts: Resource[];
   presets: Resource[];
+  minecraft_icons: Resource[];
 }

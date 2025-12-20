@@ -227,3 +227,35 @@
     color: hsl(var(--foreground) / 0.7);
   }
 }
+
+/* Video.js Pixel Theme */
+.video-js.vjs-custom-skin {
+  border: 2px solid hsl(var(--primary) / 0.5) !important;
+  border-radius: 0 !important;
+}
+
+.video-js .vjs-big-play-button {
+  background-color: hsl(var(--cow-purple)) !important;
+  border: none !important;
+  line-height: 1.5em !important;
+  height: 1.5em !important;
+  width: 1.5em !important;
+  left: 50% !important;
+  top: 50% !important;
+  margin-left: -0.75em !important;
+  margin-top: -0.75em !important;
+  border-radius: 0 !important;
+}
+
+.video-js .vjs-control-bar {
+  background-color: hsl(var(--cow-dark) / 0.9) !important;
+}
+
+.video-js .vjs-play-progress,
+.video-js .vjs-volume-level {
+  background-color: hsl(var(--cow-purple)) !important;
+}
+
+.video-js .vjs-load-progress {
+  background: hsl(var(--primary) / 0.2) !important;
+}

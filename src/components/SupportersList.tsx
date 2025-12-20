@@ -1,15 +1,4 @@
-import { useEffect, useState } from 'react';
-import { IconHeart } from '@tabler/icons-react';
-
-interface Supporter {
-  name: string;
-  amount?: string;
-}
-
-const supporters: Supporter[] = [
-  { name: "Bermo", amount: "$1" },
-  { name: "VovoPlay", amount: "$2" },
-];
+import { supporters } from '@/data/supporters';
 
 const SupportersList = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -41,14 +30,14 @@ const SupportersList = () => {
     <div className="w-full py-3 overflow-hidden bg-accent/30 rounded-lg">
       <div className="flex flex-col items-center space-y-2">
         <div className="text-sm font-medium text-muted-foreground">Recent Supporters</div>
-        
+
         <div className="relative h-12 w-full">
           {supporters.map((supporter, index) => (
             <div
               key={index}
               className={`absolute inset-y-0 flex items-center justify-center transition-all duration-500 transform w-full
-                ${index === currentIndex ? 
-                  'opacity-100 translate-x-0' : 
+                ${index === currentIndex ?
+                  'opacity-100 translate-x-0' :
                   index === previousIndex ?
                     'opacity-0 translate-x-full' :
                     'opacity-0 -translate-x-full'

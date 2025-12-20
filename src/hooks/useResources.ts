@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Resource } from '@/types/resources';
 import { useDownloadCounts } from '@/hooks/useDownloadCounts';
+import { fetchMciResources } from '@/lib/mciApi';
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
@@ -50,9 +51,16 @@ export const useResources = () => {
                             else if (file.url.includes('/PREVIEWS/')) subcategory = 'previews';
                         }
 
+                        const formattedTitle = file.title
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .filter(Boolean)
+                            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                            .join(' ');
+
                         allResources.push({
                             id: file.id,
-                            title: file.title,
+                            title: formattedTitle,
                             category: category as Category,
                             subcategory,
                             credit: file.credit,
@@ -62,6 +70,10 @@ export const useResources = () => {
                     });
                 });
             }
+
+            // Fetch MCI resources
+            const mciResources = await fetchMciResources();
+            allResources.push(...mciResources);
 
             setResources(allResources);
         } catch (error) {
@@ -131,6 +143,19 @@ export const useResources = () => {
         // Filter by Category
         if (selectedCategory && selectedCategory !== "favorites") {
             result = result.filter(r => r.category === selectedCategory);
+        } else if (selectedCategory === null && !searchQuery) {
+            // Exclude minecraft-icons from "All" tab unless searching
+            // If user is searching, they probably want to see matches from all categories including icons?
+            // The user request was "Don't show minecraft icons on the all resource tab".
+            // Usually "All" tab is the landing state.
+            // If I exclude it here, search might also exclude it if I don't be careful.
+            // But search filtering happens LATER in the code (lines 145+).
+            // If I filter `result` here, subsequent search filter works on reduced set.
+            // If the user wants search to find icons globally, I should only exclude if NOT searching?
+            // "Don't show minecraft icons on the all resource tab" implies the list view.
+            // Let's assume if they type "sword", they might want to see sword icons.
+            // So: if (selectedCategory === null && !searchQuery)
+            result = result.filter(r => r.category !== 'minecraft-icons');
         }
 
         // Filter by Subcategory
@@ -175,7 +200,7 @@ export const useResources = () => {
             const fileUrl = resource.download_url;
             const filename = `${resource.title}.${resource.filetype || "file"}`;
 
-            const shouldForceDownload = ["presets", "images", "animations", "fonts", "music", "sfx"].includes(
+            const shouldForceDownload = ["presets", "images", "animations", "fonts", "music", "sfx", "minecraft-icons"].includes(
                 resource.category,
             );
 

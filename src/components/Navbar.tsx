@@ -49,7 +49,6 @@ const mainLinks: (NavLink | NavDropdown)[] = [
     icon: 'resources',
     links: [
       { name: 'Resources Hub', path: '/resources', icon: 'resources-hub' },
-      { name: 'Guides', path: '/guides', icon: 'guides' },
       { name: 'Utilities', path: '/utilities', icon: 'software' },
       { name: 'Community Assets', path: '/showcase', icon: 'yt-videos', tag: 'NEW' },
       { name: 'Community', path: '/community', icon: 'yt-videos' },
@@ -222,7 +221,7 @@ const Navbar = () => {
               <Logo size={isMobile ? "sm" : "md"} />
             </div>
             {!isMobile && (
-              <span className="hidden md:inline animate-glow font-vt323">Renderdragon</span>
+              <span className="hidden md:inline font-vt323">Renderdragon</span>
             )}
             {isMobile && <span className="font-vt323">RD</span>}
           </Link>

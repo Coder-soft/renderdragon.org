@@ -2,6 +2,7 @@
 import { Resource } from '@/types/resources';
 import AudioPlayer from '@/components/AudioPlayer';
 import { useState, useEffect } from 'react';
+import VideoPlayer from '@/components/VideoPlayer';
 
 interface ResourcePreviewProps {
   resource: Resource;
@@ -16,27 +17,27 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
 
   const getDownloadURL = (resource: Resource) => {
     if (!resource || !resource.filetype) return '';
-    
+
     // Use preview_url if available, otherwise construct URL
     if (resource.preview_url) {
       return resource.preview_url;
     }
-    
+
     // Use download_url if available
     if (resource.download_url) {
       return resource.download_url;
     }
-    
+
     // Fallback to the old URL construction method
     const titleLowered = resource.title
       .toLowerCase()
       .replace(/ /g, '%20');
-    
+
     if (resource.category === 'presets') {
       const prefix = resource.subcategory === 'adobe' ? 'a' : 'd';
       return `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/presets/PREVIEWS/${prefix}${titleLowered}.mp4`;
     }
-    
+
     if (resource.credit) {
       return `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
     }
@@ -57,15 +58,14 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
 
   if (resource.category === 'animations') {
     return (
-      <video
+      <VideoPlayer
         src={downloadURL}
-        controls
-        className="w-full rounded-md aspect-video"
+        className="w-full aspect-video"
       />
     );
   }
 
-  if (resource.category === 'images') {
+  if (resource.category === 'images' || resource.category === 'minecraft-icons') {
     return (
       <div className="rounded-md overflow-hidden bg-muted/20 border border-border">
         <img
@@ -108,26 +108,24 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
             You can help out creating previews for presets by joining our Discord!
           </p>
           <div className="flex gap-4 justify-center mt-4 pt-3">
-              <a
-                  href="https://discord.renderdragon.org"
-                  target="_blank"
-                  rel="noopener"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
-              >
-                <img className='w-5 h-5' src="/assets/discord_icon.png" alt="Discord"></img>
-                  Join our Discord
-              </a>
+            <a
+              href="https://discord.renderdragon.org"
+              target="_blank"
+              rel="noopener"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <img className='w-5 h-5' src="/assets/discord_icon.png" alt="Discord"></img>
+              Join our Discord
+            </a>
           </div>
         </div>
       );
     }
 
     return (
-      <video
+      <VideoPlayer
         src={downloadURL}
-        controls
-        className="w-full rounded-md aspect-video"
-        onError={() => setHasError(true)}
+        className="w-full aspect-video"
       />
     );
   }

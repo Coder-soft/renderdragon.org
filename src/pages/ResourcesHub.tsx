@@ -33,6 +33,7 @@ const ResourcesHub = () => {
   const [uploaderOpen, setUploaderOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [description, setDescription] = useState<string>("");
+  const [credit, setCredit] = useState<string>("");
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const {
@@ -75,7 +76,7 @@ const ResourcesHub = () => {
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('showFavorites', handleShowFavorites);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('showFavorites', handleShowFavorites);
@@ -126,7 +127,7 @@ const ResourcesHub = () => {
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -134,6 +135,20 @@ const ResourcesHub = () => {
             >
               <h1 className="text-4xl md:text-5xl font-vt323 font-bold mb-2 text-center">Resources Hub</h1>
               <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="absolute top-0 right-0 hidden md:block z-10"
+            >
+              <Button
+                onClick={() => setUploaderOpen(true)}
+                className="pixel-btn-primary font-vt323 flex items-center gap-2"
+              >
+                <span className="text-xl">+</span> Submit Resource
+              </Button>
             </motion.div>
 
             {/* Submit action is now in filters toolbar after Presets */}
@@ -181,6 +196,12 @@ const ResourcesHub = () => {
                       onOpenSubmit={() => setUploaderOpen(true)}
                     />
 
+                    {selectedCategory === 'minecraft-icons' && (
+                      <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
+                        Powered by Hydrogen Chloride
+                      </p>
+                    )}
+
                     <ResourcesList
                       resources={resources}
                       filteredResources={filteredResources}
@@ -218,9 +239,9 @@ const ResourcesHub = () => {
         />
       </Suspense>
 
-      <AuthDialog 
-        open={authDialogOpen} 
-        onOpenChange={setAuthDialogOpen} 
+      <AuthDialog
+        open={authDialogOpen}
+        onOpenChange={setAuthDialogOpen}
       />
 
 
@@ -256,9 +277,20 @@ const ResourcesHub = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 maxLength={1024}
                 placeholder="Describe your upload (max 1024 chars)"
-                className="w-full h-28 pixel-input font-vt323 resize-vertical"
+                className="w-full h-24 pixel-input font-vt323 resize-vertical"
               />
               <div className="text-right text-xs text-muted-foreground mt-1">{description.length}/1024</div>
+            </div>
+
+            <div>
+              <label className="block mb-2 font-vt323 text-lg">Credit / Attribution (optional)</label>
+              <input
+                type="text"
+                value={credit}
+                onChange={(e) => setCredit(e.target.value)}
+                placeholder="Who should be credited?"
+                className="w-full pixel-input font-vt323"
+              />
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
@@ -279,34 +311,42 @@ const ResourcesHub = () => {
                   try {
                     setIsUploading(true);
                     const files = Array.from(selectedFiles);
-                    type UploadResult = { url: string; key: string; name: string; size: number };
-                    const results: UploadResult[] = [];
+                    const results = [];
+
+                    const authToken = import.meta.env.VITE_SUBMIT_AUTH_TOKEN;
+
                     for (const file of files) {
                       const form = new FormData();
                       form.append('file', file);
                       if (description) form.append('description', description);
+                      if (credit) form.append('credit', credit);
 
-                      const res = await fetch('https://submit-renderdragon.vercel.app/api/public-upload', {
+                      const res = await fetch('https://69356fc63652.ngrok-free.app/upload', {
                         method: 'POST',
-                        headers: description ? { 'x-description': description } : undefined,
+                        headers: {
+                          'x-api-key': authToken
+                        },
                         body: form,
                       });
 
                       if (!res.ok) {
-                        const text = await res.text();
-                        throw new Error(text || 'Upload failed');
+                        const errorData = await res.json().catch(() => ({ message: 'Upload failed' }));
+                        throw new Error(errorData.message || 'Upload failed');
                       }
-                      const json: UploadResult = await res.json();
+                      const json = await res.json();
                       results.push(json);
                     }
 
-                    toast.success('Upload complete', { description: `Uploaded ${results.length} file(s).` });
-                    console.log(results);
+                    toast.success('Upload complete', {
+                      description: `Successfully submitted ${results.length} file(s) for review.`
+                    });
+
                     setUploaderOpen(false);
                     setSelectedFiles(null);
                     setDescription('');
+                    setCredit('');
                   } catch (err: unknown) {
-                    console.error(err);
+                    console.error('Upload Error:', err);
                     const msg = err instanceof Error ? err.message : 'Something went wrong.';
                     toast.error('Upload failed', { description: msg });
                   } finally {
