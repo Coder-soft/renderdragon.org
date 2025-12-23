@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Resource } from '@/types/resources';
 import { useDownloadCounts } from '@/hooks/useDownloadCounts';
-import { fetchMciResources } from '@/lib/mciApi';
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
@@ -30,20 +29,25 @@ export const useResources = () => {
     const fetchResources = useCallback(async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('https://hamburger-api.powernplant101-c6b.workers.dev/all');
 
-            if (!response.ok) {
-                throw new Error(`Failed to fetch resources: ${response.status}`);
-            }
+            // Fetch main resources and mcicons in parallel
+            const [resourcesRes, mciconsRes] = await Promise.all([
+                fetch('https://hamburger-api.powernplant101-c6b.workers.dev/all'),
+                fetch('https://hamburger-api.powernplant101-c6b.workers.dev/mcicons')
+            ]);
 
-            const data = await response.json();
+            if (!resourcesRes.ok) throw new Error(`Failed to fetch resources: ${resourcesRes.status}`);
+            if (!mciconsRes.ok) throw new Error(`Failed to fetch mcicons: ${mciconsRes.status}`);
+
+            const data = await resourcesRes.json();
+            const mciconsData = await mciconsRes.json();
+
             const allResources: Resource[] = [];
 
-            // Parse the response which is { categories: { [categoryName]: FileObject[] } }
+            // Parse main resources
             if (data && data.categories) {
                 Object.entries(data.categories).forEach(([category, files]: [string, any[]]) => {
                     files.forEach(file => {
-                        // Derive subcategory from URL
                         let subcategory: string | undefined = undefined;
                         if (file.url) {
                             if (file.url.includes('/adobe/')) subcategory = 'adobe';
@@ -71,9 +75,28 @@ export const useResources = () => {
                 });
             }
 
-            // Fetch MCI resources
-            const mciResources = await fetchMciResources();
-            allResources.push(...mciResources);
+            // Parse mcicons from Hamburger API
+            if (mciconsData && mciconsData.files) {
+                mciconsData.files.forEach((file: any) => {
+                    const formattedTitle = file.title
+                        .replace(/_/g, ' ')
+                        .replace(/\.[^/.]+$/, "") // Remove extension if present in title
+                        .split(' ')
+                        .filter(Boolean)
+                        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+
+                    allResources.push({
+                        id: file.id,
+                        title: formattedTitle,
+                        category: 'minecraft-icons',
+                        subcategory: file.subcategory, // Directly use the subcategory from API
+                        credit: file.credit || "",
+                        filetype: file.ext,
+                        download_url: file.url,
+                    });
+                });
+            }
 
             setResources(allResources);
         } catch (error) {
@@ -193,6 +216,15 @@ export const useResources = () => {
         return result;
     }, [resources, selectedCategory, selectedSubcategory, searchQuery, sortOrder, externalDownloadCounts]);
 
+    // Derive unique subcategories for the current selected category
+    const availableSubcategories = useMemo(() => {
+        if (!selectedCategory || selectedCategory === "favorites") return [];
+        const subs = resources
+            .filter(r => r.category === selectedCategory && r.subcategory)
+            .map(r => r.subcategory as string);
+        return Array.from(new Set(subs)).sort();
+    }, [resources, selectedCategory]);
+
     const handleDownload = useCallback(
         async (resource: Resource): Promise<boolean> => {
             if (!resource || !resource.download_url) return false;
@@ -250,6 +282,7 @@ export const useResources = () => {
         loadedFonts,
         setLoadedFonts,
         filteredResources,
+        availableSubcategories,
         hasCategoryResources,
         handleSearchSubmit,
         handleClearSearch,

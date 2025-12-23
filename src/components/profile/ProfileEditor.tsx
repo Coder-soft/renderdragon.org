@@ -28,6 +28,8 @@ import ProfileThemeEngine from './ProfileThemeEngine';
 import ReactMarkdown from 'react-markdown';
 import { getSmartIconUrl } from '@/lib/utils';
 import { SvglPicker } from './SvglPicker';
+import { ImageUpload } from './ImageUpload';
+import { FontPicker } from './FontPicker';
 
 const DRAFT_KEY = 'profile_editor_draft';
 
@@ -219,12 +221,28 @@ const ProfileEditor: React.FC = () => {
                                     <p className="text-xs text-muted-foreground">Original Name: {dbProfile?.display_name || 'Not set'}</p>
                                 </div>
                                 <div className="space-y-2">
+                                    <Label>Profile Tag</Label>
+                                    <Input
+                                        placeholder="e.g. Creator, Developer..."
+                                        value={themeConfig.profileTag || ''}
+                                        onChange={(e) => setThemeConfig({ ...themeConfig, profileTag: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label>Custom Avatar URL</Label>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 items-center">
                                         <Input
                                             value={themeConfig.customAvatarUrl || ''}
                                             onChange={(e) => setThemeConfig({ ...themeConfig, customAvatarUrl: e.target.value })}
                                             placeholder="https://... (Leave empty to use account avatar)"
+                                            className="flex-1"
+                                        />
+                                        <ImageUpload
+                                            onUpload={(url) => setThemeConfig({ ...themeConfig, customAvatarUrl: url })}
+                                            currentImage={themeConfig.customAvatarUrl}
+                                            label="Upload"
+                                            folder="avatars"
                                         />
                                         <Avatar className="h-10 w-10 border">
                                             <AvatarImage src={themeConfig.customAvatarUrl || dbProfile?.avatar_url || ''} />
@@ -360,11 +378,19 @@ const ProfileEditor: React.FC = () => {
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
                                     <Label>Cover Image URL</Label>
-                                    <Input
-                                        value={themeConfig.coverImage || ''}
-                                        onChange={(e) => setThemeConfig({ ...themeConfig, coverImage: e.target.value })}
-                                        placeholder="https://..."
-                                    />
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={themeConfig.coverImage || ''}
+                                            onChange={(e) => setThemeConfig({ ...themeConfig, coverImage: e.target.value })}
+                                            placeholder="https://..."
+                                            className="flex-1"
+                                        />
+                                        <ImageUpload
+                                            onUpload={(url) => setThemeConfig({ ...themeConfig, coverImage: url })}
+                                            currentImage={themeConfig.coverImage}
+                                            label="Upload"
+                                        />
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Avatar Position</Label>
@@ -438,7 +464,19 @@ const ProfileEditor: React.FC = () => {
                                 {themeConfig.backgroundType === 'image' && (
                                     <div className="space-y-2">
                                         <Label>Background Image URL</Label>
-                                        <Input value={themeConfig.backgroundImage || ''} onChange={(e) => setThemeConfig({ ...themeConfig, backgroundImage: e.target.value })} placeholder="https://..." />
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={themeConfig.backgroundImage || ''}
+                                                onChange={(e) => setThemeConfig({ ...themeConfig, backgroundImage: e.target.value })}
+                                                placeholder="https://..."
+                                                className="flex-1"
+                                            />
+                                            <ImageUpload
+                                                onUpload={(url) => setThemeConfig({ ...themeConfig, backgroundImage: url })}
+                                                currentImage={themeConfig.backgroundImage}
+                                                label="Upload"
+                                            />
+                                        </div>
                                     </div>
                                 )}
 
@@ -461,16 +499,14 @@ const ProfileEditor: React.FC = () => {
 
                                 <div className="space-y-2">
                                     <Label>Font Family</Label>
-                                    <Select value={themeConfig.fontFamily} onValueChange={(val: any) => setThemeConfig({ ...themeConfig, fontFamily: val })}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="geist">Geist Sans</SelectItem>
-                                            <SelectItem value="mono">Geist Mono</SelectItem>
-                                            <SelectItem value="inter">Inter</SelectItem>
-                                            <SelectItem value="serif">Serif</SelectItem>
-                                            <SelectItem value="pixel">Pixel</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <FontPicker
+                                        value={themeConfig.fontFamily}
+                                        onFontChange={(family, url) => setThemeConfig({
+                                            ...themeConfig,
+                                            fontFamily: family,
+                                            fontUrl: url || undefined
+                                        })}
+                                    />
                                 </div>
                             </CardContent>
                         </Card>
@@ -508,7 +544,12 @@ const ProfileEditor: React.FC = () => {
                                 </h2>
                                 {/* Show username if using default name */}
                                 {!themeConfig.customDisplayName && dbProfile?.username && (
-                                    <p className="opacity-70 font-mono" style={{ color: themeConfig.textColor }}>@{dbProfile.username}</p>
+                                    <p className="opacity-70" style={{ color: themeConfig.textColor }}>@{dbProfile.username}</p>
+                                )}
+                                {themeConfig.profileTag && (
+                                    <span className="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider opacity-80 mt-1 inline-block" style={{ backgroundColor: themeConfig.accentColor, color: '#fff' }}>
+                                        {themeConfig.profileTag}
+                                    </span>
                                 )}
                                 <div style={{ color: themeConfig.textColor, opacity: 0.8 }} className="mt-2 prose prose-invert prose-sm max-w-none">
                                     <ReactMarkdown>{bio || 'No bio yet.'}</ReactMarkdown>

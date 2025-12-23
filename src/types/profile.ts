@@ -5,13 +5,15 @@ export interface ProfileThemeConfig {
     backgroundGradient?: string;
     textColor: string;
     accentColor: string;
-    fontFamily: 'geist' | 'inter' | 'roboto' | 'mono' | 'serif';
+    fontFamily: string; // was 'geist' | 'inter' | 'roboto' | 'mono' | 'serif'
+    fontUrl?: string; // For dynamically loaded fonts
     buttonStyle: 'rounded' | 'square' | 'pill' | 'pixel' | 'icon';
     cardStyle: 'glass' | 'solid' | 'outline' | 'pixel';
     layout: 'list' | 'grid';
     // New customizations
     coverImage?: string;
     customDisplayName?: string;
+    profileTag?: string; // Custom user tag/role
     customAvatarUrl?: string;
     avatarPosition?: 'center' | 'left' | 'right';
 }

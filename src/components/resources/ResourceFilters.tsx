@@ -24,7 +24,7 @@ type ResourceFiltersProps = {
   onSortOrderChange: (order: string) => void;
   isMobile: boolean;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
-  onOpenSubmit: () => void;
+  availableSubcategories: string[];
 };
 
 const ResourceFilters = ({
@@ -36,9 +36,10 @@ const ResourceFilters = ({
   onSearchSubmit,
   onCategoryChange,
   onSubcategoryChange,
+  onSortOrderChange,
   isMobile,
   inputRef,
-  onOpenSubmit
+  availableSubcategories,
 }: ResourceFiltersProps) => {
   return (
     <div className={`mb-8 flex gap-4 ${isMobile ? 'flex-row items-center' : 'flex-col'}`}>
@@ -76,17 +77,17 @@ const ResourceFilters = ({
         <MobileFilters
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
+          availableSubcategories={availableSubcategories}
           onCategoryChange={onCategoryChange}
           onSubcategoryChange={onSubcategoryChange}
-          onOpenSubmit={onOpenSubmit}
         />
       ) : (
         <DesktopFilters
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
+          availableSubcategories={availableSubcategories}
           onCategoryChange={onCategoryChange}
           onSubcategoryChange={onSubcategoryChange}
-          onOpenSubmit={onOpenSubmit}
         />
       )}
     </div>
@@ -96,15 +97,15 @@ const ResourceFilters = ({
 const MobileFilters = ({
   selectedCategory,
   selectedSubcategory,
+  availableSubcategories,
   onCategoryChange,
   onSubcategoryChange,
-  onOpenSubmit
 }: {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
+  availableSubcategories: string[];
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
-  onOpenSubmit: () => void;
 }) => {
   return (
     <Sheet>
@@ -183,13 +184,6 @@ const MobileFilters = ({
               <img src="/assets/mci_icon.png" className="h-4 w-4 mr-2" alt="MCI" onError={(e) => { e.currentTarget.style.display = 'none' }} />
               Minecraft Icons
             </Button>
-            <Button
-              variant="default"
-              onClick={onOpenSubmit}
-              className="justify-start pixel-corners font-vt323"
-            >
-              Submit your resources
-            </Button>
 
 
             {selectedCategory === 'presets' && (
@@ -210,7 +204,7 @@ const MobileFilters = ({
               </div>
             )}
 
-            {selectedCategory === 'minecraft-icons' && (
+            {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
               <div className="mt-2 ml-2">
                 <Select
                   value={selectedSubcategory || "all"}
@@ -221,22 +215,9 @@ const MobileFilters = ({
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
                     <SelectItem value="all">All Icons</SelectItem>
-                    <SelectItem value="1. Swords">Swords</SelectItem>
-                    <SelectItem value="2. Pickaxes">Pickaxes</SelectItem>
-                    <SelectItem value="3. Axes">Axes</SelectItem>
-                    <SelectItem value="4. Shovels">Shovels</SelectItem>
-                    <SelectItem value="5. Hoes">Hoes</SelectItem>
-                    <SelectItem value="10. Items">Items</SelectItem>
-                    <SelectItem value="10. Food">Food</SelectItem>
-                    <SelectItem value="11. Materials">Materials</SelectItem>
-                    <SelectItem value="14. Potions">Potions</SelectItem>
-                    <SelectItem value="15. Projectiles">Projectiles</SelectItem>
-                    <SelectItem value="16. Dyes">Dyes</SelectItem>
-                    <SelectItem value="21. Decoration">Decoration</SelectItem>
-                    <SelectItem value="22. Coral">Coral</SelectItem>
-                    <SelectItem value="23. Flowers">Flowers</SelectItem>
-                    <SelectItem value="26. Redstone">Redstone</SelectItem>
-                    <SelectItem value="30. Legacy spawn eggs">Spawn Eggs</SelectItem>
+                    {availableSubcategories.map(sub => (
+                      <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -251,15 +232,15 @@ const MobileFilters = ({
 const DesktopFilters = ({
   selectedCategory,
   selectedSubcategory,
+  availableSubcategories,
   onCategoryChange,
   onSubcategoryChange,
-  onOpenSubmit
 }: {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
+  availableSubcategories: string[];
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
-  onOpenSubmit: () => void;
 }) => {
   return (
     <div className="flex flex-wrap gap-2">
@@ -346,7 +327,7 @@ const DesktopFilters = ({
         </Select>
       )}
 
-      {selectedCategory === 'minecraft-icons' && (
+      {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
         <Select
           value={selectedSubcategory || "all"}
           onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
@@ -356,22 +337,9 @@ const DesktopFilters = ({
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <SelectItem value="all">All Icons</SelectItem>
-            <SelectItem value="1. Swords">Swords</SelectItem>
-            <SelectItem value="2. Pickaxes">Pickaxes</SelectItem>
-            <SelectItem value="3. Axes">Axes</SelectItem>
-            <SelectItem value="4. Shovels">Shovels</SelectItem>
-            <SelectItem value="5. Hoes">Hoes</SelectItem>
-            <SelectItem value="10. Items">Items</SelectItem>
-            <SelectItem value="10. Food">Food</SelectItem>
-            <SelectItem value="11. Materials">Materials</SelectItem>
-            <SelectItem value="14. Potions">Potions</SelectItem>
-            <SelectItem value="15. Projectiles">Projectiles</SelectItem>
-            <SelectItem value="16. Dyes">Dyes</SelectItem>
-            <SelectItem value="21. Decoration">Decoration</SelectItem>
-            <SelectItem value="22. Coral">Coral</SelectItem>
-            <SelectItem value="23. Flowers">Flowers</SelectItem>
-            <SelectItem value="26. Redstone">Redstone</SelectItem>
-            <SelectItem value="30. Legacy spawn eggs">Spawn Eggs</SelectItem>
+            {availableSubcategories.map(sub => (
+              <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       )}

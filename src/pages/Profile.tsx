@@ -133,7 +133,15 @@ const ProfilePage: React.FC = () => {
             <div className="space-y-2 w-full">
               <h1 className="text-4xl font-bold tracking-tight">{displayName}</h1>
               {profile.username && !theme.customDisplayName && (
-                <p className="text-lg opacity-75 font-mono">@{profile.username}</p>
+                <p className="text-lg opacity-75">@{profile.username}</p>
+              )}
+              {theme.profileTag && (
+                <div className={`mt-2 ${theme.avatarPosition === 'left' ? 'text-left' : theme.avatarPosition === 'right' ? 'text-right' : 'text-center'}`}>
+                  <span className="px-3 py-1 rounded-md text-sm font-bold uppercase tracking-wider shadow-sm backdrop-blur-sm border border-white/10"
+                    style={{ backgroundColor: theme.accentColor, color: '#fff' }}>
+                    {theme.profileTag}
+                  </span>
+                </div>
               )}
               {profile.bio && (
                 <div className={`mt-4 prose prose-invert prose-lg max-w-none ${theme.avatarPosition === 'left' ? 'text-left' : theme.avatarPosition === 'right' ? 'text-right' : 'text-center'}`}>
