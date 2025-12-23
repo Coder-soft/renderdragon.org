@@ -144,7 +144,7 @@ const ProfileEditor: React.FC = () => {
 
     const addLink = () => {
         const newLink: ProfileLink = {
-            id: crypto.randomUUID(),
+            id: crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`,
             label: 'New Link',
             url: '',
             active: true,
