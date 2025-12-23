@@ -52,7 +52,7 @@ const ProfilePage: React.FC = () => {
         if (!username) return;
         const { data, error } = await supabase
           .from("profiles")
-          .select("*")
+          .select("id, email, display_name, avatar_url, username, bio, links, theme_config, social_links, verified")
           .eq("username", username)
           .maybeSingle();
 
@@ -145,7 +145,9 @@ const ProfilePage: React.FC = () => {
               )}
               {profile.bio && (
                 <div className={`mt-4 prose prose-invert prose-lg max-w-none ${theme.avatarPosition === 'left' ? 'text-left' : theme.avatarPosition === 'right' ? 'text-right' : 'text-center'}`}>
-                  <ReactMarkdown>{profile.bio}</ReactMarkdown>
+                  <ReactMarkdown allowedElements={['h1', 'h2', 'h3', 'p', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'code', 'blockquote', 'img']}>
+                    {profile.bio}
+                  </ReactMarkdown>
                 </div>
               )}
             </div>

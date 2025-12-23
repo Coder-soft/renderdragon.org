@@ -23,7 +23,7 @@ async function exportResources() {
 
     if (error) {
         console.error('Error fetching data:', error);
-        return;
+        process.exit(1);
     }
 
     // Group by category for the structure the app likes
@@ -47,4 +47,7 @@ async function exportResources() {
     console.log('Exported to resources_export.json');
 }
 
-exportResources();
+exportResources().catch(err => {
+    console.error('Unexpected error:', err);
+    process.exit(1);
+});

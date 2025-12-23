@@ -138,7 +138,7 @@ const ProfileEditor: React.FC = () => {
     const discardDraft = () => {
         if (confirm("Are you sure you want to discard your unsaved changes and reload from the server?")) {
             localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
-            window.location.reload();
+            loadProfile();
         }
     };
 
@@ -552,7 +552,9 @@ const ProfileEditor: React.FC = () => {
                                     </span>
                                 )}
                                 <div style={{ color: themeConfig.textColor, opacity: 0.8 }} className="mt-2 prose prose-invert prose-sm max-w-none">
-                                    <ReactMarkdown>{bio || 'No bio yet.'}</ReactMarkdown>
+                                    <ReactMarkdown allowedElements={['h1', 'h2', 'h3', 'p', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'code', 'blockquote', 'img']}>
+                                        {bio || 'No bio yet.'}
+                                    </ReactMarkdown>
                                 </div>
                             </div>
 

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -54,15 +54,18 @@ const App = () => {
   const [queryClient] = useState(() => new QueryClient());
 
   // Global Theme Initialization
-  useState(() => {
-    const theme = localStorage.getItem('theme') as 'light' | 'dark' ||
+  const [theme] = useState(() => {
+    return localStorage.getItem('theme') as 'light' | 'dark' ||
       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  });
+
+  useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  });
+  }, [theme]);
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

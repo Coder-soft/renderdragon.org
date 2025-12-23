@@ -92,7 +92,7 @@ const Navbar = () => {
   });
   const isMobile = useIsMobile();
   const [authDialogOpen, setAuthDialogOpen] = useState(false); // Added for auth
-  const { user, loading } = useAuth(); // Added for auth
+  const { user, loading, signOut } = useAuth(); // Added for auth
   const { profile } = useProfile();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Manages Drawer open state
   const [showBlogsBanner, setShowBlogsBanner] = useState(true);
@@ -448,10 +448,8 @@ const Navbar = () => {
                           My Favorites
                         </Button>
                         <Button
-                          onClick={() => {
-                            // Assuming sign out logic is handled elsewhere, e.g., via useAuth context
-                            // You might need to add a sign-out function here if useAuth doesn't provide one
-                            // Example: signOut();
+                          onClick={async () => {
+                            await signOut();
                             setIsDrawerOpen(false);
                           }}
                           variant="outline"

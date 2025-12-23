@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 interface UserProfile {
   id: string;
   email: string | null;
+  username?: string | null;
   display_name?: string | null;
   first_name?: string | null;
   last_name?: string | null;
@@ -25,7 +26,7 @@ export const useProfile = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data: rawData, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
@@ -33,14 +34,17 @@ export const useProfile = () => {
 
       if (error) throw error;
 
+      const data = rawData as any;
+
       // Transform the data to match our interface, handling missing fields
       const profileData: UserProfile = {
         id: data.id,
         email: data.email,
+        username: data.username || null,
         display_name: data.display_name || null,
         first_name: data.first_name || null,
         last_name: data.last_name || null,
-        avatar_url: (data as { avatar_url?: string | null }).avatar_url || null,
+        avatar_url: data.avatar_url || null,
         created_at: data.created_at,
         updated_at: data.updated_at,
       };
@@ -67,7 +71,7 @@ export const useProfile = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data: rawData, error } = await supabase
         .from("profiles")
         .update(updates)
         .eq("id", user.id)
@@ -76,10 +80,13 @@ export const useProfile = () => {
 
       if (error) throw error;
 
+      const data = rawData as any;
+
       // Transform the data to match our interface, handling missing fields
       const profileData: UserProfile = {
         id: data.id,
         email: data.email,
+        username: data.username || null,
         display_name: data.display_name || null,
         first_name: data.first_name || null,
         last_name: data.last_name || null,
