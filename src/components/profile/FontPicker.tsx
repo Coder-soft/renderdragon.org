@@ -38,15 +38,49 @@ export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) =
         const fetchFonts = async () => {
             setLoading(true);
             try {
-                const res = await fetch('https://hamburger-api.powernplant101-c6b.workers.dev/fonts');
-                if (!res.ok) throw new Error('Failed to fetch fonts');
-                const data = await res.json();
-                if (data && Array.isArray(data.files)) {
-                    setExternalFonts(data.files);
+                let attempt = 0;
+                const maxRetries = 2;
+
+                while (attempt <= maxRetries) {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                    try {
+                        const res = await fetch('https://hamburger-api.powernplant101-c6b.workers.dev/fonts', {
+                            signal: controller.signal
+                        });
+                        clearTimeout(timeoutId);
+
+                        if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+                        const data = await res.json();
+
+                        if (data && Array.isArray(data.files)) {
+                            const validated = data.files.filter((f: any) =>
+                                typeof f.id === 'number' &&
+                                typeof f.title === 'string' &&
+                                typeof f.url === 'string' &&
+                                f.url.startsWith('https://')
+                            );
+                            setExternalFonts(validated);
+                        }
+                        return; // Success, exit the loop and function
+                    } catch (error: any) {
+                        clearTimeout(timeoutId);
+                        if (error.name === 'AbortError') {
+                            toast.error("Font library connection timed out");
+                            break; // Stop retrying on timeout as requested (or could continue, but usually timeouts are systemic)
+                        }
+
+                        if (attempt === maxRetries) {
+                            console.error("Error loading fonts:", error);
+                            toast.error("Could not load external fonts");
+                        } else {
+                            attempt++;
+                            await new Promise(r => setTimeout(r, 1000 * attempt));
+                            continue;
+                        }
+                    }
                 }
-            } catch (error) {
-                console.error("Error loading fonts:", error);
-                toast.error("Could not load external fonts");
             } finally {
                 setLoading(false);
             }
