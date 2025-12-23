@@ -136,7 +136,7 @@ const ProfileEditor: React.FC = () => {
     };
 
     const discardDraft = () => {
-        if (confirm("Are you sure you want to discard your unsaved changes and reload from the server?")) {
+        if (!window.confirm("Are you sure you want to discard your unsaved changes and reload from the server?")) return;
             localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
             loadProfile();
         }
@@ -144,7 +144,7 @@ const ProfileEditor: React.FC = () => {
 
     const addLink = () => {
         const newLink: ProfileLink = {
-            id: crypto.randomUUID(),
+            id: crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`,
             label: 'New Link',
             url: '',
             active: true,
