@@ -40,10 +40,16 @@ export default function BlogView() {
                     .from("blogs")
                     .select("*")
                     .eq("slug", slug)
+                    .eq("published", true)
                     .single();
 
-                if (dbError) throw dbError;
-                if (data) {
+                if (dbError) {
+                    if (dbError.code === "PGRST116") {
+                        setError("Blog post not found or it is a draft");
+                    } else {
+                        throw dbError;
+                    }
+                } else if (data && data.published) {
                     setBlog(data);
                     // Fetch author
                     const { data: profileData } = await supabase

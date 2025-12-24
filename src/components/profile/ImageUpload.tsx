@@ -45,6 +45,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
             if (!user) {
                 toast.error('You must be logged in to upload images');
+                setUploading(false);
                 return;
             }
 

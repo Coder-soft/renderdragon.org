@@ -133,9 +133,9 @@ const App = () => {
                     <Route path="/showcase" element={<Showcase />} />
                     <Route path="/u/:username" element={<Profile />} />
                     <Route path="/changelogs" element={<Changelogs />} />
-                    <Route path="*" element={<NotFound />} />
                     <Route path="/blogs" element={<Blogs />} />
                     <Route path="/blogs/:slug" element={<BlogView />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
               </BrowserRouter>

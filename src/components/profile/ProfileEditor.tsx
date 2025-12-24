@@ -30,8 +30,127 @@ import { getSmartIconUrl } from '@/lib/utils';
 import { SvglPicker } from './SvglPicker';
 import { ImageUpload } from './ImageUpload';
 import { FontPicker } from './FontPicker';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const DRAFT_KEY = 'profile_editor_draft';
+
+interface SortableLinkItemProps {
+    link: ProfileLink;
+    updateLink: (id: string, updates: Partial<ProfileLink>) => void;
+    removeLink: (id: string) => void;
+    getFavicon: (url: string) => string;
+}
+
+const SortableLinkItem: React.FC<SortableLinkItemProps> = ({ link, updateLink, removeLink, getFavicon }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: link.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 50 : undefined,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            className="flex flex-col gap-3 p-4 border rounded-lg bg-card/50"
+        >
+            <div className="flex items-center gap-2">
+                <button
+                    type="button"
+                    {...attributes}
+                    {...listeners}
+                    className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-muted"
+                    aria-label="Drag to reorder"
+                    aria-roledescription="sortable link"
+                >
+                    <IconGripVertical className="text-muted-foreground w-4 h-4" />
+                </button>
+
+                {/* Icon Preview */}
+                <div className="w-8 h-8 flex items-center justify-center bg-muted rounded overflow-hidden relative group">
+                    {link.url || link.icon ? (
+                        link.iconColor ? (
+                            <div
+                                className="w-6 h-6"
+                                style={{
+                                    backgroundColor: link.iconColor,
+                                    maskImage: `url(${link.icon || getFavicon(link.url)})`,
+                                    WebkitMaskImage: `url(${link.icon || getFavicon(link.url)})`,
+                                    maskSize: 'contain',
+                                    maskRepeat: 'no-repeat',
+                                    maskPosition: 'center',
+                                }}
+                            />
+                        ) : (
+                            <img src={link.icon || getFavicon(link.url)} alt="" className="w-6 h-6 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                        )
+                    ) : (
+                        <span className="text-xs">?</span>
+                    )}
+
+                    {/* Mini Color Picker Overlay */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <label className="cursor-pointer w-full h-full flex items-center justify-center text-white text-[10px] font-bold">
+                            TINT
+                            <input
+                                type="color"
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                value={link.iconColor || '#000000'}
+                                onChange={(e) => updateLink(link.id, { iconColor: e.target.value })}
+                            />
+                        </label>
+                    </div>
+                </div>
+                <Input
+                    value={link.label}
+                    onChange={(e) => updateLink(link.id, { label: e.target.value })}
+                    placeholder="Link Label"
+                    className="flex-1"
+                />
+                <Button size="icon" variant="ghost" className="text-destructive" onClick={() => removeLink(link.id)}>
+                    <IconTrash className="w-4 h-4" />
+                </Button>
+            </div>
+            <div className="pl-10 flex gap-2">
+                <SvglPicker
+                    value={link.icon}
+                    onChange={(url) => updateLink(link.id, { icon: url })}
+                />
+                <Input
+                    value={link.url}
+                    onChange={(e) => updateLink(link.id, { url: e.target.value })}
+                    placeholder="https://example.com"
+                />
+            </div>
+        </div>
+    );
+};
 
 const ProfileEditor: React.FC = () => {
     const { user } = useAuth();
@@ -137,8 +256,26 @@ const ProfileEditor: React.FC = () => {
 
     const discardDraft = () => {
         if (!window.confirm("Are you sure you want to discard your unsaved changes and reload from the server?")) return;
-            localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
-            loadProfile();
+        localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
+        loadProfile();
+    };
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setLinks((items) => {
+                const oldIndex = items.findIndex((i) => i.id === active.id);
+                const newIndex = items.findIndex((i) => i.id === over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
         }
     };
 
@@ -283,68 +420,26 @@ const ProfileEditor: React.FC = () => {
                                 </Button>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {links.map((link) => (
-                                    <div key={link.id} className="flex flex-col gap-3 p-4 border rounded-lg bg-card/50">
-                                        <div className="flex items-center gap-2">
-                                            <IconGripVertical className="text-muted-foreground w-4 h-4 cursor-move" />
-                                            {/* Icon Preview */}
-                                            <div className="w-8 h-8 flex items-center justify-center bg-muted rounded overflow-hidden relative group">
-                                                {link.url || link.icon ? (
-                                                    link.iconColor ? (
-                                                        <div
-                                                            className="w-6 h-6"
-                                                            style={{
-                                                                backgroundColor: link.iconColor,
-                                                                maskImage: `url(${link.icon || getFavicon(link.url)})`,
-                                                                WebkitMaskImage: `url(${link.icon || getFavicon(link.url)})`,
-                                                                maskSize: 'contain',
-                                                                maskRepeat: 'no-repeat',
-                                                                maskPosition: 'center',
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <img src={link.icon || getFavicon(link.url)} alt="" className="w-6 h-6 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                                                    )
-                                                ) : (
-                                                    <span className="text-xs">?</span>
-                                                )}
-
-                                                {/* Mini Color Picker Overlay */}
-                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                                    <label className="cursor-pointer w-full h-full flex items-center justify-center text-white text-[10px] font-bold">
-                                                        TINT
-                                                        <input
-                                                            type="color"
-                                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                                            value={link.iconColor || '#000000'}
-                                                            onChange={(e) => updateLink(link.id, { iconColor: e.target.value })}
-                                                        />
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <Input
-                                                value={link.label}
-                                                onChange={(e) => updateLink(link.id, { label: e.target.value })}
-                                                placeholder="Link Label"
-                                                className="flex-1"
+                                <DndContext
+                                    sensors={sensors}
+                                    collisionDetection={closestCenter}
+                                    onDragEnd={handleDragEnd}
+                                >
+                                    <SortableContext
+                                        items={links.map(l => l.id)}
+                                        strategy={verticalListSortingStrategy}
+                                    >
+                                        {links.map((link) => (
+                                            <SortableLinkItem
+                                                key={link.id}
+                                                link={link}
+                                                updateLink={updateLink}
+                                                removeLink={removeLink}
+                                                getFavicon={getFavicon}
                                             />
-                                            <Button size="icon" variant="ghost" className="text-destructive" onClick={() => removeLink(link.id)}>
-                                                <IconTrash className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="pl-10 flex gap-2">
-                                            <SvglPicker
-                                                value={link.icon}
-                                                onChange={(url) => updateLink(link.id, { icon: url })}
-                                            />
-                                            <Input
-                                                value={link.url}
-                                                onChange={(e) => updateLink(link.id, { url: e.target.value })}
-                                                placeholder="https://example.com"
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
+                                        ))}
+                                    </SortableContext>
+                                </DndContext>
                             </CardContent>
                         </Card>
                     </TabsContent>

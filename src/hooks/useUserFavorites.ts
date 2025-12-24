@@ -46,7 +46,7 @@ export const useUserFavorites = () => {
       } else {
         const { error } = await supabase
           .from('user_favorites')
-          .insert({ user_id: user.id, resource_id: parseInt(resourceId) }); // Ensure ID is int if needed by DB, or keep string if uuid
+          .insert({ user_id: user.id, resource_id: resourceId });
         if (error) throw error;
         return { action: 'added', resourceId };
       }

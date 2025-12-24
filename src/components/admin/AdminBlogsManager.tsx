@@ -105,7 +105,7 @@ export default function AdminBlogsManager() {
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <Button variant="ghost" size="icon" asChild>
-                                                    <Link to={`/blogs/${blog.slug}`} target="_blank">
+                                                    <Link to={`/blogs/${blog.slug}`} target="_blank" rel="noopener noreferrer">
                                                         <IconEye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                                     </Link>
                                                 </Button>

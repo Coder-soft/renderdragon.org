@@ -167,17 +167,7 @@ export const useResources = () => {
         if (selectedCategory && selectedCategory !== "favorites") {
             result = result.filter(r => r.category === selectedCategory);
         } else if (selectedCategory === null && !searchQuery) {
-            // Exclude minecraft-icons from "All" tab unless searching
-            // If user is searching, they probably want to see matches from all categories including icons?
-            // The user request was "Don't show minecraft icons on the all resource tab".
-            // Usually "All" tab is the landing state.
-            // If I exclude it here, search might also exclude it if I don't be careful.
-            // But search filtering happens LATER in the code (lines 145+).
-            // If I filter `result` here, subsequent search filter works on reduced set.
-            // If the user wants search to find icons globally, I should only exclude if NOT searching?
-            // "Don't show minecraft icons on the all resource tab" implies the list view.
-            // Let's assume if they type "sword", they might want to see sword icons.
-            // So: if (selectedCategory === null && !searchQuery)
+            // Exclude 'minecraft-icons' from the All tab unless a search query is present
             result = result.filter(r => r.category !== 'minecraft-icons');
         }
 
