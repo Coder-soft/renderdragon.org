@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +32,7 @@ const AdminResourcesManager = () => {
 
   const categories = ['all', 'music', 'sfx', 'images', 'animations', 'fonts', 'presets'];
 
-  const fetchResources = async (isNewSearch = false) => {
+  const fetchResources = useCallback(async (isNewSearch = false) => {
     try {
       setLoading(true);
       const from = isNewSearch ? 0 : page * RESOURCES_PER_PAGE;
@@ -54,7 +54,7 @@ const AdminResourcesManager = () => {
       const { data, error, count } = await query;
 
       if (error) throw error;
-      
+
       setResources(prev => isNewSearch ? data || [] : [...prev, ...(data || [])]);
 
       if (count !== null) {
@@ -73,10 +73,11 @@ const AdminResourcesManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory, page]);
 
   useEffect(() => {
     fetchResources(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, selectedCategory]);
 
   const loadMore = () => {
@@ -88,6 +89,7 @@ const AdminResourcesManager = () => {
     if (page > 0) {
       fetchResources();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
 
@@ -99,7 +101,7 @@ const AdminResourcesManager = () => {
         .eq('id', resource.id);
 
       if (error) throw error;
-      
+
       toast.success('Resource deleted successfully');
       fetchResources(true);
       setDeleteDialog({ open: false, resource: null });
@@ -236,13 +238,13 @@ const AdminResourcesManager = () => {
                   />
                 </div>
               )}
-              
+
               {resource.description && (
                 <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                   {resource.description}
                 </p>
               )}
-              
+
               <div className="space-y-2 text-xs text-muted-foreground">
                 {resource.credit && (
                   <div className="flex items-center gap-1">

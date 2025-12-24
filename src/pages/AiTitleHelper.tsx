@@ -65,8 +65,9 @@ const AiTitleHelper = () => {
         throw new Error('No titles returned by the API.');
       }
       setTitles(out);
-    } catch (err: any) {
-      setError(err?.message || 'Something went wrong.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Something went wrong.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -119,8 +119,8 @@ const YouTubeDownloader: React.FC = () => {
           } else if (res.status === 403) {
             throw new Error('Access denied - YouTube may be blocking requests. Please try again later.');
           }
-          const errJson = await res.json().catch(() => ({}));
-          const message = (errJson as any)?.error || (errJson as any)?.message || `Request failed (${res.status})`;
+          const errJson = await res.json().catch(() => ({})) as { error?: string; message?: string };
+          const message = errJson?.error || errJson?.message || `Request failed (${res.status})`;
           throw new Error(message);
         }
 
@@ -140,7 +140,7 @@ const YouTubeDownloader: React.FC = () => {
           // Handle AbortError (timeout)
           if (err.name === 'AbortError') {
             const timeoutMsg = 'Request timed out - The server is taking too long to respond. Please try again.';
-            
+
             if (attempt === MAX_RETRIES) {
               toast.error(timeoutMsg);
               break;
@@ -150,7 +150,7 @@ const YouTubeDownloader: React.FC = () => {
           } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
             // Network errors
             const networkMsg = 'Network error - Please check your internet connection and try again.';
-            
+
             if (attempt === MAX_RETRIES) {
               toast.error(networkMsg);
               break;
@@ -168,7 +168,7 @@ const YouTubeDownloader: React.FC = () => {
           }
         } else {
           const genericMsg = 'An unexpected error occurred. Please try again.';
-          
+
           if (attempt === MAX_RETRIES) {
             toast.error(genericMsg);
             break;
@@ -191,16 +191,30 @@ const YouTubeDownloader: React.FC = () => {
     if (!video) return;
     setIsDownloadingThumb(true);
     toast.info('Preparing thumbnail download...');
-    
+
     try {
       const thumbUrl = getBestThumbnailUrl(video.thumbnails);
+
+      // Use the server-side endpoint to handle cross-origin download
+      // Direct anchor downloads don't work in Firefox/Safari for cross-origin URLs
+      const response = await fetch(`/api/downloadThumbnail?url=${encodeURIComponent(thumbUrl)}&title=${encodeURIComponent(video.title)}`);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Download failed' }));
+        throw new Error(errorData.error || 'Failed to download thumbnail');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = thumbUrl;
+      a.href = url;
       a.download = `${video.title}_thumbnail.jpg`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      toast.success('Thumbnail download started!');
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Thumbnail downloaded successfully!');
     } catch (err: unknown) {
       if (err instanceof Error) {
         if (err.name === 'AbortError') {
@@ -218,7 +232,7 @@ const YouTubeDownloader: React.FC = () => {
       setIsDownloadingThumb(false);
     }
   };
-  
+
   const getBestThumbnailUrl = (thumbs: Record<string, YoutubeThumbnail>): string => {
     const order = ['maxres', 'standard', 'high', 'medium', 'default'];
     for (const k of order) {

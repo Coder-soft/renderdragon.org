@@ -33,8 +33,9 @@ export default function GuideView() {
         if (!res.ok) throw new Error(`Failed to load guide: ${res.status}`);
         const text = await res.text();
         if (active) setMarkdown(text);
-      } catch (e: any) {
-        if (active) setError(e?.message ?? "Failed to load guide");
+      } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : 'Failed to load guide';
+        if (active) setError(errorMessage);
       } finally {
         if (active) setLoading(false);
       }

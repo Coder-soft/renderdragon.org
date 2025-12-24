@@ -19,6 +19,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        '/mci-proxy': {
+          target: 'https://hydrogenchloride.vercel.app',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/mci-proxy/, '/api/assets'),
+          secure: false,
+        },
       },
     },
     plugins: [

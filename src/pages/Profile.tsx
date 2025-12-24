@@ -1,192 +1,241 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { IconLoader2 } from '@tabler/icons-react';
-import { formatDistanceToNow } from "date-fns";
+import { IconLoader2, IconBrandTwitter, IconBrandGithub, IconBrandInstagram, IconBrandLinkedin, IconBrandDiscord, IconBrandYoutube, IconWorld } from '@tabler/icons-react';
+import { ProfileLink, ProfileThemeConfig, defaultThemeConfig } from '@/types/profile';
+import ProfileThemeEngine from '@/components/profile/ProfileThemeEngine';
+import ReactMarkdown from 'react-markdown';
+import { Button } from "@/components/ui/button";
+import { getSmartIconUrl } from "@/lib/utils";
 
-// Reuse types similar to Showcase page
-type Showcase = {
-  id: string;
-  user_id: string;
-  description: string | null;
-  tag: string;
-  created_at: string;
-};
-
-type ShowcaseAsset = {
-  id: string;
-  showcase_id: string;
-  kind: "image" | "video" | "audio" | "file";
-  url: string;
-  provider: "uploadthing" | "external";
-  position: number;
-  created_at: string;
-};
-
-type ProfileRow = {
+// Types
+type ProfileData = {
   id: string;
   email: string | null;
   display_name: string | null;
   avatar_url: string | null;
   username: string | null;
+  bio: string | null;
+  links: ProfileLink[] | null;
+  theme_config: ProfileThemeConfig | null;
+  social_links: any | null;
+  verified: boolean | null;
+};
+
+const SocialIcon = ({ type, url }: { type: string, url: string }) => {
+  const iconProps = { className: "w-6 h-6 hover:scale-110 transition-transform" };
+  switch (type) {
+    case 'twitter': return <a href={url} target="_blank" rel="noreferrer"><IconBrandTwitter {...iconProps} /></a>;
+    case 'github': return <a href={url} target="_blank" rel="noreferrer"><IconBrandGithub {...iconProps} /></a>;
+    case 'instagram': return <a href={url} target="_blank" rel="noreferrer"><IconBrandInstagram {...iconProps} /></a>;
+    case 'linkedin': return <a href={url} target="_blank" rel="noreferrer"><IconBrandLinkedin {...iconProps} /></a>;
+    case 'discord': return <a href={url} target="_blank" rel="noreferrer"><IconBrandDiscord {...iconProps} /></a>;
+    case 'youtube': return <a href={url} target="_blank" rel="noreferrer"><IconBrandYoutube {...iconProps} /></a>;
+    default: return <a href={url} target="_blank" rel="noreferrer"><IconWorld {...iconProps} /></a>;
+  }
 };
 
 const ProfilePage: React.FC = () => {
   const { username } = useParams<{ username: string }>();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<ProfileRow | null>(null);
-  const [showcases, setShowcases] = useState<Showcase[]>([]);
-  const [assetsByShowcase, setAssetsByShowcase] = useState<Map<string, ShowcaseAsset[]>>(new Map());
+  const [profile, setProfile] = useState<ProfileData | null>(null);
 
-  const sb = supabase as SupabaseClient;
   useEffect(() => {
     let active = true;
     (async () => {
       setLoading(true);
       try {
         if (!username) return;
-        // Find profile by username
-        const { data: prof, error: pErr } = await sb
+        const { data, error } = await supabase
           .from("profiles")
-          .select("id, email, display_name, avatar_url, username")
+          .select("id, email, display_name, avatar_url, username, bio, links, theme_config, social_links, verified")
           .eq("username", username)
           .maybeSingle();
-        if (pErr) throw pErr;
-        if (!active) return;
-        setProfile(prof || null);
 
-        if (prof?.id) {
-          // Load showcases for this user
-          const { data: sc, error: sErr } = await sb
-            .from("showcases")
-            .select("*")
-            .eq("user_id", prof.id)
-            .order("created_at", { ascending: false });
-          if (sErr) throw sErr;
-          if (!active) return;
-          const list = (sc as Showcase[]) || [];
-          setShowcases(list);
-          if (list.length) {
-            const ids = list.map((s) => s.id);
-            const { data: assets, error: aErr } = await sb
-              .from("showcase_assets")
-              .select("*")
-              .in("showcase_id", ids)
-              .order("position", { ascending: true });
-            if (aErr) throw aErr;
-            const map = new Map<string, ShowcaseAsset[]>();
-            (assets as ShowcaseAsset[] | null)?.forEach((a) => {
-              const arr = map.get(a.showcase_id) || [];
-              arr.push(a);
-              map.set(a.showcase_id, arr);
-            });
-            if (!active) return;
-            setAssetsByShowcase(map);
-          } else {
-            setAssetsByShowcase(new Map());
-          }
+        if (error) throw error;
+        if (active) {
+          setProfile(data as any); // Cast because of JSON types
         }
+      } catch (err) {
+        console.error(err);
       } finally {
         if (active) setLoading(false);
       }
     })();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [username]);
 
-  const name = profile?.display_name || profile?.email || profile?.username || "User";
+  const theme = profile?.theme_config || defaultThemeConfig;
+  // Use custom display name if set, otherwise fallback to standard Logic
+  const displayName = theme.customDisplayName || profile?.display_name || profile?.email?.split('@')[0] || profile?.username || "User";
+  // Use custom avatar if set, otherwise fallback
+  const avatarUrl = theme.customAvatarUrl || profile?.avatar_url;
+
+  const links = profile?.links || [];
+  const socials = profile?.social_links || {};
+
+  const getFavicon = (url: string) => {
+    return getSmartIconUrl(url);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <IconLoader2 className="h-8 w-8 animate-spin text-cow-purple" />
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-background text-white flex flex-col items-center justify-center gap-4">
+        <h1 className="text-2xl font-bold">Profile Not Found</h1>
+        <p className="text-muted-foreground">The user @{username} does not exist.</p>
+        <Button onClick={() => window.history.back()}>Go Back</Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background cow-grid-bg">
-      <Navbar />
-      <div className="container mx-auto px-4 pt-28 pb-12">
-        <Helmet>
-          <title>{profile ? `${name} • Profile | Renderdragon` : "Profile | Renderdragon"}</title>
-        </Helmet>
+    <ProfileThemeEngine config={theme}>
+      <div className="min-h-screen flex flex-col items-center relative">
 
-        {loading ? (
-          <div className="flex items-center justify-center py-24">
-            <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
+        {/* Cover Image */}
+        {theme.coverImage && (
+          <div className="absolute top-0 left-0 right-0 h-48 md:h-64 bg-cover bg-center z-0 animate-in fade-in duration-700" style={{ backgroundImage: `url(${theme.coverImage})` }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent" />
           </div>
-        ) : !profile ? (
-          <div className="text-center text-white/70 py-24">Profile not found.</div>
-        ) : (
-          <div className="space-y-8">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                {profile.avatar_url ? <AvatarImage src={profile.avatar_url} alt={name} /> : null}
-                <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="text-2xl font-vt323">{name}</div>
-                {profile.username ? (
-                  <div className="text-sm text-white/60">@{profile.username}</div>
-                ) : null}
-              </div>
+        )}
+
+        <main className="flex-1 container mx-auto px-4 py-8 flex flex-col items-center gap-8 max-w-2xl relative z-10 w-full" style={{ marginTop: theme.coverImage ? '12rem' : '6rem' }}>
+          <Helmet>
+            <title>{`${displayName} (@${profile.username}) | Renderdragon`}</title>
+          </Helmet>
+
+          {/* Header Section with Dynamic Alignment */}
+          <div className={`
+             flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-4 duration-700
+             ${theme.avatarPosition === 'left' ? 'items-start text-left' : theme.avatarPosition === 'right' ? 'items-end text-right' : 'items-center text-center'}
+          `}>
+            <Avatar className="h-32 w-32 border-4 border-[var(--profile-accent)] shadow-xl bg-background">
+              {avatarUrl ? (
+                <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
+              ) : null}
+              <AvatarFallback className="text-4xl bg-muted text-muted-foreground">
+                {displayName.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="space-y-2 w-full">
+              <h1 className="text-4xl font-bold tracking-tight">{displayName}</h1>
+              {profile.username && !theme.customDisplayName && (
+                <p className="text-lg opacity-75">@{profile.username}</p>
+              )}
+              {theme.profileTag && (
+                <div className={`mt-2 ${theme.avatarPosition === 'left' ? 'text-left' : theme.avatarPosition === 'right' ? 'text-right' : 'text-center'}`}>
+                  <span className="px-3 py-1 rounded-md text-sm font-bold uppercase tracking-wider shadow-sm backdrop-blur-sm border border-white/10"
+                    style={{ backgroundColor: theme.accentColor, color: '#fff' }}>
+                    {theme.profileTag}
+                  </span>
+                </div>
+              )}
+              {profile.bio && (
+                <div className={`mt-4 prose prose-invert prose-lg max-w-none ${theme.avatarPosition === 'left' ? 'text-left' : theme.avatarPosition === 'right' ? 'text-right' : 'text-center'}`}>
+                  <ReactMarkdown allowedElements={['h1', 'h2', 'h3', 'p', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'code', 'blockquote', 'img']}>
+                    {profile.bio}
+                  </ReactMarkdown>
+                </div>
+              )}
             </div>
 
-            {showcases.length === 0 ? (
-              <div className="text-center text-white/70 py-12">No showcases yet.</div>
-            ) : (
-              <div className="grid grid-cols-1 gap-6">
-                {showcases.map((item) => {
-                  const assets = assetsByShowcase.get(item.id) || [];
-                  return (
-                    <Card key={item.id} className="pixel-corners bg-card border-white/10">
-                      <CardHeader>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9">
-                            {profile.avatar_url ? <AvatarImage src={profile.avatar_url!} alt={name} /> : null}
-                            <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <CardTitle className="text-base font-vt323">{name}</CardTitle>
-                            <div className="text-xs text-white/60">{formatDistanceToNow(new Date(item.created_at))} ago</div>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        {item.description ? (
-                          <p className="mb-3 text-sm text-white/80 whitespace-pre-wrap">{item.description}</p>
-                        ) : null}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {assets.map((a) => {
-                            const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(a.url);
-                            const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(a.url);
-                            const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(a.url);
-                            const kind = a.kind === "file" ? (isImage ? "image" : isVideo ? "video" : isAudio ? "audio" : "file") : a.kind;
-                            return (
-                              <div key={a.id} className="group pixel-corners overflow-hidden border border-white/10">
-                                {kind === "image" && <img src={a.url} alt="showcase" className="w-full h-full object-cover" />}
-                                {kind === "video" && <video src={a.url} controls className="w-full h-full" />}
-                                {kind === "audio" && (
-                                  <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Audio</div>
-                                )}
-                                {kind === "file" && (
-                                  <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">File</div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+            {/* Social Links */}
+            {Object.keys(socials).length > 0 && (
+              <div className={`flex gap-4 mt-2 flex-wrap ${theme.avatarPosition === 'left' ? 'justify-start' : theme.avatarPosition === 'right' ? 'justify-end' : 'justify-center'}`}>
+                {Object.entries(socials).map(([key, url]) => (
+                  url ? <SocialIcon key={key} type={key} url={url as string} /> : null
+                ))}
               </div>
             )}
           </div>
-        )}
+
+          {/* Links Section */}
+          <div className={`
+            w-full space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 flex gap-4
+            ${theme.buttonStyle === 'icon' ? 'flex-row flex-wrap justify-center' : 'flex-col'}
+          `}>
+            {links.map((link) => (
+              link.active && (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`
+                    block transition-all hover:scale-[1.05] active:scale-[0.95] shadow-md hover:shadow-lg
+                    ${theme.buttonStyle === 'icon' ? 'p-4 rounded-full bg-black/20 backdrop-blur-sm' : 'w-full text-center py-4 px-6 text-lg font-medium'}
+                  `}
+                  style={{
+                    backgroundColor: theme.buttonStyle === 'icon' ? 'transparent' : (link.color || 'var(--profile-accent)'),
+                    color: '#fff',
+                    borderRadius: theme.buttonStyle === 'pill' ? '9999px' :
+                      theme.buttonStyle === 'rounded' ? '0.75rem' :
+                        theme.buttonStyle === 'icon' ? '9999px' :
+                          '0',
+                    border: theme.buttonStyle === 'pixel' ? '2px solid white' : 'none',
+                    boxShadow: theme.buttonStyle === 'pixel' ? '4px 4px 0 rgba(0,0,0,0.5)' : undefined,
+                  }}
+                  title={link.label}
+                >
+                  <div className="relative w-full flex items-center justify-center">
+                    {link.iconColor ? (
+                      <div
+                        className={`
+                             ${theme.buttonStyle === 'icon' ? 'w-8 h-8 drop-shadow-md' : 'w-6 h-6 absolute left-0 opacity-90'}
+                           `}
+                        style={{
+                          backgroundColor: link.iconColor,
+                          maskImage: `url(${link.icon || getFavicon(link.url)})`,
+                          WebkitMaskImage: `url(${link.icon || getFavicon(link.url)})`,
+                          maskSize: 'contain',
+                          maskRepeat: 'no-repeat',
+                          maskPosition: 'center',
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={link.icon || getFavicon(link.url)}
+                        alt=""
+                        className={`
+                            object-contain transition-opacity
+                            ${theme.buttonStyle === 'icon' ? 'w-8 h-8 drop-shadow-md' : 'w-6 h-6 absolute left-0 opacity-90'}
+                          `}
+                      />
+                    )}
+                    {theme.buttonStyle !== 'icon' && (
+                      <span className="z-10">{link.label}</span>
+                    )}
+                  </div>
+                </a>
+              )
+            ))}
+          </div>
+
+          {/* Floating Branding Button */}
+          <a
+            href="/"
+            target="_blank"
+            className="fixed bottom-4 right-4 z-50 bg-white text-black font-geist-mono py-2.5 px-5 shadow-xl hover:scale-105 transition-transform border border-white/20 flex flex-row items-center gap-2.5 rounded-lg no-underline"
+          >
+            <img src="/renderdragon.png" alt="RD" className="w-5 h-5 object-contain" />
+            <span className="text-sm font-bold">Made in RenderDragon.</span>
+          </a>
+        </main>
       </div>
-      <Footer />
-    </div>
+    </ProfileThemeEngine>
   );
 };
 

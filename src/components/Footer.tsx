@@ -22,7 +22,7 @@ const Footer = () => {
 
   const handleCartClick = () => {
     if (cartClicked) return;
-    
+
     const canvas = document.createElement('canvas');
     canvas.style.position = 'fixed';
     canvas.style.inset = '0';
@@ -31,30 +31,30 @@ const Footer = () => {
     canvas.style.zIndex = '999';
     canvas.style.pointerEvents = 'none';
     document.body.appendChild(canvas);
-    
+
     const myConfetti = confetti.create(canvas, {
       resize: true,
       useWorker: true
     });
-    
+
     myConfetti({
       particleCount: 150,
       spread: 100,
       origin: { y: 0.8 }
     });
-    
+
     setTimeout(() => {
       document.body.removeChild(canvas);
     }, 3000);
-    
-    toast('Made with ❤️ by Yamura!', {
+
+    toast('Made with ❤️ by Renderdragon Team!', {
       description: 'And a little help from the community.',
       position: "bottom-center",
       duration: 3000,
     });
-    
+
     setCartClicked(true);
-    
+
     if (cartButtonRef.current) {
       cartButtonRef.current.style.transform = 'translateX(150%)';
     }
@@ -65,8 +65,8 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="flex items-center space-x-2 text-xl font-bold mb-4"
             >
               <div className="flex items-center justify-center">
@@ -74,45 +74,45 @@ const Footer = () => {
               </div>
               <span className="font-pixel">Renderdragon</span>
             </Link>
-            
+
             <p className="text-white/70 mb-6 max-w-md">
               The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more.
             </p>
-            
+
             <div className="flex space-x-4 mb-3">
-              <a 
-                href="https://discord.renderdragon.org" 
-                target="_blank" 
+              <a
+                href="https://discord.renderdragon.org"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
                 aria-label="Discord"
               >
                 <img className="w-6 h-6" src="/assets/discord_icon.png" alt="Discord" loading="lazy" />
               </a>
-              
-              <a 
-                href="https://x.com/_renderdragon" 
-                target="_blank" 
+
+              <a
+                href="https://x.com/_renderdragon"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
                 aria-label="Twitter"
               >
                 <img className="w-6 h-6" src="/assets/twitter_icon.png" alt="Twitter" loading="lazy" />
               </a>
-              
-              <a 
-                href="https://www.youtube.com/channel/UCOheNYpPEHcS2ljttRmllxg" 
-                target="_blank" 
+
+              <a
+                href="https://www.youtube.com/channel/UCOheNYpPEHcS2ljttRmllxg"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
                 aria-label="YouTube"
               >
                 <img className="w-6 h-6" src="/assets/youtube_icon.png" alt="YouTube" loading="lazy" />
               </a>
-              
-              <a 
-                href="https://github.com/Yxmura/renderdragon" 
-                target="_blank" 
+
+              <a
+                href="https://github.com/Yxmura/renderdragon"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
                 aria-label="GitHub"
@@ -121,7 +121,7 @@ const Footer = () => {
               </a>
             </div>
           </div>
-          
+
           <div>
             <h3 className="text-lg font-vt323 mb-4">Legal</h3>
             <ul className="space-y-2">
@@ -136,12 +136,18 @@ const Footer = () => {
                 </Link>
               </li>
             </ul>
-            
+
             <h3 className="text-lg font-vt323 mb-4 mt-6">Navigate</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-white/70 hover:text-white transition-colors">
                   Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/blogs" className="text-white/70 hover:text-white transition-colors flex items-center">
+                  <span>Blogs</span>
+                  <span className="ml-1 px-1.5 py-0.5 bg-cow-purple text-white text-[10px] rounded align-middle">NEW</span>
                 </Link>
               </li>
               <li>
@@ -156,11 +162,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/guides" className="text-white/70 hover:text-white transition-colors">
-                  Guides
-                </Link>
-              </li>
-              <li>
                 <Link to="/utilities" className="text-white/70 hover:text-white transition-colors">
                   Utilities
                 </Link>
@@ -172,7 +173,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="text-lg font-vt323 mb-4">Tools</h3>
             <ul className="space-y-2">
@@ -221,17 +222,17 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        
+
         <div className="pt-8 mt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
             <Link to="/faq" className="text-white/70 hover:text-white transition-colors text-sm relative">
               FAQ
             </Link>
-            
+
             <Link to="/tos" className="text-white/70 hover:text-white transition-colors text-sm">
               Terms
             </Link>
-            
+
             <Link to="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">
               Privacy
             </Link>
@@ -253,7 +254,7 @@ const Footer = () => {
               &copy; {currentYear} RenderDragon. All rights reserved.
             </p>
 
-            <button 
+            <button
               ref={cartButtonRef}
               onClick={handleCartClick}
               className="ml-4 p-2 bg-white/10 hover:bg-white/20 rounded-md transition-all duration-1000"

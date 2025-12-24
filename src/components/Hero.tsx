@@ -95,19 +95,6 @@ const Hero = () => {
         damping: 10,
       },
     },
-    pulse: {
-      scale: [1, 1.05, 1],
-      boxShadow: [
-        "0 0 0 rgba(155, 135, 245, 0.4)",
-        "0 0 10px rgba(155, 135, 245, 0.6)",
-        "0 0 0 rgba(155, 135, 245, 0.4)",
-      ],
-      transition: {
-        duration: 2,
-        repeat: Number.POSITIVE_INFINITY,
-        repeatType: 'mirror' as const,
-      },
-    },
   }
 
   return (
@@ -179,7 +166,6 @@ const Hero = () => {
           style={{
             fontFamily: "'Press Start 2P', cursive",
             lineHeight: "1.1",
-            textShadow: "0 0 12px rgba(155, 135, 245, 0.6), 0 0 24px rgba(155, 135, 245, 0.4)",
           }}
           variants={titleVariants}
         >
@@ -189,14 +175,6 @@ const Hero = () => {
           <motion.span
             className="text-cow-purple inline-block"
             variants={itemVariants}
-            whileInView={{
-              textShadow: [
-                "0 0 12px rgba(155, 135, 245, 0.6), 0 0 24px rgba(155, 135, 245, 0.4)",
-                "0 0 20px rgba(155, 135, 245, 0.8), 0 0 40px rgba(155, 135, 245, 0.6)",
-                "0 0 12px rgba(155, 135, 245, 0.6), 0 0 24px rgba(155, 135, 245, 0.4)",
-              ],
-              transition: { duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-            }}
           >
             Creation Potential
           </motion.span>
@@ -258,7 +236,7 @@ const Hero = () => {
             className="text-xl text-foreground/70 dark:text-white/70 bg-cow-purple/10 px-4 py-2 rounded pixel-corners inline-block"
             variants={badgeVariants}
             initial="hidden"
-            animate={["visible", "pulse"]}
+            animate="visible"
           >
             100% Free
           </motion.span>

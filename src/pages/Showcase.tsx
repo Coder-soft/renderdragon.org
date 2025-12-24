@@ -26,6 +26,7 @@ type NewAsset = { url: string; kind: ShowcaseAsset["kind"]; provider: "uploadthi
 
 const useProfiles = (userIds: string[]) => {
   const [profiles, setProfiles] = useState<Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }>>({});
+  const userIdsKey = JSON.stringify(userIds.slice().sort());
   useEffect(() => {
     const unique = Array.from(new Set(userIds)).filter(Boolean);
     if (unique.length === 0) return;
@@ -33,11 +34,12 @@ const useProfiles = (userIds: string[]) => {
       const { data, error } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("id", unique);
       if (!error && data) {
         const map: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
-        for (const row of data as any[]) map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: (row as any).avatar_url, username: (row as any).username };
+        for (const row of data as Array<{ id: string; display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }>) map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
         setProfiles(map);
       }
     })();
-  }, [JSON.stringify(userIds.sort())]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userIdsKey]);
   return profiles;
 };
 
@@ -85,44 +87,44 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
             const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(a.url);
             const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(a.url);
             const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(a.url);
-            return isImage || isVideo || isAudio || ["image","video","audio"].includes(a.kind);
+            return isImage || isVideo || isAudio || ["image", "video", "audio"].includes(a.kind);
           }).map((a) => {
             const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(a.url);
             const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(a.url);
             const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(a.url);
-            const baseKind = ["image","video","audio"].includes(a.kind) ? a.kind : "file";
+            const baseKind = ["image", "video", "audio"].includes(a.kind) ? a.kind : "file";
             const effectiveKind = baseKind === "file" ? (isImage ? "image" : isVideo ? "video" : isAudio ? "audio" : "file") : baseKind as typeof a.kind;
             return (
-            <div
-              key={a.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => {
-                setPreviewAsset(a);
-                setPreviewOpen(true);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
+              <div
+                key={a.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => {
                   setPreviewAsset(a);
                   setPreviewOpen(true);
-                }
-              }}
-              className="group pixel-corners overflow-hidden border border-white/10 cursor-zoom-in transition-transform duration-200 hover:scale-[1.015] hover:border-white/20 h-56 bg-background/40"
-            
-            >
-              {(effectiveKind === "image") && (
-                <img src={a.url} alt="showcase" className="w-full h-full object-cover" />
-              )}
-              {(effectiveKind === "video") && (
-                <video src={a.url} controls className="w-full h-full object-cover" />
-              )}
-              {(effectiveKind === "audio") && (
-                <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Audio</div>
-              )}
-              {(effectiveKind === "file") && (
-                <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Unsupported</div>
-              )}
-            </div>
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setPreviewAsset(a);
+                    setPreviewOpen(true);
+                  }
+                }}
+                className="group pixel-corners overflow-hidden border border-white/10 cursor-zoom-in transition-transform duration-200 hover:scale-[1.015] hover:border-white/20 h-56 bg-background/40"
+
+              >
+                {(effectiveKind === "image") && (
+                  <img src={a.url} alt="showcase" className="w-full h-full object-cover" />
+                )}
+                {(effectiveKind === "video") && (
+                  <video src={a.url} controls className="w-full h-full object-cover" />
+                )}
+                {(effectiveKind === "audio") && (
+                  <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Audio</div>
+                )}
+                {(effectiveKind === "file") && (
+                  <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Unsupported</div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -140,7 +142,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
               const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(url);
               const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(url);
               const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(url);
-              const baseKind = ["image","video","audio"].includes(previewAsset.kind) ? previewAsset.kind : "file";
+              const baseKind = ["image", "video", "audio"].includes(previewAsset.kind) ? previewAsset.kind : "file";
               const kind = baseKind === "file" ? (isImage ? "image" : isVideo ? "video" : isAudio ? "audio" : "file") : baseKind;
               if (kind === "image") return <img src={url} alt="preview" className="max-h-[80vh] w-auto h-auto object-contain" />;
               if (kind === "video") return <video src={url} controls autoPlay className="max-h-[80vh] w-auto h-auto object-contain" />;
@@ -220,7 +222,7 @@ const ShowcasePage: React.FC = () => {
         const map: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
         if (userIds.length) {
           const { data } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("id", userIds);
-          for (const row of (data || []) as any[]) map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: (row as any).avatar_url, username: (row as any).username };
+          for (const row of (data || []) as Array<{ id: string; display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }>) map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
         }
         return map;
       })();
@@ -237,6 +239,7 @@ const ShowcasePage: React.FC = () => {
 
   useEffect(() => {
     void load(undefined, tagFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagFilter]);
 
   const onAddExternalField = () => setExternalLinks((prev) => [...prev, ""]);
@@ -290,7 +293,7 @@ const ShowcasePage: React.FC = () => {
                 className="pl-9 bg-background/60"
               />
             </div>
-            <Select value={tagFilter} onValueChange={(v) => setTagFilter(v as any)}>
+            <Select value={tagFilter} onValueChange={(v) => setTagFilter(v as ShowcaseTag | "All")}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Filter by tag" />
               </SelectTrigger>
@@ -377,10 +380,10 @@ const ShowcasePage: React.FC = () => {
                           const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(name);
                           const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(name);
                           const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(name);
-                          if (!(isImage || isVideo || isAudio)) return null as any;
+                          if (!(isImage || isVideo || isAudio)) return null as NewAsset | null;
                           const kind = isImage ? ("image" as const) : isVideo ? ("video" as const) : ("audio" as const);
                           const url = (f.ufsUrl && typeof f.ufsUrl === 'string') ? f.ufsUrl : (f.url ?? "");
-                          if (!url) return null as any;
+                          if (!url) return null as NewAsset | null;
                           return { url, kind, provider: "uploadthing" } as const;
                         }).filter((x): x is NewAsset => Boolean(x));
                         setUploaded((prev) => [...prev, ...mapped]);
@@ -396,7 +399,8 @@ const ShowcasePage: React.FC = () => {
                               const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(name);
                               const url = (f.ufsUrl && typeof f.ufsUrl === 'string') ? f.ufsUrl : (f.url ?? "");
                               if (isImage || isVideo || isAudio) {
-                                next[idx] = { ...next[idx], status: 'done', url, kind: (isImage ? 'image' : isVideo ? 'video' : 'audio') } as any;
+                                const mediaKind: 'image' | 'video' | 'audio' = isImage ? 'image' : isVideo ? 'video' : 'audio';
+                                next[idx] = { ...next[idx], status: 'done' as const, url, kind: mediaKind };
                               } else {
                                 // remove unsupported item from queue
                                 next.splice(idx, 1);

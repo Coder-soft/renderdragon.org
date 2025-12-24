@@ -16,7 +16,6 @@ import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 import DonateButton from '@/components/DonateButton';
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const ResourceDetailDialog = lazy(() => import('@/components/resources/ResourceDetailDialog'));
 
@@ -30,10 +29,7 @@ const ResourcesHub = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [uploaderOpen, setUploaderOpen] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [description, setDescription] = useState<string>("");
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+
 
   const {
     resources,
@@ -56,6 +52,7 @@ const ResourcesHub = () => {
     handleSortOrderChange,
     handleSearch,
     handleDownload,
+    availableSubcategories,
   } = useResources();
 
   const { downloadCounts } = useDownloadCounts();
@@ -75,7 +72,7 @@ const ResourcesHub = () => {
 
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('showFavorites', handleShowFavorites);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('showFavorites', handleShowFavorites);
@@ -126,7 +123,7 @@ const ResourcesHub = () => {
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -136,7 +133,7 @@ const ResourcesHub = () => {
               <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
             </motion.div>
 
-            {/* Submit action is now in filters toolbar after Presets */}
+
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -169,6 +166,7 @@ const ResourcesHub = () => {
                       searchQuery={searchQuery}
                       selectedCategory={selectedCategory}
                       selectedSubcategory={selectedSubcategory}
+                      availableSubcategories={availableSubcategories}
                       onSearch={handleSearch}
                       onClearSearch={handleClearSearch}
                       onSearchSubmit={handleSearchSubmit}
@@ -178,8 +176,14 @@ const ResourcesHub = () => {
                       onSortOrderChange={handleSortOrderChange}
                       isMobile={isMobile}
                       inputRef={inputRef}
-                      onOpenSubmit={() => setUploaderOpen(true)}
+
                     />
+
+                    {selectedCategory === 'minecraft-icons' && (
+                      <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
+                        Powered by Hamburger API
+                      </p>
+                    )}
 
                     <ResourcesList
                       resources={resources}
@@ -218,110 +222,13 @@ const ResourcesHub = () => {
         />
       </Suspense>
 
-      <AuthDialog 
-        open={authDialogOpen} 
-        onOpenChange={setAuthDialogOpen} 
+      <AuthDialog
+        open={authDialogOpen}
+        onOpenChange={setAuthDialogOpen}
       />
 
 
-      {/* Public API Uploader Dialog */}
-      <Dialog open={uploaderOpen} onOpenChange={setUploaderOpen}>
-        <DialogContent className="sm:max-w-lg pixel-corners">
-          <DialogHeader>
-            <DialogTitle className="font-vt323 text-2xl">Public API Uploader</DialogTitle>
-            <DialogDescription className="font-vt323">
-              Upload files directly to the Renderdragon public API. Optionally include a description that will be sent to our Discord embed.
-            </DialogDescription>
-          </DialogHeader>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-2 font-vt323 text-lg">Select files</label>
-              <input
-                type="file"
-                multiple
-                onChange={(e) => setSelectedFiles(e.target.files)}
-                className="w-full pixel-input font-vt323"
-                accept="audio/mpeg,audio/wav,video/mp4,video/quicktime,.prfpset,.drfx,.settings,.preset,image/jpeg,image/png,image/webp,.jpeg,.jpg,.png,.webp,font/ttf,font/otf,font/woff,font/woff2,.ttf,.otf,.woff,.woff2"
-              />
-              <p className="mt-2 text-xs text-muted-foreground">
-                Supported: mp3, wav, mp4, mov, prfpset, drfx, settings, preset, jpeg/jpg, png, webp, ttf, otf, woff, woff2
-              </p>
-            </div>
-
-            <div>
-              <label className="block mb-2 font-vt323 text-lg">Description (optional)</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={1024}
-                placeholder="Describe your upload (max 1024 chars)"
-                className="w-full h-28 pixel-input font-vt323 resize-vertical"
-              />
-              <div className="text-right text-xs text-muted-foreground mt-1">{description.length}/1024</div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <Button
-                variant="outline"
-                onClick={() => setUploaderOpen(false)}
-                className="font-vt323 pixel-corners"
-                disabled={isUploading}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={async () => {
-                  if (!selectedFiles || selectedFiles.length === 0) {
-                    toast.error('Please select at least one file to upload.');
-                    return;
-                  }
-                  try {
-                    setIsUploading(true);
-                    const files = Array.from(selectedFiles);
-                    type UploadResult = { url: string; key: string; name: string; size: number };
-                    const results: UploadResult[] = [];
-                    for (const file of files) {
-                      const form = new FormData();
-                      form.append('file', file);
-                      if (description) form.append('description', description);
-
-                      const res = await fetch('https://submit-renderdragon.vercel.app/api/public-upload', {
-                        method: 'POST',
-                        headers: description ? { 'x-description': description } : undefined,
-                        body: form,
-                      });
-
-                      if (!res.ok) {
-                        const text = await res.text();
-                        throw new Error(text || 'Upload failed');
-                      }
-                      const json: UploadResult = await res.json();
-                      results.push(json);
-                    }
-
-                    toast.success('Upload complete', { description: `Uploaded ${results.length} file(s).` });
-                    console.log(results);
-                    setUploaderOpen(false);
-                    setSelectedFiles(null);
-                    setDescription('');
-                  } catch (err: unknown) {
-                    console.error(err);
-                    const msg = err instanceof Error ? err.message : 'Something went wrong.';
-                    toast.error('Upload failed', { description: msg });
-                  } finally {
-                    setIsUploading(false);
-                  }
-                }}
-                className="pixel-btn-primary font-vt323"
-                disabled={isUploading}
-              >
-                {isUploading ? 'Uploading…' : 'Upload'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <AnimatePresence>
         {showScrollTop && (

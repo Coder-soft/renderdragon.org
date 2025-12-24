@@ -22,7 +22,7 @@ const Index = () => {
         href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
       }
     ];
-    
+
     fontLinks.forEach(font => {
       const linkElement = document.createElement('link');
       linkElement.rel = font.rel;
@@ -67,7 +67,7 @@ const Index = () => {
         >
           <Hero />
         </motion.div>
-        
+
         <motion.div {...fadeInUp}>
           <FeaturedResources />
         </motion.div>
@@ -86,7 +86,7 @@ const Index = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <Partnership/>
+          <Partnership />
         </motion.div>
       </main>
       <Footer />

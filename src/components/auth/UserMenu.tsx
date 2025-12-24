@@ -104,6 +104,12 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="cursor-pointer">
+          <Link to="/account/profile">
+            <IconUser className="mr-2 h-4 w-4" />
+            <span>Edit Profile</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link to="/account">
             <IconSettings className="mr-2 h-4 w-4" />
             <span>Account Settings</span>

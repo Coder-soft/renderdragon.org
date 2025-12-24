@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,11 +6,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import VercelAnalytics from "@/components/VercelAnalytics";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider } from "@/providers/AuthProvider";
 import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { IconLoader2 } from "@tabler/icons-react";
 
+// Lazy Pages
 const Index = lazy(() => import("@/pages/Index"));
 const ResourcesHub = lazy(() => import("@/pages/ResourcesHub"));
 const Contact = lazy(() => import("@/pages/Contact"));
@@ -25,6 +26,9 @@ const PlayerRenderer = lazy(() => import("@/pages/PlayerRenderer"));
 const Renderbot = lazy(() => import("@/pages/Renderbot"));
 const Account = lazy(() => import("@/pages/Account"));
 const Admin = lazy(() => import("@/pages/Admin"));
+const BlogEditor = lazy(() => import("@/components/admin/BlogEditor"));
+const ProfileEditor = lazy(() => import("@/components/profile/ProfileEditor"));
+
 const FAQ = lazy(() => import("@/pages/FAQ"));
 const TOS = lazy(() => import("@/pages/TOS"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
@@ -36,8 +40,8 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const Showcase = lazy(() => import("@/pages/Showcase"));
 const Changelogs = lazy(() => import("@/pages/Changelogs"));
 const Profile = lazy(() => import("@/pages/Profile"));
-
-const queryClient = new QueryClient();
+const Blogs = lazy(() => import("@/pages/Blogs"));
+const BlogView = lazy(() => import("@/pages/BlogView"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
@@ -48,6 +52,20 @@ const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
+
+  // Global Theme Initialization
+  const [theme] = useState(() => {
+    return localStorage.getItem('theme') as 'light' | 'dark' ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -86,7 +104,22 @@ const App = () => {
                     />
                     <Route path="/renderbot" element={<Renderbot />} />
                     <Route path="/account" element={<Account />} />
+                    <Route path="/account/profile" element={
+                      <div className="min-h-screen pt-24 pb-16 px-4 container mx-auto cow-grid-bg bg-background text-foreground">
+                        <ProfileEditor />
+                      </div>
+                    } />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin/blogs/new" element={
+                      <div className="min-h-screen pt-24 pb-16 px-4 container mx-auto">
+                        <BlogEditor />
+                      </div>
+                    } />
+                    <Route path="/admin/blogs/:id" element={
+                      <div className="min-h-screen pt-24 pb-16 px-4 container mx-auto">
+                        <BlogEditor />
+                      </div>
+                    } />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/tos" element={<TOS />} />
                     <Route path="/privacy" element={<Privacy />} />
@@ -100,6 +133,8 @@ const App = () => {
                     <Route path="/showcase" element={<Showcase />} />
                     <Route path="/u/:username" element={<Profile />} />
                     <Route path="/changelogs" element={<Changelogs />} />
+                    <Route path="/blogs" element={<Blogs />} />
+                    <Route path="/blogs/:slug" element={<BlogView />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

@@ -24,7 +24,7 @@ type ResourceFiltersProps = {
   onSortOrderChange: (order: string) => void;
   isMobile: boolean;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
-  onOpenSubmit: () => void;
+  availableSubcategories: string[];
 };
 
 const ResourceFilters = ({
@@ -36,12 +36,13 @@ const ResourceFilters = ({
   onSearchSubmit,
   onCategoryChange,
   onSubcategoryChange,
+  onSortOrderChange,
   isMobile,
   inputRef,
-  onOpenSubmit
+  availableSubcategories,
 }: ResourceFiltersProps) => {
   return (
-    <div className="mb-8 flex flex-col md:flex-row gap-4">
+    <div className={`mb-8 flex gap-4 ${isMobile ? 'flex-row items-center' : 'flex-col'}`}>
       <div className="relative flex-grow">
         <form onSubmit={(e) => onSearchSubmit(e)} className="relative w-full">
           <Input
@@ -54,12 +55,12 @@ const ResourceFilters = ({
             }}
             className="pixel-input w-full pr-10"
           />
-          
+
           {searchQuery && (
-            <Button 
-              type="button" 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
               className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
               onClick={onClearSearch}
             >
@@ -67,44 +68,44 @@ const ResourceFilters = ({
               <span className="sr-only">Clear search</span>
             </Button>
           )}
-          
+
           <Button type="submit" className="sr-only">Search</Button>
         </form>
       </div>
 
       {isMobile ? (
-        <MobileFilters 
+        <MobileFilters
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
+          availableSubcategories={availableSubcategories}
           onCategoryChange={onCategoryChange}
           onSubcategoryChange={onSubcategoryChange}
-          onOpenSubmit={onOpenSubmit}
         />
       ) : (
-        <DesktopFilters 
+        <DesktopFilters
           selectedCategory={selectedCategory}
           selectedSubcategory={selectedSubcategory}
+          availableSubcategories={availableSubcategories}
           onCategoryChange={onCategoryChange}
           onSubcategoryChange={onSubcategoryChange}
-          onOpenSubmit={onOpenSubmit}
         />
       )}
     </div>
   );
 };
 
-const MobileFilters = ({ 
-  selectedCategory, 
+const MobileFilters = ({
+  selectedCategory,
   selectedSubcategory,
+  availableSubcategories,
   onCategoryChange,
   onSubcategoryChange,
-  onOpenSubmit
 }: {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
+  availableSubcategories: string[];
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
-  onOpenSubmit: () => void;
 }) => {
   return (
     <Sheet>
@@ -176,13 +177,14 @@ const MobileFilters = ({
               Presets
             </Button>
             <Button
-              variant="default"
-              onClick={onOpenSubmit}
-              className="justify-start pixel-corners font-vt323"
+              variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
+              onClick={() => onCategoryChange('minecraft-icons')}
+              className="justify-start pixel-corners"
             >
-              Submit your resources
+              <img src="/assets/mci_icon.png" className="h-4 w-4 mr-2" alt="MCI" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+              Minecraft Icons
             </Button>
-            
+
 
             {selectedCategory === 'presets' && (
               <div className="mt-2 ml-2">
@@ -201,6 +203,25 @@ const MobileFilters = ({
                 </Select>
               </div>
             )}
+
+            {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+              <div className="mt-2 ml-2">
+                <Select
+                  value={selectedSubcategory || "all"}
+                  onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select icon type" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="all">All Icons</SelectItem>
+                    {availableSubcategories.map(sub => (
+                      <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         </div>
       </SheetContent>
@@ -208,18 +229,18 @@ const MobileFilters = ({
   );
 };
 
-const DesktopFilters = ({ 
-  selectedCategory, 
+const DesktopFilters = ({
+  selectedCategory,
   selectedSubcategory,
+  availableSubcategories,
   onCategoryChange,
   onSubcategoryChange,
-  onOpenSubmit
 }: {
   selectedCategory: string | null;
   selectedSubcategory: string | null;
+  availableSubcategories: string[];
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
-  onOpenSubmit: () => void;
 }) => {
   return (
     <div className="flex flex-wrap gap-2">
@@ -280,14 +301,15 @@ const DesktopFilters = ({
         Presets
       </Button>
       <Button
-        variant="default"
+        variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
         size="sm"
-        onClick={onOpenSubmit}
-        className="h-10 pixel-corners font-vt323"
+        onClick={() => onCategoryChange('minecraft-icons')}
+        className="h-10 pixel-corners"
       >
-        Submit your resources
+        Minecraft Icons
       </Button>
-      
+
+
 
       {selectedCategory === 'presets' && (
         <Select
@@ -301,6 +323,23 @@ const DesktopFilters = ({
             <SelectItem value="all">All Presets</SelectItem>
             <SelectItem value="davinci">Davinci Resolve</SelectItem>
             <SelectItem value="adobe">Adobe Products</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+
+      {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+        <Select
+          value={selectedSubcategory || "all"}
+          onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+        >
+          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+            <SelectValue placeholder="Select icon type" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px]">
+            <SelectItem value="all">All Icons</SelectItem>
+            {availableSubcategories.map(sub => (
+              <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       )}
