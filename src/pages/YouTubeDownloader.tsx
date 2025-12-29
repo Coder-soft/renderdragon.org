@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import DonateButton from '@/components/DonateButton';
+
 import { IconDownload, IconAlertCircle, IconRefresh, IconBrandYoutube, IconInfoCircle } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -423,7 +423,7 @@ const YouTubeDownloader: React.FC = () => {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };

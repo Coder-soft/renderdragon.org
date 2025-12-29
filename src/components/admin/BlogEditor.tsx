@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { IconLoader2, IconDeviceFloppy, IconEye, IconArrowLeft } from "@tabler/icons-react";
 import ReactMarkdown from "react-markdown";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const slugify = (text: string) => {
@@ -24,9 +24,19 @@ const slugify = (text: string) => {
 export default function BlogEditor() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+
+    // Admin Authorization Check
+    const authorizedEmails = ['yamura@duck.com', 'theckie@protonmail.com', 'vovoplaygame3@gmail.com'];
+    const isAuthorized = user && authorizedEmails.includes(user?.email || '');
+
+    if (authLoading) return <div className="p-10 flex justify-center"><IconLoader2 className="animate-spin" /></div>;
+
+    if (!user || !isAuthorized) {
+        return <Navigate to="/" replace />;
+    }
 
     const [title, setTitle] = useState("");
     const [slug, setSlug] = useState("");

@@ -3,13 +3,23 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import VercelAnalytics from "@/components/VercelAnalytics";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { IconLoader2 } from "@tabler/icons-react";
+import DonateButton from "@/components/DonateButton";
+
+// Global components wrapper to use hooks like useLocation
+const GlobalComponents = () => {
+  const location = useLocation();
+  const hideDonateButton = location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/account');
+
+  return !hideDonateButton ? <DonateButton /> : null;
+};
 
 // Lazy Pages
 const Index = lazy(() => import("@/pages/Index"));
@@ -138,6 +148,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
+                <GlobalComponents />
               </BrowserRouter>
               <Toaster />
               <Sonner />

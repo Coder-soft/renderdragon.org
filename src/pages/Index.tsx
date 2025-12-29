@@ -8,7 +8,7 @@ import PopularTools from '@/components/PopularTools';
 import Testimonials from '@/components/Testimonials';
 import Partnership from '@/components/Partnership';
 import Footer from '@/components/Footer';
-import DonateButton from '@/components/DonateButton';
+
 
 const Index = () => {
   useEffect(() => {
@@ -90,7 +90,7 @@ const Index = () => {
         </motion.div>
       </main>
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };

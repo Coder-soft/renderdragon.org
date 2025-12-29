@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { IconHome, IconCompass, IconTool, IconPick } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import DonateButton from "@/components/DonateButton";
+
 
 const NotFound = () => {
   useEffect(() => {
@@ -223,7 +223,7 @@ const NotFound = () => {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };

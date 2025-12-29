@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import DonateButton from "@/components/DonateButton";
+
 import { Helmet } from "react-helmet-async";
 
 interface TeamMember {
@@ -289,7 +289,7 @@ const Contact = () => {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };

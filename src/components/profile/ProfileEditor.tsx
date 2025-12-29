@@ -229,6 +229,10 @@ const ProfileEditor: React.FC = () => {
     };
 
     const saveProfile = async () => {
+        if (!user) {
+            toast.error('Not signed in');
+            return;
+        }
         setSaving(true);
         try {
             const { error } = await supabase
@@ -239,12 +243,12 @@ const ProfileEditor: React.FC = () => {
                     theme_config: themeConfig as any,
                     updated_at: new Date().toISOString(),
                 })
-                .eq('id', user!.id);
+                .eq('id', user.id);
 
             if (error) throw error;
 
             // Clear draft on successful save
-            localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
+            localStorage.removeItem(`${DRAFT_KEY}_${user.id}`);
             toast.success('Profile published successfully!');
         } catch (error: any) {
             toast.error('Failed to save profile');
@@ -255,8 +259,9 @@ const ProfileEditor: React.FC = () => {
     };
 
     const discardDraft = () => {
+        if (!user) return;
         if (!window.confirm("Are you sure you want to discard your unsaved changes and reload from the server?")) return;
-        localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
+        localStorage.removeItem(`${DRAFT_KEY}_${user.id}`);
         loadProfile();
     };
 

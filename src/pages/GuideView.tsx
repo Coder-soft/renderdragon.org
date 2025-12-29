@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import DonateButton from "@/components/DonateButton";
+
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import { IconArrowLeft, IconList, IconLoader2 } from "@tabler/icons-react";
@@ -212,7 +212,7 @@ export default function GuideView() {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 }

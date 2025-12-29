@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import DonateButton from "@/components/DonateButton";
+
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 
@@ -213,7 +213,7 @@ const GuidesPage = () => {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };
