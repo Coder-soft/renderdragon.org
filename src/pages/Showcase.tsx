@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useAuth } from "@/hooks/useAuth";
-import { UploadButton } from "@/components/UploadThingClient";
 import { createShowcase, listShowcases, type Showcase, type ShowcaseAsset, type ShowcaseTag } from "@/lib/showcases";
 import { formatDistanceToNow } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,27 +21,6 @@ import Footer from "@/components/Footer";
 import AuthDialog from "@/components/auth/AuthDialog";
 
 type ShowcaseWithAssets = Showcase & { assets: ShowcaseAsset[]; profile?: { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null } };
-
-type NewAsset = { url: string; kind: ShowcaseAsset["kind"]; provider: "uploadthing" | "external" };
-
-const useProfiles = (userIds: string[]) => {
-  const [profiles, setProfiles] = useState<Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }>>({});
-  const userIdsKey = JSON.stringify(userIds.slice().sort());
-  useEffect(() => {
-    const unique = Array.from(new Set(userIds)).filter(Boolean);
-    if (unique.length === 0) return;
-    (async () => {
-      const { data, error } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("id", unique);
-      if (!error && data) {
-        const map: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
-        for (const row of data as Array<{ id: string; display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }>) map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
-        setProfiles(map);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userIdsKey]);
-  return profiles;
-};
 
 const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
   const name = item.profile?.display_name || item.profile?.email || "Anonymous";
@@ -197,6 +176,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
 
 const ShowcasePage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<ShowcaseWithAssets[]>([]);
@@ -207,25 +187,37 @@ const ShowcasePage: React.FC = () => {
   const [authOpen, setAuthOpen] = useState(false);
 
   const [desc, setDesc] = useState("");
-  const [uploaded, setUploaded] = useState<NewAsset[]>([]);
-  const [externalLinks, setExternalLinks] = useState<string[]>([""]);
-  const [uploadQueue, setUploadQueue] = useState<Array<{ id: string; name: string; status: 'uploading' | 'done'; kind: NewAsset['kind']; url?: string }>>([]);
-  const [currentPreviewIdx, setCurrentPreviewIdx] = useState(0);
-  const hasPendingUploads = useMemo(() => uploadQueue.some((q) => q.status === 'uploading'), [uploadQueue]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
 
   const load = async (q?: string, t?: ShowcaseTag | "All") => {
     setLoading(true);
     try {
       const { showcases, assetsByShowcase } = await listShowcases(q, (t ?? tagFilter) !== "All" ? (t ?? tagFilter) as ShowcaseTag : undefined);
-      const userIds = showcases.map((s) => s.user_id);
+      
+      const legacyIds = showcases.filter(s => !s.id.startsWith('new-')).map(s => s.user_id);
+      const newEmails = showcases.filter(s => s.id.startsWith('new-')).map(s => s.user_id);
+
       const profiles = await (async () => {
         const map: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
-        if (userIds.length) {
-          const { data } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("id", userIds);
-          for (const row of (data || []) as Array<{ id: string; display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }>) map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
+        
+        if (legacyIds.length > 0) {
+          const { data } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("id", legacyIds);
+          for (const row of (data || []) as any[]) {
+            map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
+          }
         }
+        
+        if (newEmails.length > 0) {
+          const { data } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("email", newEmails);
+          for (const row of (data || []) as any[]) {
+            map[row.email] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
+          }
+        }
+        
         return map;
       })();
+
       const merged: ShowcaseWithAssets[] = showcases.map((s) => ({
         ...s,
         assets: assetsByShowcase.get(s.id) || [],
@@ -242,30 +234,67 @@ const ShowcasePage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagFilter]);
 
-  const onAddExternalField = () => setExternalLinks((prev) => [...prev, ""]);
-  const onChangeExternal = (idx: number, val: string) => setExternalLinks((prev) => prev.map((v, i) => (i === idx ? val : v)));
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    
+    const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(file.name);
+    const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(file.name);
+    const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(file.name);
+    
+    if (!(isImage || isVideo || isAudio)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid file type",
+        description: "Please upload an image, video, or audio file.",
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+    setFilePreview(URL.createObjectURL(file));
+  };
 
   const onCreate = async () => {
-    if (!user || submitting || !tag) return;
-    const assets: NewAsset[] = [...uploaded];
-    for (const link of externalLinks.map((l) => l.trim()).filter(Boolean)) {
-      const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(link);
-      const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(link);
-      const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(link);
-      if (!(isImage || isVideo || isAudio)) continue;
-      const kind = isImage ? ("image" as const) : isVideo ? ("video" as const) : ("audio" as const);
-      assets.push({ url: link, kind, provider: "external" });
+    if (!user || submitting || !tag || !selectedFile) {
+      if (!selectedFile) {
+        toast({
+          variant: "destructive",
+          title: "File required",
+          description: "Please select a file to upload.",
+        });
+      }
+      return;
     }
-    if (assets.length === 0 && !desc.trim()) return;
+    
     try {
       setSubmitting(true);
-      await createShowcase({ description: desc.trim(), tag, assets });
+      await createShowcase({ 
+        description: desc.trim(), 
+        tag, 
+        file: selectedFile 
+      });
+      
+      toast({
+        title: "Success",
+        description: "Your showcase has been created!",
+      });
+
       setDesc("");
-      setUploaded([]);
-      setUploadQueue([]);
-      setCurrentPreviewIdx(0);
+      setSelectedFile(null);
+      setFilePreview(null);
       setOpen(false);
       await load();
+    } catch (error: any) {
+      console.error("Failed to create showcase:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to create showcase. Please try again.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -324,15 +353,15 @@ const ShowcasePage: React.FC = () => {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Description</Label>
+                    <Label>Message</Label>
                     <Textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Say something about your art..." />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Tag</Label>
+                    <Label>Category</Label>
                     <Select value={tag ?? undefined} onValueChange={(v) => setTag(v as ShowcaseTag)}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a tag (required)" />
+                        <SelectValue placeholder="Select a category (required)" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Images">Images</SelectItem>
@@ -343,158 +372,58 @@ const ShowcasePage: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Upload files</Label>
-                    <UploadButton
-                      endpoint={(r) => r.mediaUploader}
-                      onUploadBegin={(arg) => {
-                        // Coerce arg to an array of file names regardless of UploadThing version shape
-                        const names = (() => {
-                          if (Array.isArray(arg)) return arg.filter((n): n is string => typeof n === 'string');
-                          if (typeof arg === 'string') return [arg];
-                          if (arg && typeof arg === 'object') {
-                            const maybe = (arg as { files?: unknown }).files;
-                            if (Array.isArray(maybe)) return maybe.filter((n): n is string => typeof n === 'string');
-                          }
-                          return [] as string[];
-                        })();
-                        const additions = names.map((name, i) => {
-                          const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(name);
-                          const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(name);
-                          const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(name);
-                          if (!(isImage || isVideo || isAudio)) return null;
-                          const kind = isImage ? ("image" as const) : isVideo ? ("video" as const) : ("audio" as const);
-                          return { id: `pending-${Date.now()}-${i}`, name, status: 'uploading' as const, kind };
-                        }).filter(Boolean) as Array<{ id: string; name: string; status: 'uploading'; kind: 'image' | 'video' | 'audio' }>;
-                        setUploadQueue((prev) => {
-                          const next = [...prev, ...additions];
-                          if (prev.length === 0 && additions.length > 0) setCurrentPreviewIdx(0);
-                          return next;
-                        });
-                      }}
-                      onClientUploadComplete={(files) => {
-                        type UploadedFile = { name?: string; url?: string; ufsUrl?: string };
-                        if (!files) return;
-                        const arr: UploadedFile[] = Array.isArray(files) ? (files as UploadedFile[]) : [files as UploadedFile];
-                        const mapped: NewAsset[] = arr.map((f) => {
-                          const name = f.name ?? "";
-                          const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(name);
-                          const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(name);
-                          const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(name);
-                          if (!(isImage || isVideo || isAudio)) return null as NewAsset | null;
-                          const kind = isImage ? ("image" as const) : isVideo ? ("video" as const) : ("audio" as const);
-                          const url = (f.ufsUrl && typeof f.ufsUrl === 'string') ? f.ufsUrl : (f.url ?? "");
-                          if (!url) return null as NewAsset | null;
-                          return { url, kind, provider: "uploadthing" } as const;
-                        }).filter((x): x is NewAsset => Boolean(x));
-                        setUploaded((prev) => [...prev, ...mapped]);
-                        // Mark queue items as done and attach urls
-                        setUploadQueue((prev) => {
-                          const next = [...prev];
-                          for (const f of arr) {
-                            const idx = next.findIndex((q) => q.name === (f.name ?? q.name) && q.status === 'uploading');
-                            if (idx >= 0) {
-                              const name = f.name ?? next[idx].name;
-                              const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(name);
-                              const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(name);
-                              const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(name);
-                              const url = (f.ufsUrl && typeof f.ufsUrl === 'string') ? f.ufsUrl : (f.url ?? "");
-                              if (isImage || isVideo || isAudio) {
-                                const mediaKind: 'image' | 'video' | 'audio' = isImage ? 'image' : isVideo ? 'video' : 'audio';
-                                next[idx] = { ...next[idx], status: 'done' as const, url, kind: mediaKind };
-                              } else {
-                                // remove unsupported item from queue
-                                next.splice(idx, 1);
-                              }
-                            }
-                          }
-                          return next;
-                        });
-                      }}
-                      onUploadError={(e) => {
-                        console.error(e);
-                      }}
-                      content={{ button: "Choose files", allowedContent: "Images, Videos, Audio" }}
-                      className="ut-button:bg-cow-purple ut-button:pixel-corners"
+                    <Label>Upload file</Label>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*,video/*,audio/*"
+                      className="hidden"
                     />
-                    {(uploadQueue.length > 0 || uploaded.length > 0) && (
+                    <Button
+                      variant="outline"
+                      className="w-full pixel-corners border-dashed border-2 h-20 hover:bg-cow-purple/10 hover:border-cow-purple/50 transition-colors"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        <IconPlus className="h-6 w-6" />
+                        <span className="text-sm">Choose file (Image, Video, Audio)</span>
+                      </div>
+                    </Button>
+                    
+                    {filePreview && (
                       <div className="mt-4">
-                        <div className="relative w-full aspect-video bg-background/40 pixel-corners border border-white/10 flex items-center justify-center">
-                          {(() => {
-                            const all = uploadQueue.map(q => ({ kind: q.kind, url: q.url, status: q.status, name: q.name }))
-                              .concat(uploaded.map(u => ({ kind: u.kind, url: u.url, status: 'done' as const, name: u.url })));
-                            const idx = Math.min(Math.max(currentPreviewIdx, 0), Math.max(all.length - 1, 0));
-                            const item = all[idx];
-                            if (!item) return <div className="text-white/60 text-sm">No selection</div>;
-                            const isFont = item.url ? /\.(ttf|otf|woff2?|ttc)(\?|$)/i.test(item.url) : /\.(ttf|otf|woff2?|ttc)(\?|$)/i.test(item.name);
-                            if (item.status === 'uploading') {
-                              return (
-                                <div className="flex flex-col items-center gap-2 text-white/70">
-                                  <IconLoader2 className="h-6 w-6 animate-spin" />
-                                  <div className="text-xs">Uploading {item.name}</div>
-                                </div>
-                              );
-                            }
-                            if (isFont && item.url) {
-                              const fontFamily = `UploadedFont_${idx}`;
-                              const format = item.url.endsWith('.otf') ? 'opentype' : item.url.match(/\.woff2?$/) ? (item.url.endsWith('.woff2') ? 'woff2' : 'woff') : 'truetype';
-                              return (
-                                <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                                  <style>{`@font-face { font-family: '${fontFamily}'; src: url('${item.url}') format('${format}'); font-weight: normal; font-style: normal; }`}</style>
-                                  <div className="text-3xl" style={{ fontFamily }}>Aa Bb Cc 123 The quick brown fox</div>
-                                  <div className="mt-2 text-xs text-white/60 break-all">{item.url}</div>
-                                </div>
-                              );
-                            }
-                            if (item.kind === 'image' && item.url) return <img src={item.url} alt="preview" className="w-full h-full object-contain" />;
-                            if (item.kind === 'video' && item.url) return <video src={item.url} controls className="w-full h-full object-contain" />;
-                            if (item.kind === 'audio' && item.url) return <audio src={item.url} controls className="w-3/4" />;
-                            return <div className="text-white/70 text-sm">File added</div>;
-                          })()}
-                          {uploadQueue.length + uploaded.length > 1 && (
-                            <>
-                              <button type="button" aria-label="Prev" className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white px-2 py-1 pixel-corners" onClick={() => setCurrentPreviewIdx((i) => Math.max(i - 1, 0))}>{'<'}</button>
-                              <button type="button" aria-label="Next" className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white px-2 py-1 pixel-corners" onClick={() => setCurrentPreviewIdx((i) => i + 1)}>{'>'}</button>
-                            </>
+                        <div className="relative w-full aspect-video bg-background/40 pixel-corners border border-white/10 flex items-center justify-center overflow-hidden">
+                          {selectedFile?.type.startsWith('image/') ? (
+                            <img src={filePreview} alt="preview" className="w-full h-full object-contain" />
+                          ) : selectedFile?.type.startsWith('video/') ? (
+                            <video src={filePreview} controls className="w-full h-full object-contain" />
+                          ) : selectedFile?.type.startsWith('audio/') ? (
+                            <audio src={filePreview} controls className="w-3/4" />
+                          ) : (
+                            <div className="text-white/70 text-sm">{selectedFile?.name}</div>
                           )}
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {uploadQueue.map((q, i) => (
-                            <div key={`q-${i}`} className={`h-16 w-16 pixel-corners border ${currentPreviewIdx === i ? 'border-cow-purple' : 'border-white/10'} bg-background/40 flex items-center justify-center text-[10px] text-white/70`} onClick={() => setCurrentPreviewIdx(i)}>
-                              {q.status === 'uploading' ? <IconLoader2 className="h-4 w-4 animate-spin" /> : q.kind}
-                            </div>
-                          ))}
-                          {uploaded.map((u, i) => (
-                            <div key={`u-${i}`} className={`h-16 w-16 pixel-corners border ${currentPreviewIdx === (uploadQueue.length + i) ? 'border-cow-purple' : 'border-white/10'} bg-background/40 overflow-hidden`} onClick={() => setCurrentPreviewIdx(uploadQueue.length + i)}>
-                              {u.kind === 'image' ? <img src={u.url} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[10px] text-white/70">{u.kind}</div>}
-                            </div>
-                          ))}
                         </div>
                       </div>
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Or paste external links</Label>
-                    <div className="space-y-2">
-                      {externalLinks.map((v, i) => (
-                        <Input key={i} value={v} onChange={(e) => onChangeExternal(i, e.target.value)} placeholder="https://... (image or video URL)" />
-                      ))}
-                    </div>
-                    <div className="flex justify-end">
-                      <Button variant="ghost" onClick={onAddExternalField}>Add another link</Button>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center gap-2 flex-wrap">
-                    {hasPendingUploads ? (
-                      <div className="text-xs text-amber-300/80">Uploads are still in progress. Please wait before publishing.</div>
-                    ) : <div />}
-                    <div className="flex gap-2">
-                      <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                      <Button className="bg-cow-purple hover:bg-cow-purple/90 disabled:opacity-70" onClick={() => void onCreate()} disabled={!user || authLoading || submitting || !tag || hasPendingUploads}>
-                        {submitting ? <IconLoader2 className="h-4 w-4 animate-spin" /> : "Publish"}
-                      </Button>
-                    </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button
+                      onClick={onCreate}
+                      disabled={submitting || !tag || !selectedFile}
+                      className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
+                    >
+                      {submitting ? (
+                        <>
+                          <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Publishing...
+                        </>
+                      ) : (
+                        "Publish Showcase"
+                      )}
+                    </Button>
                   </div>
                 </div>
               </DialogContent>
@@ -509,7 +438,7 @@ const ShowcasePage: React.FC = () => {
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center text-white/70 min-h-[40vh] py-16">
             <div className="text-2xl font-vt323 mb-2">No showcases yet</div>
-            <p className="max-w-md">Be the first to share your art! Click "Create Showcase" to upload images or videos, or paste external links.</p>
+            <p className="max-w-md">Be the first to share your art! Click "Create Showcase" to upload an image, video, or audio file.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 justify-items-center">
