@@ -46,6 +46,20 @@ const utilities: Utility[] = [
     isFree: true
   },
   {
+    name: 'Affinity by Canva',
+    description: 'Free graphic tool, made for every type of graphic task',
+    url: 'https://www.affinity.studio/',
+    category: 'graphic-design',
+    isFree: true
+  },
+  {
+    name: 'Kdenlive',
+    description: 'Free and open source video editor, great Premiere Pro alternative',
+    url: 'https://kdenlive.org/',
+    category: 'editing',
+    isFree: true
+  },
+  {
     name: 'DaVinci Resolve',
     description: 'Professional video editing software with a generous free version',
     url: 'https://www.blackmagicdesign.com/products/davinciresolve/',

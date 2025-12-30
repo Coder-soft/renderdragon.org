@@ -4,13 +4,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // Use a broadly-typed client so we can work with tables created by migrations
 const sb = supabase as SupabaseClient;
 
-export type ShowcaseTag = "Animations" | "Images" | "Music/SFX";
+export type ShowcaseTag = "All";
 
 export type Showcase = {
   id: string;
   user_id: string;
   description: string | null;
-  tag: ShowcaseTag;
   created_at: string;
 };
 
@@ -22,6 +21,7 @@ export type ShowcaseAsset = {
   provider: "uploadthing" | "external";
   position: number;
   created_at: string;
+  filename?: string;
 };
 
 const ASSETS_API_BASE_URL = 'https://assets-api-worker.powernplant101-c6b.workers.dev';
@@ -37,7 +37,7 @@ export interface NewApiAsset {
   url: string;
 }
 
-export async function listShowcases(search?: string, tag?: ShowcaseTag) {
+export async function listShowcases(search?: string) {
   // Fetch only from New Assets API
   let newApiShowcases: Showcase[] = [];
   let newApiAssetsByShowcase = new Map<string, ShowcaseAsset[]>();
@@ -48,23 +48,9 @@ export async function listShowcases(search?: string, tag?: ShowcaseTag) {
       const assets: NewApiAsset[] = await response.json();
       
       assets.forEach((asset) => {
-        // Parse tag and description from message (Format: "Tag|Description")
-        let assetTag: ShowcaseTag = "Images";
         let description = asset.message;
         
-        if (asset.message && asset.message.includes('|')) {
-          const parts = asset.message.split('|');
-          if (parts.length >= 2) {
-            const possibleTag = parts[0] as ShowcaseTag;
-            if (["Animations", "Images", "Music/SFX"].includes(possibleTag)) {
-              assetTag = possibleTag;
-              description = parts.slice(1).join('|');
-            }
-          }
-        }
-
         // Apply filters
-        if (tag && tag !== assetTag) return;
         if (search && !description.toLowerCase().includes(search.toLowerCase()) && !asset.filename.toLowerCase().includes(search.toLowerCase())) return;
 
         const showcaseId = `new-${asset._id}`;
@@ -72,7 +58,6 @@ export async function listShowcases(search?: string, tag?: ShowcaseTag) {
           id: showcaseId,
           user_id: asset.email, // Using email as a unique identifier for profile fetching
           description: description,
-          tag: assetTag,
           created_at: new Date(asset._creationTime).toISOString(),
         });
 
@@ -89,6 +74,7 @@ export async function listShowcases(search?: string, tag?: ShowcaseTag) {
           provider: "external",
           position: 0,
           created_at: new Date(asset._creationTime).toISOString(),
+          filename: asset.filename,
         }]);
       });
     }
@@ -106,7 +92,6 @@ export async function listShowcases(search?: string, tag?: ShowcaseTag) {
 
 export async function createShowcase(params: {
   description: string;
-  tag: ShowcaseTag;
   file: File;
 }) {
   const {
@@ -123,8 +108,8 @@ export async function createShowcase(params: {
   formData.append('slug', slug);
   // Pass the user's email automatically
   formData.append('email', user.email || 'anonymous@renderdragon.org');
-  // Encode tag into message: "Tag|Description"
-  formData.append('message', `${params.tag}|${params.description}`);
+  // Pass message directly
+  formData.append('message', params.description);
 
   const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`, {
     method: 'POST',
@@ -144,7 +129,6 @@ export async function createShowcase(params: {
     id: `new-${result.id}`,
     user_id: user.email || 'anonymous@renderdragon.org',
     description: params.description,
-    tag: params.tag,
     created_at: new Date().toISOString()
   } as Showcase;
 }

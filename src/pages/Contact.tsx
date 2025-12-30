@@ -31,7 +31,7 @@ const teamMembers: TeamMember[] = [
   },
   {
     name: "Clover",
-    role: "Project Lead",
+    role: "Admin",
     avatar: "/assets/clover.jpeg",
     socials: {
       github: "https://github.com/CloverTheBunny",

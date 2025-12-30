@@ -214,7 +214,9 @@ const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) =
                     whileHover={{ scale: 1.05 }}
                 >
                     {getCategoryIcon(resource.category)}
-                    <span className="ml-1 capitalize">{resource.category}</span>
+                    <span className="ml-1 capitalize">
+                        {resource.category === 'minecraft-icons' ? 'Mcicons' : resource.category}
+                    </span>
                     {resource.subcategory && (
                         <span className="ml-1">({resource.subcategory})</span>
                     )}

@@ -13,12 +13,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { IconLoader2, IconPlus, IconSearch } from '@tabler/icons-react';
+import { IconCode, IconDownload, IconFileText, IconLoader2, IconPlus, IconSearch, IconTypography } from '@tabler/icons-react';
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AuthDialog from "@/components/auth/AuthDialog";
+import AudioPlayer from "@/components/AudioPlayer";
+import VideoPlayer from "@/components/VideoPlayer";
 
 type ShowcaseWithAssets = Showcase & { assets: ShowcaseAsset[]; profile?: { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null } };
 
@@ -28,86 +30,168 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
   const avatar = item.profile?.avatar_url;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewAsset, setPreviewAsset] = useState<ShowcaseAsset | null>(null);
-  return (
-    <Card className="pixel-corners bg-card border-white/10 w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <div className="flex items-center gap-3">
-          {profileUrl ? (
-            <Link to={profileUrl} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-              <Avatar className="h-9 w-9">
-                {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
-                <AvatarFallback>{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-base font-vt323">{name}</CardTitle>
-                <div className="text-xs text-white/60">{formatDistanceToNow(new Date(item.created_at))} ago</div>
-              </div>
-            </Link>
-          ) : (
-            <>
-              <Avatar className="h-9 w-9">
-                {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
-                <AvatarFallback>{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-base font-vt323">{name}</CardTitle>
-                <div className="text-xs text-white/60">{formatDistanceToNow(new Date(item.created_at))} ago</div>
-              </div>
-            </>
-          )}
+
+  const renderAssetPreview = (a: ShowcaseAsset) => {
+    const url = a.url;
+    const filename = a.filename || url;
+
+    // Trust the kind property if available, otherwise check filename/url extension
+    const isImage = a.kind === 'image' || /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(filename);
+    const isVideo = a.kind === 'video' || /\.(mp4|mov|webm)(\?|$)/i.test(filename);
+    const isAudio = a.kind === 'audio' || /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(filename);
+    const isFont = /\.(ttf|otf|woff2?)(\?|$)/i.test(filename);
+    const isJson = /\.(json)(\?|$)/i.test(filename);
+
+    if (isImage) {
+      return (
+        <div className="w-full h-full relative group/img">
+          <img src={url} alt="showcase" className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
         </div>
-      </CardHeader>
-      <CardContent>
-        {item.description ? (
-          <p className="mb-3 text-sm text-white/80 whitespace-pre-wrap">{item.description}</p>
-        ) : null}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {item.assets.filter((a) => {
-            const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(a.url);
-            const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(a.url);
-            const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(a.url);
-            return isImage || isVideo || isAudio || ["image", "video", "audio"].includes(a.kind);
-          }).map((a) => {
-            const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(a.url);
-            const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(a.url);
-            const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(a.url);
-            const baseKind = ["image", "video", "audio"].includes(a.kind) ? a.kind : "file";
-            const effectiveKind = baseKind === "file" ? (isImage ? "image" : isVideo ? "video" : isAudio ? "audio" : "file") : baseKind as typeof a.kind;
+      );
+    }
+    if (isVideo) {
+      return (
+        <div className="w-full h-full bg-black relative group/vid">
+          <video 
+            src={url} 
+            muted 
+            loop 
+            autoPlay 
+            playsInline 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20 group-hover/vid:bg-transparent transition-colors" />
+        </div>
+      );
+    }
+    if (isAudio) {
+      return (
+        <div className="w-full p-4 bg-muted/10">
+          <AudioPlayer src={url} className="w-full shadow-none border-none bg-transparent" />
+        </div>
+      );
+    }
+    if (isFont) {
+      const fontName = `font-${a.id}`;
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 min-h-[14rem] relative overflow-hidden group/font">
+          <style>{`
+            @font-face {
+              font-family: '${fontName}';
+              src: url('${url}');
+            }
+          `}</style>
+          <div className="absolute top-3 right-3 opacity-20 group-hover/font:opacity-40 transition-opacity">
+            <IconTypography size={40} />
+          </div>
+          <div style={{ fontFamily: fontName }} className="text-5xl text-center mb-6 text-white drop-shadow-lg leading-tight">
+            Aa Bb Cc<br/>123
+          </div>
+          <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono bg-white/5 px-2 py-1 rounded">
+            Font Preview
+          </div>
+        </div>
+      );
+    }
+    if (isJson) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-[#1e1e1e] p-6 min-h-[14rem] relative group/json">
+          <div className="absolute top-3 right-3 opacity-20 group-hover/json:opacity-40 transition-opacity">
+            <IconCode size={40} className="text-cow-purple" />
+          </div>
+          <div className="font-mono text-xs text-cow-purple/80 w-full overflow-hidden opacity-60 group-hover:opacity-100 transition-opacity">
+            <div className="mb-1">{"{"}</div>
+            <div className="pl-4">"type": "asset",</div>
+            <div className="pl-4">"format": "json",</div>
+            <div className="pl-4">"status": "ready"</div>
+            <div>{"}"}</div>
+          </div>
+          <div className="mt-6 text-xs text-white/40 uppercase tracking-widest font-mono bg-white/5 px-2 py-1 rounded">
+            JSON Data
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 min-h-[14rem]">
+        <IconFileText className="h-12 w-12 text-white/20 mb-4" />
+        <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono">
+          Document File
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <Card className="pixel-corners bg-card/40 backdrop-blur-sm border-white/10 w-full flex flex-col h-full overflow-hidden hover:border-cow-purple/50 transition-all duration-300 group hover:shadow-2xl hover:shadow-cow-purple/10">
+      <div className="flex-grow flex flex-col">
+        {/* Asset Preview at top */}
+        <div className="w-full">
+          {item.assets.map((a) => {
+            const filename = a.filename || a.url;
+            const isAudio = a.kind === 'audio' || /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(filename);
             return (
               <div
                 key={a.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => {
+                role={isAudio ? undefined : "button"}
+                tabIndex={isAudio ? undefined : 0}
+                onClick={isAudio ? undefined : () => {
                   setPreviewAsset(a);
                   setPreviewOpen(true);
                 }}
-                onKeyDown={(e) => {
+                onKeyDown={isAudio ? undefined : (e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     setPreviewAsset(a);
                     setPreviewOpen(true);
                   }
                 }}
-                className="group pixel-corners overflow-hidden border border-white/10 cursor-zoom-in transition-transform duration-200 hover:scale-[1.015] hover:border-white/20 h-56 bg-background/40"
-
+                className={cn(
+                  "overflow-hidden transition-all duration-200 w-full",
+                  isAudio ? "h-auto" : "h-64 cursor-zoom-in group-hover:bg-background/40"
+                )}
               >
-                {(effectiveKind === "image") && (
-                  <img src={a.url} alt="showcase" className="w-full h-full object-cover" />
-                )}
-                {(effectiveKind === "video") && (
-                  <video src={a.url} controls className="w-full h-full object-cover" />
-                )}
-                {(effectiveKind === "audio") && (
-                  <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Audio</div>
-                )}
-                {(effectiveKind === "file") && (
-                  <div className="w-full h-full flex items-center justify-center p-3 text-xs text-white/70">Unsupported</div>
-                )}
+                {renderAssetPreview(a)}
               </div>
             );
           })}
         </div>
-      </CardContent>
+
+        <div className="p-4 flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              {profileUrl ? (
+                <Link to={profileUrl} className="flex items-center gap-2 hover:opacity-90 transition-opacity min-w-0">
+                  <Avatar className="h-7 w-7 ring-1 ring-white/10">
+                    {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
+                    <AvatarFallback className="bg-cow-purple/20 text-cow-purple text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <div className="text-sm font-vt323 truncate text-white/90 leading-none mb-1">{name}</div>
+                    <div className="text-[9px] text-white/40 uppercase tracking-tighter">{formatDistanceToNow(new Date(item.created_at))} ago</div>
+                  </div>
+                </Link>
+              ) : (
+                <>
+                  <Avatar className="h-7 w-7 ring-1 ring-white/10">
+                    {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
+                    <AvatarFallback className="bg-cow-purple/20 text-cow-purple text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <div className="text-sm font-vt323 truncate text-white/90 leading-none mb-1">{name}</div>
+                    <div className="text-[9px] text-white/40 uppercase tracking-tighter">{formatDistanceToNow(new Date(item.created_at))} ago</div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+          
+          {item.description ? (
+            <p className="text-xs text-white/60 whitespace-pre-wrap line-clamp-2 leading-relaxed italic">"{item.description}"</p>
+          ) : null}
+        </div>
+      </div>
       {/* Lightbox dialog for preview */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-5xl bg-popover/95 border-white/10">
@@ -118,9 +202,10 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
             {(() => {
               if (!previewAsset) return null;
               const url = previewAsset.url;
-              const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(url);
-              const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(url);
-              const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(url);
+              const filename = previewAsset.filename || url;
+              const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(filename);
+              const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(filename);
+              const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(filename);
               const baseKind = ["image", "video", "audio"].includes(previewAsset.kind) ? previewAsset.kind : "file";
               const kind = baseKind === "file" ? (isImage ? "image" : isVideo ? "video" : isAudio ? "audio" : "file") : baseKind;
               if (kind === "image") return <img src={url} alt="preview" className="max-h-[80vh] w-auto h-auto object-contain" />;
@@ -182,18 +267,17 @@ const ShowcasePage: React.FC = () => {
   const [items, setItems] = useState<ShowcaseWithAssets[]>([]);
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [tagFilter, setTagFilter] = useState<ShowcaseTag | "All">("All");
-  const [tag, setTag] = useState<ShowcaseTag | null>(null);
+  const [tag, setTag] = useState<ShowcaseTag>("All");
   const [authOpen, setAuthOpen] = useState(false);
 
   const [desc, setDesc] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
 
-  const load = async (q?: string, t?: ShowcaseTag | "All") => {
+  const load = async (q?: string) => {
     setLoading(true);
     try {
-      const { showcases, assetsByShowcase } = await listShowcases(q, (t ?? tagFilter) !== "All" ? (t ?? tagFilter) as ShowcaseTag : undefined);
+      const { showcases, assetsByShowcase } = await listShowcases(q);
       
       const legacyIds = showcases.filter(s => !s.id.startsWith('new-')).map(s => s.user_id);
       const newEmails = showcases.filter(s => s.id.startsWith('new-')).map(s => s.user_id);
@@ -230,9 +314,9 @@ const ShowcasePage: React.FC = () => {
   };
 
   useEffect(() => {
-    void load(undefined, tagFilter);
+    void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tagFilter]);
+  }, []);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -259,7 +343,7 @@ const ShowcasePage: React.FC = () => {
   };
 
   const onCreate = async () => {
-    if (!user || submitting || !tag || !selectedFile) {
+    if (!user || submitting || !selectedFile) {
       if (!selectedFile) {
         toast({
           variant: "destructive",
@@ -274,7 +358,6 @@ const ShowcasePage: React.FC = () => {
       setSubmitting(true);
       await createShowcase({ 
         description: desc.trim(), 
-        tag, 
         file: selectedFile 
       });
       
@@ -318,22 +401,11 @@ const ShowcasePage: React.FC = () => {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search descriptions..."
+                placeholder="Search messages..."
                 className="pl-9 bg-background/60"
               />
             </div>
-            <Select value={tagFilter} onValueChange={(v) => setTagFilter(v as ShowcaseTag | "All")}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by tag" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All</SelectItem>
-                <SelectItem value="Images">Images</SelectItem>
-                <SelectItem value="Animations">Animations</SelectItem>
-                <SelectItem value="Music/SFX">Music/SFX</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="secondary" onClick={() => void load(search, tagFilter)} className="pixel-corners">Search</Button>
+            <Button variant="secondary" onClick={() => void load(search)} className="pixel-corners">Search</Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <Button
                 className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
@@ -355,20 +427,6 @@ const ShowcasePage: React.FC = () => {
                   <div className="space-y-2">
                     <Label>Message</Label>
                     <Textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Say something about your art..." />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Category</Label>
-                    <Select value={tag ?? undefined} onValueChange={(v) => setTag(v as ShowcaseTag)}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a category (required)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Images">Images</SelectItem>
-                        <SelectItem value="Animations">Animations</SelectItem>
-                        <SelectItem value="Music/SFX">Music/SFX</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
 
                   <div className="space-y-2">
@@ -412,7 +470,7 @@ const ShowcasePage: React.FC = () => {
                     <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                     <Button
                       onClick={onCreate}
-                      disabled={submitting || !tag || !selectedFile}
+                      disabled={submitting || !selectedFile}
                       className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
                     >
                       {submitting ? (
@@ -441,7 +499,7 @@ const ShowcasePage: React.FC = () => {
             <p className="max-w-md">Be the first to share your art! Click "Create Showcase" to upload an image, video, or audio file.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 justify-items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((it) => (
               <ShowcaseCard key={it.id} item={it} />
             ))}

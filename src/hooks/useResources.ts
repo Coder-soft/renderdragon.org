@@ -62,10 +62,15 @@ export const useResources = () => {
                             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                             .join(' ');
 
+                        let categoryName = category as Category;
+                        if (category === 'mcicons') {
+                            categoryName = 'minecraft-icons';
+                        }
+
                         allResources.push({
                             id: file.id,
                             title: formattedTitle,
-                            category: category as Category,
+                            category: categoryName,
                             subcategory,
                             credit: file.credit,
                             filetype: file.ext,
@@ -166,9 +171,9 @@ export const useResources = () => {
         // Filter by Category
         if (selectedCategory && selectedCategory !== "favorites") {
             result = result.filter(r => r.category === selectedCategory);
-        } else if (selectedCategory === null && !searchQuery) {
-            // Exclude 'minecraft-icons' from the All tab unless a search query is present
-            result = result.filter(r => r.category !== 'minecraft-icons');
+        } else if (selectedCategory === null) {
+            // Exclude 'minecraft-icons' and 'mcicons' from the All tab
+            result = result.filter(r => r.category !== 'minecraft-icons' && (r as any).category !== 'mcicons');
         }
 
         // Filter by Subcategory
