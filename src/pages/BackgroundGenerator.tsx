@@ -139,7 +139,7 @@ const BackgroundGenerator = () => {
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timer);
-  }, [color, size, spacing, opacity, scale, uploadedImage, selectedTexture, isTransparent]);
+  }, [color, size, spacing[0], opacity[0], scale[0], uploadedImage, selectedTexture, isTransparent]);
 
   const handleGenerate = () => {
     const sourceImage = selectedTexture || uploadedImage;
