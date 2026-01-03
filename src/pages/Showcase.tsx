@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useAuth } from "@/hooks/useAuth";
-import { createShowcase, listShowcases, type Showcase, type ShowcaseAsset, type ShowcaseTag } from "@/lib/showcases";
+
+import { createShowcase, getShowcasesWithProfiles, type Showcase, type ShowcaseAsset, type ShowcaseTag, type ShowcaseWithAssets } from "@/lib/showcases";
 import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +25,7 @@ import AuthDialog from "@/components/auth/AuthDialog";
 import AudioPlayer from "@/components/AudioPlayer";
 import VideoPlayer from "@/components/VideoPlayer";
 
-type ShowcaseWithAssets = Showcase & { assets: ShowcaseAsset[]; profile?: { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null } };
+
 
 const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
   const name = item.profile?.display_name || item.profile?.email || "Anonymous";
@@ -53,12 +56,12 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     if (isVideo) {
       return (
         <div className="w-full h-full bg-black relative group/vid">
-          <video 
-            src={url} 
-            muted 
-            loop 
-            autoPlay 
-            playsInline 
+          <video
+            src={url}
+            muted
+            loop
+            autoPlay
+            playsInline
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/20 group-hover/vid:bg-transparent transition-colors" />
@@ -86,7 +89,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
             <IconTypography size={40} />
           </div>
           <div style={{ fontFamily: fontName }} className="text-5xl text-center mb-6 text-white drop-shadow-lg leading-tight">
-            Aa Bb Cc<br/>123
+            Aa Bb Cc<br />123
           </div>
           <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono bg-white/5 px-2 py-1 rounded">
             Font Preview
@@ -186,7 +189,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
               )}
             </div>
           </div>
-          
+
           {item.description ? (
             <p className="text-xs text-white/60 whitespace-pre-wrap line-clamp-2 leading-relaxed italic">"{item.description}"</p>
           ) : null}
@@ -262,9 +265,8 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
 const ShowcasePage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [items, setItems] = useState<ShowcaseWithAssets[]>([]);
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [tag, setTag] = useState<ShowcaseTag>("All");
@@ -274,61 +276,42 @@ const ShowcasePage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
 
-  const load = async (q?: string) => {
-    setLoading(true);
-    try {
-      const { showcases, assetsByShowcase } = await listShowcases(q);
-      
-      const legacyIds = showcases.filter(s => !s.id.startsWith('new-')).map(s => s.user_id);
-      const newEmails = showcases.filter(s => s.id.startsWith('new-')).map(s => s.user_id);
-
-      const profiles = await (async () => {
-        const map: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
-        
-        if (legacyIds.length > 0) {
-          const { data } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("id", legacyIds);
-          for (const row of (data || []) as any[]) {
-            map[row.id] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
-          }
-        }
-        
-        if (newEmails.length > 0) {
-          const { data } = await supabase.from("profiles").select("id, display_name, email, avatar_url, username").in("email", newEmails);
-          for (const row of (data || []) as any[]) {
-            map[row.email] = { display_name: row.display_name, email: row.email, avatar_url: row.avatar_url, username: row.username };
-          }
-        }
-        
-        return map;
-      })();
-
-      const merged: ShowcaseWithAssets[] = showcases.map((s) => ({
-        ...s,
-        assets: assetsByShowcase.get(s.id) || [],
-        profile: profiles[s.user_id],
-      }));
-      setItems(merged);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ['showcases', search],
+    queryFn: () => getShowcasesWithProfiles(search),
+  });
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Cleanup object URL on unmount or when filePreview changes
+  useEffect(() => {
+    return () => {
+      if (filePreview) {
+        URL.revokeObjectURL(filePreview);
+      }
+    };
+  }, [filePreview]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const file = files[0];
-    
+
+    // Validate file size (e.g., 50MB limit)
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: `File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB.`,
+      });
+      return;
+    }
+
     const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(file.name);
     const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(file.name);
     const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(file.name);
-    
+
     if (!(isImage || isVideo || isAudio)) {
       toast({
         variant: "destructive",
@@ -336,6 +319,11 @@ const ShowcasePage: React.FC = () => {
         description: "Please upload an image, video, or audio file.",
       });
       return;
+    }
+
+    // Revoke previous URL if exists
+    if (filePreview) {
+      URL.revokeObjectURL(filePreview);
     }
 
     setSelectedFile(file);
@@ -353,14 +341,14 @@ const ShowcasePage: React.FC = () => {
       }
       return;
     }
-    
+
     try {
       setSubmitting(true);
-      await createShowcase({ 
-        description: desc.trim(), 
-        file: selectedFile 
+      await createShowcase({
+        description: desc.trim(),
+        file: selectedFile
       });
-      
+
       toast({
         title: "Success",
         description: "Your showcase has been created!",
@@ -368,9 +356,12 @@ const ShowcasePage: React.FC = () => {
 
       setDesc("");
       setSelectedFile(null);
+      if (filePreview) {
+        URL.revokeObjectURL(filePreview);
+      }
       setFilePreview(null);
       setOpen(false);
-      await load();
+      await queryClient.invalidateQueries({ queryKey: ['showcases'] });
     } catch (error: any) {
       console.error("Failed to create showcase:", error);
       toast({
@@ -405,7 +396,7 @@ const ShowcasePage: React.FC = () => {
                 className="pl-9 bg-background/60"
               />
             </div>
-            <Button variant="secondary" onClick={() => void load(search)} className="pixel-corners">Search</Button>
+            <Button variant="secondary" onClick={() => { }} className="pixel-corners">Search</Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <Button
                 className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
@@ -448,7 +439,7 @@ const ShowcasePage: React.FC = () => {
                         <span className="text-sm">Choose file (Image, Video, Audio)</span>
                       </div>
                     </Button>
-                    
+
                     {filePreview && (
                       <div className="mt-4">
                         <div className="relative w-full aspect-video bg-background/40 pixel-corners border border-white/10 flex items-center justify-center overflow-hidden">

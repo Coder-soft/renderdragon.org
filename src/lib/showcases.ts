@@ -43,13 +43,13 @@ export async function listShowcases(search?: string) {
   let newApiAssetsByShowcase = new Map<string, ShowcaseAsset[]>();
 
   try {
-    const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`, { cache: 'no-store' });
+    const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`);
     if (response.ok) {
       const assets: NewApiAsset[] = await response.json();
-      
+
       assets.forEach((asset) => {
         let description = asset.message;
-        
+
         // Apply filters
         if (search && !description.toLowerCase().includes(search.toLowerCase()) && !asset.filename.toLowerCase().includes(search.toLowerCase())) return;
 
@@ -83,11 +83,64 @@ export async function listShowcases(search?: string) {
   }
 
   // Sort by creation time
-  const allShowcases = newApiShowcases.sort((a, b) => 
+  const allShowcases = newApiShowcases.sort((a, b) =>
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
-  
+
   return { showcases: allShowcases, assetsByShowcase: newApiAssetsByShowcase };
+}
+
+export type ShowcaseWithAssets = Showcase & {
+  assets: ShowcaseAsset[];
+  profile?: {
+    display_name?: string | null;
+    avatar_url?: string | null;
+    email?: string | null;
+    username?: string | null
+  }
+};
+
+export async function getShowcasesWithProfiles(search?: string): Promise<ShowcaseWithAssets[]> {
+  const { showcases, assetsByShowcase } = await listShowcases(search);
+
+  const legacyIds = showcases.filter(s => !s.id.startsWith('new-')).map(s => s.user_id);
+  const newEmails = showcases.filter(s => s.id.startsWith('new-')).map(s => s.user_id);
+
+  const profilesMap: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
+
+  if (legacyIds.length > 0 || newEmails.length > 0) {
+    let query = sb.from("profiles").select("id, display_name, email, avatar_url, username");
+
+    const conditions: string[] = [];
+    if (legacyIds.length > 0) {
+      conditions.push(`id.in.(${legacyIds.join(',')})`);
+    }
+    if (newEmails.length > 0) {
+      // Emails need to be quoted for PostgREST filter syntax
+      const quotedEmails = newEmails.map(e => `"${e}"`).join(',');
+      conditions.push(`email.in.(${quotedEmails})`);
+    }
+
+    if (conditions.length > 0) {
+      query = query.or(conditions.join(','));
+    }
+
+    const { data } = await query;
+
+    if (data) {
+      for (const row of (data as any[])) {
+        // Populate map for both ID and Email to ensure lookup works
+        if (row.id) profilesMap[row.id] = row;
+        if (row.email) profilesMap[row.email] = row;
+      }
+    }
+  }
+
+  return showcases.map((s) => ({
+    ...s,
+    assets: assetsByShowcase.get(s.id) || [],
+    profile: profilesMap[s.user_id],
+  }));
 }
 
 export async function createShowcase(params: {
@@ -114,14 +167,13 @@ export async function createShowcase(params: {
   const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`, {
     method: 'POST',
     body: formData,
-    cache: 'no-store'
   });
 
   if (!response.ok) {
     const errData = await response.json();
     throw new Error(errData.error || "Failed to upload asset to new API");
   }
-  
+
   const result = await response.json();
 
   // Return synthetic showcase object based on the upload
