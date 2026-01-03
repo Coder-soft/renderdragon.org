@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import DonateButton from '@/components/DonateButton';
+
 import confetti from 'canvas-confetti';
 import PlayerRenderSkeleton from '@/components/skeletons/PlayerRenderSkeleton';
 
@@ -131,8 +131,8 @@ const PlayerRenderer = () => {
       full: (id: string) => `https://api.mineatar.io/body/front/${id}?scale=8&overlay=true`,
     },
     vzge: {
-        full: (id: string) => `https://vzge.me/frontfull/${id}`,
-        face: (id: string) => `https://vzge.me/face/1024/${username}`,
+      full: (id: string) => `https://vzge.me/frontfull/${id}`,
+      face: (id: string) => `https://vzge.me/face/1024/${username}`,
     },
     nmsr: {
       front: (id: string) => `https://nmsr.nickac.dev/profile/${id}/front`,
@@ -380,7 +380,7 @@ const PlayerRenderer = () => {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };

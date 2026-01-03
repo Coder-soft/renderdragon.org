@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Helmet } from 'react-helmet-async';
 import { IconMessage, IconBrandTwitter, IconTag } from '@tabler/icons-react';
-import DonateButton from '@/components/DonateButton';
+
 import TweetGenerator from '@/components/generators/TweetGenerator';
 import YouTubeCommentGenerator from '@/components/generators/YouTubeCommentGenerator';
 import MinecraftNametagGenerator from '@/components/generators/MinecraftNametagGenerator';
@@ -23,16 +23,16 @@ const Generators = () => {
         <meta name="twitter:title" content="Content Generators - Renderdragon" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/generators.png" />
       </Helmet>
-      
+
       <Navbar />
-      
+
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
               Content <span className="text-cow-purple">Generators</span>
             </h1>
-            
+
             <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
               Create social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators.
               Perfect for content creators and Minecraft players.
@@ -69,9 +69,9 @@ const Generators = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };

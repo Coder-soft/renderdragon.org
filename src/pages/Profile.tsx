@@ -164,8 +164,8 @@ const ProfilePage: React.FC = () => {
 
           {/* Links Section */}
           <div className={`
-            w-full space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 flex gap-4
-            ${theme.buttonStyle === 'icon' ? 'flex-row flex-wrap justify-center' : 'flex-col'}
+            w-full mt-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 flex gap-4
+            ${theme.buttonStyle === 'icon' ? 'flex-row flex-wrap justify-center items-center' : 'flex-col space-y-4'}
           `}>
             {links.map((link) => (
               link.active && (
@@ -175,8 +175,8 @@ const ProfilePage: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`
-                    block transition-all hover:scale-[1.05] active:scale-[0.95] shadow-md hover:shadow-lg
-                    ${theme.buttonStyle === 'icon' ? 'p-4 rounded-full bg-black/20 backdrop-blur-sm' : 'w-full text-center py-4 px-6 text-lg font-medium'}
+                    block transition-all hover:scale-[1.1] active:scale-[0.9]
+                    ${theme.buttonStyle === 'icon' ? 'p-2' : 'w-full text-center py-4 px-6 text-lg font-medium shadow-md hover:shadow-lg'}
                   `}
                   style={{
                     backgroundColor: theme.buttonStyle === 'icon' ? 'transparent' : (link.color || 'var(--profile-accent)'),
@@ -186,7 +186,8 @@ const ProfilePage: React.FC = () => {
                         theme.buttonStyle === 'icon' ? '9999px' :
                           '0',
                     border: theme.buttonStyle === 'pixel' ? '2px solid white' : 'none',
-                    boxShadow: theme.buttonStyle === 'pixel' ? '4px 4px 0 rgba(0,0,0,0.5)' : undefined,
+                    boxShadow: theme.buttonStyle === 'pixel' ? '4px 4px 0 rgba(0,0,0,0.5)' : 
+                               theme.buttonStyle === 'icon' ? 'none' : undefined,
                   }}
                   title={link.label}
                 >

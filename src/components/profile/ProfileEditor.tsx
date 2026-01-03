@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { IconDeviceFloppy, IconPlus, IconTrash, IconGripVertical, IconEye, IconX, IconRefresh } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconPlus, IconTrash, IconGripVertical, IconEye, IconX, IconRefresh, IconShare } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -163,6 +163,8 @@ const ProfileEditor: React.FC = () => {
     const [themeConfig, setThemeConfig] = useState<ProfileThemeConfig>(defaultThemeConfig);
     const [previewMode, setPreviewMode] = useState(false);
     const [dbProfile, setDbProfile] = useState<{ display_name: string | null, avatar_url: string | null, username: string | null } | null>(null);
+    const [username, setUsername] = useState('');
+    const [showShare, setShowShare] = useState(false);
 
     // Load initial data
     useEffect(() => {
@@ -208,6 +210,7 @@ const ProfileEditor: React.FC = () => {
                     avatar_url: data.avatar_url,
                     username: data.username
                 });
+                setUsername(data.username || '');
 
                 if (draftData) {
                     setBio(draftData.bio || '');
@@ -229,6 +232,10 @@ const ProfileEditor: React.FC = () => {
     };
 
     const saveProfile = async () => {
+        if (!user) {
+            toast.error('Not signed in');
+            return;
+        }
         setSaving(true);
         try {
             const { error } = await supabase
@@ -237,15 +244,17 @@ const ProfileEditor: React.FC = () => {
                     bio,
                     links: links as any,
                     theme_config: themeConfig as any,
+                    username: username.trim().toLowerCase(),
                     updated_at: new Date().toISOString(),
                 })
-                .eq('id', user!.id);
+                .eq('id', user.id);
 
             if (error) throw error;
 
             // Clear draft on successful save
-            localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
+            localStorage.removeItem(`${DRAFT_KEY}_${user.id}`);
             toast.success('Profile published successfully!');
+            setShowShare(true);
         } catch (error: any) {
             toast.error('Failed to save profile');
             console.error(error);
@@ -255,8 +264,9 @@ const ProfileEditor: React.FC = () => {
     };
 
     const discardDraft = () => {
+        if (!user) return;
         if (!window.confirm("Are you sure you want to discard your unsaved changes and reload from the server?")) return;
-        localStorage.removeItem(`${DRAFT_KEY}_${user!.id}`);
+        localStorage.removeItem(`${DRAFT_KEY}_${user.id}`);
         loadProfile();
     };
 
@@ -297,6 +307,12 @@ const ProfileEditor: React.FC = () => {
         setLinks(links.map(l => l.id === id ? { ...l, ...updates } : l));
     };
 
+    const handleShare = () => {
+        const url = `${window.location.origin}/u/${username || user?.id}`;
+        navigator.clipboard.writeText(url);
+        toast.success("Profile link copied to clipboard!");
+    };
+
     const getFavicon = (url: string) => {
         return getSmartIconUrl(url);
     };
@@ -327,6 +343,11 @@ const ProfileEditor: React.FC = () => {
                         <Button variant="outline" size="sm" onClick={() => setPreviewMode(!previewMode)} className="md:hidden">
                             <IconEye className="w-4 h-4 mr-1" /> Preview
                         </Button>
+                        {showShare && (
+                            <Button variant="outline" size="sm" onClick={handleShare} className="pixel-btn-secondary">
+                                <IconShare className="w-4 h-4 mr-2" /> Share
+                            </Button>
+                        )}
                         <Button onClick={saveProfile} disabled={saving} className="pixel-btn-primary">
                             <IconDeviceFloppy className="w-4 h-4 mr-2" />
                             {saving ? 'Publishing...' : 'Publish'}
@@ -358,7 +379,19 @@ const ProfileEditor: React.FC = () => {
                                     <p className="text-xs text-muted-foreground">Original Name: {dbProfile?.display_name || 'Not set'}</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Profile Tag</Label>
+                                    <Label>Profile Handle (@tag)</Label>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-muted-foreground">@</span>
+                                        <Input
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
+                                            placeholder="your_username"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">This is your unique URL: {window.location.origin}/u/{username || 'username'}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Profile Tag (Badge)</Label>
                                     <Input
                                         placeholder="e.g. Creator, Developer..."
                                         value={themeConfig.profileTag || ''}
@@ -653,7 +686,7 @@ const ProfileEditor: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className={`w-full max-w-sm flex items-center gap-4 ${themeConfig.buttonStyle === 'icon' ? 'flex-row justify-center flex-wrap' : 'flex-col'}`}>
+                            <div className={`w-full max-w-sm flex gap-4 ${themeConfig.buttonStyle === 'icon' ? 'flex-row justify-center flex-wrap items-center' : 'flex-col space-y-4'}`}>
                                 {links.map(link => (
                                     <a
                                         key={link.id}
@@ -662,9 +695,9 @@ const ProfileEditor: React.FC = () => {
                                         rel="noreferrer"
                                         title={link.label}
                                         className={`
-                            block transition-transform hover:scale-[1.05] active:scale-[0.95]
-                            ${themeConfig.buttonStyle === 'icon' ? 'p-3 rounded-full' : 'w-full py-3 px-6 text-center'}
-                          `}
+                                            block transition-transform hover:scale-[1.1] active:scale-[0.9]
+                                            ${themeConfig.buttonStyle === 'icon' ? 'p-2' : 'w-full py-3 px-6 text-center shadow-sm'}
+                                        `}
                                         style={{
                                             backgroundColor: themeConfig.buttonStyle === 'icon' ? 'transparent' : (link.active ? (link.color || themeConfig.accentColor) : 'transparent'),
                                             color: '#fff',

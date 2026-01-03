@@ -14,7 +14,7 @@ import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
-import DonateButton from '@/components/DonateButton';
+
 
 
 const ResourceDetailDialog = lazy(() => import('@/components/resources/ResourceDetailDialog'));
@@ -206,7 +206,7 @@ const ResourcesHub = () => {
       </main>
 
       <Footer />
-      <DonateButton />
+
 
       <Suspense fallback={null}>
         <ResourceDetailDialog
