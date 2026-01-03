@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import DonateButton from "@/components/DonateButton";
+
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
 import { IconArrowLeft, IconList, IconLoader2 } from "@tabler/icons-react";
@@ -33,8 +33,9 @@ export default function GuideView() {
         if (!res.ok) throw new Error(`Failed to load guide: ${res.status}`);
         const text = await res.text();
         if (active) setMarkdown(text);
-      } catch (e: any) {
-        if (active) setError(e?.message ?? "Failed to load guide");
+      } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : 'Failed to load guide';
+        if (active) setError(errorMessage);
       } finally {
         if (active) setLoading(false);
       }
@@ -211,7 +212,7 @@ export default function GuideView() {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 }

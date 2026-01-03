@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import DonateButton from '@/components/DonateButton';
+
 import { Helmet } from 'react-helmet-async';
 
 const FAQ = () => {
@@ -19,9 +19,9 @@ const FAQ = () => {
         <meta name="twitter:title" content="FAQ - Renderdragon" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/faq.png" />
       </Helmet>
-      
+
       <Navbar />
-      
+
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
@@ -33,7 +33,7 @@ const FAQ = () => {
               <div className="space-y-8 text-muted-foreground">
                 <div>
                   <h2 className="text-2xl font-vt323 text-foreground mb-4">General Questions</h2>
-                  
+
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-medium text-foreground mb-2">Is everything on Renderdragon really free?</h3>
@@ -54,7 +54,7 @@ const FAQ = () => {
 
                 <div>
                   <h2 className="text-2xl font-vt323 text-foreground mb-4">Technical Questions</h2>
-                  
+
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-medium text-foreground mb-2">What file formats do you support?</h3>
@@ -75,7 +75,7 @@ const FAQ = () => {
 
                 <div>
                   <h2 className="text-2xl font-vt323 text-foreground mb-4">Resource Usage</h2>
-                  
+
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-medium text-foreground mb-2">Can I modify the resources?</h3>
@@ -96,7 +96,7 @@ const FAQ = () => {
 
                 <div>
                   <h2 className="text-2xl font-vt323 text-foreground mb-4">Contact & Support</h2>
-                  
+
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-medium text-foreground mb-2">How can I get help?</h3>
@@ -119,9 +119,9 @@ const FAQ = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
-      <DonateButton />
+
     </div>
   );
 };

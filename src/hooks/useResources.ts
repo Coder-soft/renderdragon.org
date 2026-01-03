@@ -2,297 +2,290 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Resource } from '@/types/resources';
 import { useDownloadCounts } from '@/hooks/useDownloadCounts';
-import { supabase } from '@/integrations/supabase/client';
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
 
-// Utility to normalize numbers and words
-const numberWordMap: Record<string, string> = {
-  zero: "0",
-  one: "1",
-  two: "2",
-  three: "3",
-  four: "4",
-  five: "5",
-  six: "6",
-  seven: "7",
-  eight: "8",
-  nine: "9",
-  ten: "10",
-  eleven: "11",
-  twelve: "12",
-  thirteen: "13",
-  fourteen: "14",
-  fifteen: "15",
-  sixteen: "16",
-  seventeen: "17",
-  eighteen: "18",
-  nineteen: "19",
-  twenty: "20",
-};
-const digitWordMap: Record<string, string> = Object.fromEntries(
-  Object.entries(numberWordMap).map(([k, v]) => [v, k]),
-);
-const normalize = (str: string) => str.replace(/ /g, "%20");
-
-function normalizeText(text: string): string {
-  let normalized = text.toLowerCase();
-  // Replace number words with digits
-  for (const [word, digit] of Object.entries(numberWordMap)) {
-    normalized = normalized.replace(new RegExp(`\\b${word}\\b`, "g"), digit);
-  }
-  // Replace digits with number words
-  for (const [digit, word] of Object.entries(digitWordMap)) {
-    normalized = normalized.replace(new RegExp(`\\b${digit}\\b`, "g"), word);
-  }
-  return normalized;
-}
-
 export const useResources = () => {
-  const [resources, setResources] = useState<Resource[]>([]);
-  const { downloadCounts: externalDownloadCounts, incrementDownload } =
-    useDownloadCounts();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<
-    Category | null | "favorites"
-  >(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    null,
-  );
-  const [sortOrder, setSortOrder] = useState("newest");
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedResource, setSelectedResource] = useState<Resource | null>(
-    null,
-  );
-  const [isSearching, setIsSearching] = useState(false);
-  const [downloadCounts, setDownloadCounts] = useState<Record<number, number>>(
-    {},
-  );
-  const [lastAction, setLastAction] = useState<string>("");
-  const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
-  // Pagination removed: fetch all resources at once
+    const [resources, setResources] = useState<Resource[]>([]);
+    const { downloadCounts: externalDownloadCounts, incrementDownload } =
+        useDownloadCounts();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState<
+        Category | null | "favorites"
+    >(null);
+    const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+        null,
+    );
+    const [sortOrder, setSortOrder] = useState("newest");
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedResource, setSelectedResource] = useState<Resource | null>(
+        null,
+    );
+    const [isSearching, setIsSearching] = useState(false);
+    const [lastAction, setLastAction] = useState<string>("");
+    const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
 
-  const fetchResources = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      let query = supabase.from("resources").select("*", { count: "exact" });
+    const fetchResources = useCallback(async () => {
+        try {
+            setIsLoading(true);
 
-      if (searchQuery) {
-        query = query.ilike('title', `%${searchQuery}%`);
-      }
-      if (selectedCategory && selectedCategory !== "favorites") {
-        query = query.eq("category", selectedCategory);
-      }
-      // Use eq for exact match on subcategory, ensuring correct type for Supabase query
-      if (
-        selectedSubcategory &&
-        selectedSubcategory !== "all" &&
-        // Ensure selectedSubcategory is a valid subcategory type
-        (["davinci", "adobe"] as const).includes(selectedSubcategory as any)
-      ) {
-        // Cast to the correct literal type for Supabase
-        query = query.eq(
-          "subcategory",
-          selectedSubcategory as "davinci" | "adobe",
-        );
-      }
+            // Fetch main resources and mcicons in parallel
+            const [resourcesRes, mciconsRes] = await Promise.all([
+                fetch('https://hamburger-api.powernplant101-c6b.workers.dev/all'),
+                fetch('https://hamburger-api.powernplant101-c6b.workers.dev/mcicons')
+            ]);
 
-      switch (sortOrder) {
-        case "popular":
-          query = query.order("downloads", { ascending: false });
-          break;
-        case "a-z":
-          query = query.order("title", { ascending: true });
-          break;
-        case "z-a":
-          query = query.order("title", { ascending: false });
-          break;
-        case "newest":
-        default:
-          query = query.order("created_at", { ascending: false });
-          break;
-      }
+            if (!resourcesRes.ok) throw new Error(`Failed to fetch resources: ${resourcesRes.status}`);
+            if (!mciconsRes.ok) throw new Error(`Failed to fetch mcicons: ${mciconsRes.status}`);
 
-      const { data, error } = await query;
+            const data = await resourcesRes.json();
+            const mciconsData = await mciconsRes.json();
 
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
+            const allResources: Resource[] = [];
 
-      const newResources: Resource[] = (data || []).map((resource) => ({
-        ...resource,
-        downloads: 0, // Set all resources to have 0 downloads by default
-      }));
+            // Parse main resources
+            if (data && data.categories) {
+                Object.entries(data.categories).forEach(([category, files]: [string, any[]]) => {
+                    files.forEach(file => {
+                        let subcategory: string | undefined = undefined;
+                        if (file.url) {
+                            if (file.url.includes('/adobe/')) subcategory = 'adobe';
+                            else if (file.url.includes('/davinci/')) subcategory = 'davinci';
+                            else if (file.url.includes('/PREVIEWS/')) subcategory = 'previews';
+                        }
 
-      // Set full result set
-      setResources(newResources);
-    } catch (error) {
-      console.error("Error fetching resources:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchQuery, selectedCategory, selectedSubcategory, sortOrder]);
+                        const formattedTitle = file.title
+                            .replace(/_/g, ' ')
+                            .split(' ')
+                            .filter(Boolean)
+                            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                            .join(' ');
 
-  // Initial load and filter changes
-  useEffect(() => {
-    fetchResources();
-  }, [searchQuery, selectedCategory, selectedSubcategory, sortOrder, fetchResources]);
+                        let categoryName = category as Category;
+                        if (category === 'mcicons') {
+                            categoryName = 'minecraft-icons';
+                        }
 
-  const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
-    e?.preventDefault();
-    setIsLoading(true);
-    setIsSearching(true);
-    setLastAction("search");
-  }, []);
+                        allResources.push({
+                            id: file.id,
+                            title: formattedTitle,
+                            category: categoryName,
+                            subcategory,
+                            credit: file.credit,
+                            filetype: file.ext,
+                            download_url: file.url,
+                        });
+                    });
+                });
+            }
 
-  const handleClearSearch = useCallback(() => {
-    setSearchQuery("");
-    setIsSearching(false);
-    setLastAction("clear");
-  }, []);
+            // Parse mcicons from Hamburger API
+            if (mciconsData && mciconsData.files) {
+                mciconsData.files.forEach((file: any) => {
+                    const formattedTitle = file.title
+                        .replace(/_/g, ' ')
+                        .replace(/\.[^/.]+$/, "") // Remove extension if present in title
+                        .split(' ')
+                        .filter(Boolean)
+                        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
 
-  const handleCategoryChange = useCallback(
-    (category: Category | null | "favorites") => {
-      setIsLoading(true);
-      setSelectedCategory(category);
-      // When changing category, reset subcategory unless we're selecting 'presets'
-      if (category !== "presets") {
-        setSelectedSubcategory(null);
-      }
-      setLastAction("category");
-    },
-    [],
-  );
+                    allResources.push({
+                        id: file.id,
+                        title: formattedTitle,
+                        category: 'minecraft-icons',
+                        subcategory: file.subcategory, // Directly use the subcategory from API
+                        credit: file.credit || "",
+                        filetype: file.ext,
+                        download_url: file.url,
+                    });
+                });
+            }
 
-  const handleSubcategoryChange = useCallback(
-    (subcategory: Subcategory | "all" | null) => {
-      setIsLoading(true);
-      setSelectedSubcategory(subcategory);
-      setLastAction("subcategory");
-    },
-    [],
-  );
+            setResources(allResources);
+        } catch (error) {
+            console.error("Error fetching resources:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
-  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setLastAction("search");
-    if (e.target.value === "") {
-      setIsSearching(false);
-    } else {
-      setIsSearching(true);
-    }
-  }, []);
+    // Initial load
+    useEffect(() => {
+        fetchResources();
+    }, [fetchResources]);
 
-  // Check if we have resources in the current selected category
-  const hasCategoryResources = useMemo(() => {
-    if (!selectedCategory || selectedCategory === "favorites") return true;
-    return resources.some((resource) => resource.category === selectedCategory);
-  }, [resources, selectedCategory]);
+    const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
+        e?.preventDefault();
+        setIsSearching(true);
+        setLastAction("search");
+    }, []);
 
-  // Determine which resources to display based on filters
-  const filteredResources = useMemo(() => {
-    // With backend filtering, resources are already filtered.
-    // We might still need client side filtering for some cases, but for now this is simpler.
-    return resources;
-  }, [resources]);
+    const handleClearSearch = useCallback(() => {
+        setSearchQuery("");
+        setIsSearching(false);
+        setLastAction("clear");
+    }, []);
 
-  const handleDownload = useCallback(
-    async (resource: Resource): Promise<boolean> => {
-      if (!resource) return false;
+    const handleCategoryChange = useCallback(
+        (category: Category | null | "favorites") => {
+            setSelectedCategory(category);
+            // When changing category, reset subcategory unless we're selecting 'presets'
+            if (category !== "presets") {
+                setSelectedSubcategory(null);
+            }
+            setLastAction("category");
+        },
+        [],
+    );
 
-      // Use the download_url from the database if available, otherwise construct it
-      // let fileUrl = resource.download_url;
-      let fileUrl = "";
+    const handleSubcategoryChange = useCallback(
+        (subcategory: Subcategory | "all" | null) => {
+            setSelectedSubcategory(subcategory);
+            setLastAction("subcategory");
+        },
+        [],
+    );
 
-      if (!fileUrl) {
-        // Fallback to the old URL construction method
-        const titleLowered = normalize(resource.title.toLowerCase());
-        const creditName = resource.credit
-          ? encodeURIComponent(resource.credit)
-          : "";
-        const filetype = resource.filetype;
+    const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setLastAction("search");
+        if (e.target.value === "") {
+            setIsSearching(false);
+        } else {
+            setIsSearching(true);
+        }
+    }, []);
 
-        if (resource.category === "presets") {
-          const subcategory = resource.subcategory?.toLowerCase().trim();
-          if (subcategory === "adobe" || subcategory === "davinci") {
-            fileUrl = `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/presets/${subcategory}/${titleLowered}${creditName ? `__${creditName}` : ""}.${filetype}`;
-          } else {
-            alert(
-              "Preset resource is missing a valid subcategory (adobe or davinci).",
+    // Check if we have resources in the current selected category
+    const hasCategoryResources = useMemo(() => {
+        if (!selectedCategory || selectedCategory === "favorites") return true;
+        return resources.some((resource) => resource.category === selectedCategory);
+    }, [resources, selectedCategory]);
+
+    // Determine which resources to display based on filters and sorting
+    const filteredResources = useMemo(() => {
+        let result = [...resources];
+
+        // Filter by Category
+        if (selectedCategory && selectedCategory !== "favorites") {
+            result = result.filter(r => r.category === selectedCategory);
+        } else if (selectedCategory === null) {
+            // Exclude 'minecraft-icons' and 'mcicons' from the All tab
+            result = result.filter(r => r.category !== 'minecraft-icons' && (r as any).category !== 'mcicons');
+        }
+
+        // Filter by Subcategory
+        if (selectedSubcategory && selectedSubcategory !== "all") {
+            result = result.filter(r => {
+                if (r.subcategory === selectedSubcategory) return true;
+                return false;
+            });
+        }
+
+        // Filter by Search
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(r => r.title.toLowerCase().includes(query));
+        }
+
+        // Sort
+        switch (sortOrder) {
+            case "popular":
+                result.sort((a, b) => (externalDownloadCounts[b.id] || 0) - (externalDownloadCounts[a.id] || 0));
+                break;
+            case "a-z":
+                result.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case "z-a":
+                result.sort((a, b) => b.title.localeCompare(a.title));
+                break;
+            case "newest":
+            default:
+                // Fallback to ID sort since we don't have dates, higher ID = newer usually
+                result.sort((a, b) => b.id - a.id);
+                break;
+        }
+
+        return result;
+    }, [resources, selectedCategory, selectedSubcategory, searchQuery, sortOrder, externalDownloadCounts]);
+
+    // Derive unique subcategories for the current selected category
+    const availableSubcategories = useMemo(() => {
+        if (!selectedCategory || selectedCategory === "favorites") return [];
+        const subs = resources
+            .filter(r => r.category === selectedCategory && r.subcategory)
+            .map(r => r.subcategory as string);
+        return Array.from(new Set(subs)).sort();
+    }, [resources, selectedCategory]);
+
+    const handleDownload = useCallback(
+        async (resource: Resource): Promise<boolean> => {
+            if (!resource || !resource.download_url) return false;
+
+            const fileUrl = resource.download_url;
+            const filename = `${resource.title}.${resource.filetype || "file"}`;
+
+            const shouldForceDownload = ["presets", "images", "animations", "fonts", "music", "sfx", "minecraft-icons"].includes(
+                resource.category,
             );
-            return false;
-          }
-        } else if (resource.credit) {
-          fileUrl = `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${titleLowered}__${creditName}.${filetype}`;
-        } else {
-          fileUrl = `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${titleLowered}.${filetype}`;
-        }
-      }
 
-      if (!fileUrl) return false;
+            try {
+                if (shouldForceDownload) {
+                    const res = await fetch(fileUrl);
+                    if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+                    const blob = await res.blob();
 
-      const filename = `${resource.title}.${resource.filetype || "file"}`;
-      const shouldForceDownload = ["presets", "images"].includes(
-        resource.category,
-      );
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(a.href);
+                } else {
+                    const a = document.createElement("a");
+                    a.href = fileUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
 
-      try {
-        if (shouldForceDownload) {
-          const res = await fetch(fileUrl);
-          if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
-          const blob = await res.blob();
+                incrementDownload(resource.id);
+                return true;
+            } catch (err) {
+                console.error("Download failed", err);
+                return false;
+            }
+        },
+        [incrementDownload],
+    );
 
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(a.href);
-        } else {
-          // Let the browser handle the download (works well for audio, fonts, etc.)
-          const a = document.createElement("a");
-          a.href = fileUrl;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        }
-
-        incrementDownload(resource.id);
-        return true;
-      } catch (err) {
-        console.error("Download failed", err);
-        return false;
-      }
-    },
-    [incrementDownload],
-  );
-
-  return {
-    resources,
-    selectedResource,
-    setSelectedResource,
-    searchQuery,
-    selectedCategory,
-    selectedSubcategory,
-    isLoading,
-    isSearching,
-    downloadCounts: externalDownloadCounts,
-    lastAction,
-    loadedFonts,
-    setLoadedFonts,
-    filteredResources,
-    hasCategoryResources,
-    handleSearchSubmit,
-    handleClearSearch,
-    handleCategoryChange,
-    handleSubcategoryChange,
-    sortOrder,
-    handleSortOrderChange: setSortOrder,
-    handleSearch,
-    handleDownload,
-  };
+    return {
+        resources,
+        selectedResource,
+        setSelectedResource,
+        searchQuery,
+        selectedCategory,
+        selectedSubcategory,
+        isLoading,
+        isSearching,
+        downloadCounts: externalDownloadCounts,
+        lastAction,
+        loadedFonts,
+        setLoadedFonts,
+        filteredResources,
+        availableSubcategories,
+        hasCategoryResources,
+        handleSearchSubmit,
+        handleClearSearch,
+        handleCategoryChange,
+        handleSubcategoryChange,
+        sortOrder,
+        handleSortOrderChange: setSortOrder,
+        handleSearch,
+        handleDownload,
+    };
 };

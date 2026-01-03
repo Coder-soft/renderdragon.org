@@ -30,7 +30,7 @@ class ErrorBoundary extends Component<Props, State> {
         <div className="w-full h-screen flex flex-col items-center justify-center bg-background text-white">
           <h1 className="text-2xl font-bold mb-4">Something went wrong.</h1>
           <p className="mb-4">We're sorry for the inconvenience. Please try refreshing the page.</p>
-          <button 
+          <button
             className="bg-cow-purple text-white px-4 py-2 rounded hover:bg-cow-purple-dark"
             onClick={() => this.setState({ hasError: false })}
           >
@@ -40,7 +40,7 @@ class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.props.children; 
+    return this.props.children;
   }
 }
 

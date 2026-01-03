@@ -4,13 +4,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // Use a broadly-typed client so we can work with tables created by migrations
 const sb = supabase as SupabaseClient;
 
-export type ShowcaseTag = "Animations" | "Images" | "Music/SFX";
+export type ShowcaseTag = "All";
 
 export type Showcase = {
   id: string;
   user_id: string;
   description: string | null;
-  tag: ShowcaseTag;
   created_at: string;
 };
 
@@ -22,42 +21,131 @@ export type ShowcaseAsset = {
   provider: "uploadthing" | "external";
   position: number;
   created_at: string;
+  filename?: string;
 };
 
-export async function listShowcases(search?: string, tag?: ShowcaseTag) {
-  let query = sb.from("showcases").select("*").order("created_at", { ascending: false });
-  if (search && search.trim()) {
-    // Simple ILIKE filter on description
-    query = query.ilike("description", `%${search.trim()}%`);
-  }
-  if (tag) {
-    query = query.eq("tag", tag);
-  }
-  const { data: showcases, error } = await query;
-  if (error) throw error;
-  if (!showcases || showcases.length === 0)
-    return { showcases: [] as Showcase[], assetsByShowcase: new Map<string, ShowcaseAsset[]>() };
+const ASSETS_API_BASE_URL = 'https://assets-api-worker.powernplant101-c6b.workers.dev';
 
-  const ids = (showcases as Array<{ id: string }>).map((s) => s.id);
-  const { data: assets, error: aErr } = await sb
-    .from("showcase_assets")
-    .select("*")
-    .in("showcase_id", ids)
-    .order("position", { ascending: true });
-  if (aErr) throw aErr;
-  const byShowcase = new Map<string, ShowcaseAsset[]>();
-  (assets as unknown as ShowcaseAsset[] | null)?.forEach((a) => {
-    const arr = byShowcase.get(a.showcase_id) || [];
-    arr.push(a);
-    byShowcase.set(a.showcase_id, arr);
-  });
-  return { showcases: showcases as unknown as Showcase[], assetsByShowcase: byShowcase };
+export interface NewApiAsset {
+  _id: string;
+  _creationTime: number;
+  email: string;
+  filename: string;
+  message: string;
+  slug: string;
+  storageId: string;
+  url: string;
+}
+
+export async function listShowcases(search?: string) {
+  // Fetch only from New Assets API
+  let newApiShowcases: Showcase[] = [];
+  let newApiAssetsByShowcase = new Map<string, ShowcaseAsset[]>();
+
+  try {
+    const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`);
+    if (response.ok) {
+      const assets: NewApiAsset[] = await response.json();
+
+      assets.forEach((asset) => {
+        let description = asset.message;
+
+        // Apply filters
+        if (search && !description.toLowerCase().includes(search.toLowerCase()) && !asset.filename.toLowerCase().includes(search.toLowerCase())) return;
+
+        const showcaseId = `new-${asset._id}`;
+        newApiShowcases.push({
+          id: showcaseId,
+          user_id: asset.email, // Using email as a unique identifier for profile fetching
+          description: description,
+          created_at: new Date(asset._creationTime).toISOString(),
+        });
+
+        const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(asset.filename);
+        const isVideo = /\.(mp4|mov|webm)(\?|$)/i.test(asset.filename);
+        const isAudio = /\.(mp3|wav|flac|ogg|aac|m4a)(\?|$)/i.test(asset.filename);
+        const kind: ShowcaseAsset["kind"] = isImage ? "image" : isVideo ? "video" : isAudio ? "audio" : "file";
+
+        newApiAssetsByShowcase.set(showcaseId, [{
+          id: asset.storageId,
+          showcase_id: showcaseId,
+          kind: kind,
+          url: asset.url,
+          provider: "external",
+          position: 0,
+          created_at: new Date(asset._creationTime).toISOString(),
+          filename: asset.filename,
+        }]);
+      });
+    }
+  } catch (err) {
+    console.error("Failed to fetch from new Assets API:", err);
+  }
+
+  // Sort by creation time
+  const allShowcases = newApiShowcases.sort((a, b) =>
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  return { showcases: allShowcases, assetsByShowcase: newApiAssetsByShowcase };
+}
+
+export type ShowcaseWithAssets = Showcase & {
+  assets: ShowcaseAsset[];
+  profile?: {
+    display_name?: string | null;
+    avatar_url?: string | null;
+    email?: string | null;
+    username?: string | null
+  }
+};
+
+export async function getShowcasesWithProfiles(search?: string): Promise<ShowcaseWithAssets[]> {
+  const { showcases, assetsByShowcase } = await listShowcases(search);
+
+  const legacyIds = showcases.filter(s => !s.id.startsWith('new-')).map(s => s.user_id);
+  const newEmails = showcases.filter(s => s.id.startsWith('new-')).map(s => s.user_id);
+
+  const profilesMap: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
+
+  if (legacyIds.length > 0 || newEmails.length > 0) {
+    let query = sb.from("profiles").select("id, display_name, email, avatar_url, username");
+
+    const conditions: string[] = [];
+    if (legacyIds.length > 0) {
+      conditions.push(`id.in.(${legacyIds.join(',')})`);
+    }
+    if (newEmails.length > 0) {
+      // Emails need to be quoted for PostgREST filter syntax
+      const quotedEmails = newEmails.map(e => `"${e}"`).join(',');
+      conditions.push(`email.in.(${quotedEmails})`);
+    }
+
+    if (conditions.length > 0) {
+      query = query.or(conditions.join(','));
+    }
+
+    const { data } = await query;
+
+    if (data) {
+      for (const row of (data as any[])) {
+        // Populate map for both ID and Email to ensure lookup works
+        if (row.id) profilesMap[row.id] = row;
+        if (row.email) profilesMap[row.email] = row;
+      }
+    }
+  }
+
+  return showcases.map((s) => ({
+    ...s,
+    assets: assetsByShowcase.get(s.id) || [],
+    profile: profilesMap[s.user_id],
+  }));
 }
 
 export async function createShowcase(params: {
   description: string;
-  tag: ShowcaseTag;
-  assets: Array<{ url: string; kind: ShowcaseAsset["kind"]; provider: "uploadthing" | "external" }>;
+  file: File;
 }) {
   const {
     data: { user },
@@ -66,24 +154,33 @@ export async function createShowcase(params: {
   if (userErr) throw userErr;
   if (!user) throw new Error("Must be logged in to create a showcase");
 
-  const { data: showcase, error: sErr } = await sb
-    .from("showcases")
-    .insert({ user_id: user.id, description: params.description, tag: params.tag })
-    .select("*")
-    .single();
-  if (sErr) throw sErr;
+  const formData = new FormData();
+  formData.append('file', params.file);
+  // Auto-generate a slug: "user-timestamp-random"
+  const slug = `asset-${user.id.substring(0, 8)}-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+  formData.append('slug', slug);
+  // Pass the user's email automatically
+  formData.append('email', user.email || 'anonymous@renderdragon.org');
+  // Pass message directly
+  formData.append('message', params.description);
 
-  if (params.assets.length > 0) {
-    const toInsert = params.assets.map((a, idx) => ({
-      showcase_id: (showcase as any).id as string,
-      kind: a.kind,
-      url: a.url,
-      provider: a.provider,
-      position: idx,
-    }));
-    const { error: aErr } = await sb.from("showcase_assets").insert(toInsert as any[]);
-    if (aErr) throw aErr;
+  const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errData = await response.json();
+    throw new Error(errData.error || "Failed to upload asset to new API");
   }
 
-  return showcase as unknown as Showcase;
+  const result = await response.json();
+
+  // Return synthetic showcase object based on the upload
+  return {
+    id: `new-${result.id}`,
+    user_id: user.email || 'anonymous@renderdragon.org',
+    description: params.description,
+    created_at: new Date().toISOString()
+  } as Showcase;
 }

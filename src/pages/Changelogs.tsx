@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import DonateButton from '@/components/DonateButton';
+
 import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -80,7 +80,7 @@ export default function Changelogs() {
       </main>
 
       <Footer />
-      <DonateButton />
+
     </div>
   );
 }

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import DonateButton from "@/components/DonateButton";
+
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import VideoCardSkeleton from "@/components/skeletons/VideoCardSkeleton";
@@ -424,11 +424,10 @@ const Community = () => {
                                 </p>
                               </div>
                               <IconChevronRight
-                                className={`h-5 w-5 transition-transform duration-200 ${
-                                  openCategories.includes(category.id)
+                                className={`h-5 w-5 transition-transform duration-200 ${openCategories.includes(category.id)
                                     ? "transform rotate-90"
                                     : ""
-                                }`}
+                                  }`}
                               />
                             </div>
                           </CollapsibleTrigger>
@@ -564,7 +563,7 @@ const Community = () => {
       </main>
 
       <Footer />
-      <DonateButton />
+
 
       {/* Video Dialog */}
       <Dialog

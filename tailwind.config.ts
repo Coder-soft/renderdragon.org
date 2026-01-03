@@ -20,7 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				geist: ['Geist', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+				geist: ['Geist Sans', 'sans-serif'],
+				'geist-mono': ['Geist Mono', 'monospace'],
 				minecraftia: ['Minecraftia', 'monospace'],
 				vt323: ['VT323', 'monospace'],
 			},
@@ -137,7 +138,7 @@ export default {
 					'100%': { transform: 'translateX(100%)' }
 				},
 				'float': {
-					'0%, 100%': { 
+					'0%, 100%': {
 						transform: 'translateY(0)'
 					},
 					'50%': {
@@ -174,5 +175,6 @@ export default {
 			}
 		}
 	},
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;

@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   IconDownload,
   IconRefresh,
@@ -20,17 +21,47 @@ import {
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const BackgroundGenerator = () => {
   const [color, setColor] = useState("#9b87f5");
   const [size, setSize] = useState("1920x1080");
   const [spacing, setSpacing] = useState([10]);
   const [opacity, setOpacity] = useState([100]);
+  const [scale, setScale] = useState([100]);
+  const [isTransparent, setIsTransparent] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [textures, setTextures] = useState<any[]>([]);
+  const [visibleTexturesCount, setVisibleTexturesCount] = useState(40);
+  const [selectedTexture, setSelectedTexture] = useState<string | null>(null);
+  const [isLoadingTextures, setIsLoadingTextures] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const fetchTextures = async () => {
+      try {
+        setIsLoadingTextures(true);
+        const response = await fetch('https://hamburger-api.powernplant101-c6b.workers.dev/mcicons');
+        if (!response.ok) throw new Error('Failed to fetch textures');
+        const data = await response.json();
+        if (data && data.files) {
+          const filteredTextures = data.files.filter((f: any) => f.subcategory === 'textures');
+          setTextures(filteredTextures);
+        }
+      } catch (error) {
+        console.error("Error fetching textures:", error);
+        toast.error("Failed to load Minecraft Icons textures");
+      } finally {
+        setIsLoadingTextures(false);
+      }
+    };
+
+    fetchTextures();
+  }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -66,16 +97,19 @@ const BackgroundGenerator = () => {
     canvasHeight: number,
     imgSpacing: number,
     imgOpacity: number,
+    imgScale: number,
   ) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     // Set background color
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    if (!isTransparent) {
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    }
 
     // Calculate image size while maintaining aspect ratio
     const aspectRatio = img.width / img.height;
-    const patternHeight = 100; // Base pattern size
+    const patternHeight = 100 * (imgScale / 100); // Base pattern size scaled
     const patternWidth = patternHeight * aspectRatio;
 
     // Calculate spacing
@@ -95,11 +129,21 @@ const BackgroundGenerator = () => {
     ctx.globalAlpha = 1;
   };
 
+  // Debounced generation effect
+  useEffect(() => {
+    const sourceImage = selectedTexture || uploadedImage;
+    if (!sourceImage) return;
+
+    const timer = setTimeout(() => {
+      handleGenerate();
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [color, size, spacing[0], opacity[0], scale[0], uploadedImage, selectedTexture, isTransparent]);
+
   const handleGenerate = () => {
-    if (!uploadedImage) {
-      toast.error("Please upload an image first");
-      return;
-    }
+    const sourceImage = selectedTexture || uploadedImage;
+    if (!sourceImage) return;
 
     setIsGenerating(true);
 
@@ -108,6 +152,7 @@ const BackgroundGenerator = () => {
 
     // Create an image element from uploaded image
     const img = new Image();
+    img.crossOrigin = "Anonymous"; // Enable CORS for canvas
     img.onload = () => {
       // Get canvas
       const canvas = canvasRef.current;
@@ -122,24 +167,21 @@ const BackgroundGenerator = () => {
       if (!ctx) return;
 
       // Generate pattern
-      generatePattern(ctx, img, width, height, spacing[0], opacity[0]);
+      generatePattern(ctx, img, width, height, spacing[0], opacity[0], scale[0]);
 
       // Convert canvas to data URL
       const dataUrl = canvas.toDataURL("image/png");
       setGeneratedImage(dataUrl);
       setIsGenerating(false);
-
-      toast.success("Background generated!", {
-        description: "Ready to download",
-      });
     };
 
     img.onerror = () => {
       setIsGenerating(false);
-      toast.error("Failed to load image");
+      // Only toast on error if it's not just a transition state
+      console.error("Failed to load image for generation");
     };
 
-    img.src = uploadedImage;
+    img.src = sourceImage;
   };
 
   const handleDownload = () => {
@@ -195,7 +237,7 @@ const BackgroundGenerator = () => {
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
               <span className="text-cow-purple">Background</span> Generator
             </h1>
@@ -209,61 +251,138 @@ const BackgroundGenerator = () => {
               <div className="md:col-span-1 space-y-6 pixel-card">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Upload Image</label>
-                    <div className="flex space-x-2 items-center">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        ref={fileInputRef}
-                        className="hidden"
-                      />
-                      <Button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="pixel-btn-primary flex-grow flex items-center justify-center space-x-2"
-                      >
-                        <IconTrash className="h-5 w-5" />
-                        <span>Select Image</span>
-                      </Button>
-                      {uploadedImage && (
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={clearUploadedImage}
-                          className="pixel-corners"
-                        >
-                          <IconTrash className="h-5 w-5" />
-                        </Button>
-                      )}
-                    </div>
-                    {uploadedImage && (
-                      <div className="mt-2 relative border border-primary/20 rounded-sm overflow-hidden h-24 bg-black/10">
-                        <img
-                          src={uploadedImage}
-                          alt="Uploaded"
-                          className="h-full w-full object-contain"
-                        />
-                      </div>
-                    )}
+                    <label className="text-sm font-medium">Select Texture</label>
+                    <Tabs defaultValue="library" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 pixel-corners h-9 mb-2">
+                        <TabsTrigger value="library" className="text-xs">Library</TabsTrigger>
+                        <TabsTrigger value="upload" className="text-xs">Upload</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="library" className="mt-0">
+                        <div className="border border-primary/20 rounded-sm bg-black/10 overflow-hidden">
+                          <ScrollArea className="h-48 p-2">
+                            {isLoadingTextures ? (
+                              <div className="flex flex-col items-center justify-center h-full space-y-2 py-8">
+                                <IconRefresh className="h-5 w-5 animate-spin text-cow-purple" />
+                                <span className="text-xs text-muted-foreground">Loading icons...</span>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-4 gap-2">
+                                {textures.slice(0, visibleTexturesCount).map((texture) => (
+                                  <button
+                                    key={texture.id}
+                                    onClick={() => {
+                                      setSelectedTexture(texture.url);
+                                      setUploadedImage(null);
+                                      setGeneratedImage(null);
+                                    }}
+                                    className={`relative aspect-square border-2 rounded-sm overflow-hidden p-1 transition-all ${selectedTexture === texture.url
+                                      ? "border-cow-purple bg-cow-purple/20"
+                                      : "border-transparent hover:border-cow-purple/50 bg-white/5"
+                                      }`}
+                                    title={texture.title}
+                                  >
+                                    <img
+                                      src={texture.url}
+                                      alt={texture.title}
+                                      loading="lazy"
+                                      className="w-full h-full object-contain pixelated"
+                                    />
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            {textures.length > visibleTexturesCount && (
+                              <div className="mt-4 flex justify-center pb-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setVisibleTexturesCount(prev => prev + 40)}
+                                  className="text-xs pixel-corners h-8"
+                                >
+                                  Load More ({textures.length - visibleTexturesCount} remaining)
+                                </Button>
+                              </div>
+                            )}
+                          </ScrollArea>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="upload" className="mt-0">
+                        <div className="space-y-2">
+                          <div className="flex space-x-2 items-center">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              ref={fileInputRef}
+                              className="hidden"
+                            />
+                            <Button
+                              onClick={() => {
+                                fileInputRef.current?.click();
+                                setSelectedTexture(null);
+                              }}
+                              className="pixel-btn-primary flex-grow flex items-center justify-center space-x-2"
+                            >
+                              <IconUpload className="h-5 w-5" />
+                              <span>Select Image</span>
+                            </Button>
+                            {uploadedImage && (
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={clearUploadedImage}
+                                className="pixel-corners"
+                              >
+                                <IconTrash className="h-5 w-5" />
+                              </Button>
+                            )}
+                          </div>
+                          {uploadedImage && (
+                            <div className="mt-2 relative border border-primary/20 rounded-sm overflow-hidden h-24 bg-black/10">
+                              <img
+                                src={uploadedImage}
+                                alt="Uploaded"
+                                className="h-full w-full object-contain"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Background Color
-                    </label>
-                    <div className="flex space-x-2">
-                      <Input
-                        type="color"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        className="w-14 h-10 p-1 cursor-pointer border-none"
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="transparent-mode" className="text-sm font-medium">Transparent Background</label>
+                      <Switch
+                        id="transparent-mode"
+                        checked={isTransparent}
+                        onCheckedChange={setIsTransparent}
                       />
-                      <Input
-                        type="text"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        className="pixel-corners flex-grow"
-                      />
+                    </div>
+
+                    <div className={`space-y-2 ${isTransparent ? 'opacity-50 pointer-events-none' : ''}`}>
+                      <label className="text-sm font-medium">
+                        Background Color
+                      </label>
+                      <div className="flex space-x-2">
+                        <Input
+                          type="color"
+                          value={color}
+                          onChange={(e) => setColor(e.target.value)}
+                          className="w-14 h-10 p-1 cursor-pointer border-none"
+                          disabled={isTransparent}
+                        />
+                        <Input
+                          type="text"
+                          value={color}
+                          onChange={(e) => setColor(e.target.value)}
+                          className="pixel-corners flex-grow"
+                          disabled={isTransparent}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -302,6 +421,23 @@ const BackgroundGenerator = () => {
                   </div>
 
                   <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <label className="text-sm font-medium">Scale</label>
+                      <span className="text-xs text-muted-foreground">
+                        {scale[0]}%
+                      </span>
+                    </div>
+                    <Slider
+                      value={scale}
+                      onValueChange={setScale}
+                      min={10}
+                      max={300}
+                      step={5}
+                      className="pixel-corners"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
                     <label className="text-sm font-medium">Size</label>
                     <Select value={size} onValueChange={setSize}>
                       <SelectTrigger className="pixel-corners">
@@ -317,6 +453,9 @@ const BackgroundGenerator = () => {
                         <SelectItem value="2560x1440">
                           2560x1440 (16:9)
                         </SelectItem>
+                        <SelectItem value="3840x2160">
+                          3840x2160 (16:9)
+                        </SelectItem>
                         <SelectItem value="1080x1080">
                           1080x1080 (1:1)
                         </SelectItem>
@@ -327,23 +466,6 @@ const BackgroundGenerator = () => {
                     </Select>
                   </div>
 
-                  <Button
-                    onClick={handleGenerate}
-                    disabled={isGenerating || !uploadedImage}
-                    className="w-full pixel-btn-primary flex items-center justify-center space-x-2 mt-4"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <IconRefresh className="h-5 w-5 animate-spin" />
-                        <span>Generating...</span>
-                      </>
-                    ) : (
-                      <>
-                        <IconPhoto className="h-5 w-5" />
-                        <span>Generate Background</span>
-                      </>
-                    )}
-                  </Button>
                 </div>
               </div>
 
@@ -354,30 +476,30 @@ const BackgroundGenerator = () => {
 
                 <div className="flex-grow flex items-center justify-center bg-black/20 rounded-md overflow-hidden relative min-h-[300px]">
                   {generatedImage ? (
-                    <img
-                      src={generatedImage}
-                      alt="Generated background"
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  ) : isGenerating ? (
-                    <div className="text-center px-4 animate-pulse">
-                      <IconRefresh className="h-12 w-12 mx-auto mb-4 animate-spin" />
-                      <p className="text-muted-foreground">
-                        Generating your pattern background...
-                      </p>
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <img
+                        src={generatedImage}
+                        alt="Generated background"
+                        className={`max-w-full max-h-full object-contain transition-opacity duration-300 ${isGenerating ? 'opacity-50' : 'opacity-100'}`}
+                      />
+                      {isGenerating && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <IconRefresh className="h-12 w-12 animate-spin text-white drop-shadow-md" />
+                        </div>
+                      )}
                     </div>
-                  ) : uploadedImage ? (
-                    <div className="text-center px-4">
-                      <IconPhoto className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  ) : (uploadedImage || selectedTexture) ? (
+                    <div className="text-center px-4 animate-pulse">
+                      <IconRefresh className="h-12 w-12 mx-auto mb-4 animate-spin text-muted-foreground" />
                       <p className="text-muted-foreground">
-                        Click 'Generate Background' to create your pattern
+                        Generating preview...
                       </p>
                     </div>
                   ) : (
                     <div className="text-center px-4">
-                      <IconTrash className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                      <IconPhoto className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-muted-foreground">
-                        Upload an image to get started
+                        Select a texture or upload an image to start
                       </p>
                     </div>
                   )}
@@ -416,9 +538,9 @@ const BackgroundGenerator = () => {
                   <div className="h-12 w-12 bg-cow-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="font-vt323 text-xl">2</span>
                   </div>
-                  <h3 className="font-vt323 mb-2">Generate</h3>
+                  <h3 className="font-vt323 mb-2">Adjust</h3>
                   <p className="text-sm text-muted-foreground">
-                    Click the generate button and wait for your background
+                    Customize spacing, opacity, and color in real-time
                   </p>
                 </div>
 

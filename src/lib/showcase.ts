@@ -10,8 +10,8 @@ export type ShowcasePage = {
   slug: string
   title: string | null
   about: string | null
-  theme: any
-  layout: any
+  theme: Record<string, unknown>
+  layout: unknown[]
   cover_image_path: string | null
   avatar_image_path: string | null
   status: 'draft' | 'published' | 'unlisted'
@@ -56,10 +56,8 @@ export async function createShowcasePage(userId: string, opts?: { baseSlug?: str
   let candidate = base
   let suffix = 0
 
-  // ensure unique slug
-  // try up to 20 variants
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < 20; i++) {
+  // ensure unique slug - try up to 20 variants
+  for (let i = 0; i < 20; i += 1) {
     try {
       const { data, error } = await sb
         .from('showcase_pages')
@@ -79,9 +77,10 @@ export async function createShowcasePage(userId: string, opts?: { baseSlug?: str
 
       if (error) throw error
       return data as ShowcasePage
-    } catch (e: any) {
+    } catch (e: unknown) {
       // Unique constraint violation on slug, try next candidate
-      if (e?.code === '23505') {
+      const error = e as { code?: string };
+      if (error?.code === '23505') {
         suffix += 1
         candidate = `${base}-${suffix}`
         continue
@@ -141,9 +140,10 @@ export async function listCarousel(pageId: string) {
       .order('position', { ascending: true })
     if (error) throw error
     return (data || []) as ShowcaseMedia[]
-  } catch (e: any) {
+  } catch (e: unknown) {
     // If the position column doesn't exist yet, fall back to created_at ordering
-    if (e?.code === '42703') {
+    const error = e as { code?: string };
+    if (error?.code === '42703') {
       const { data, error } = await sb
         .from('showcase_media')
         .select('*')

@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .vercel
 .env
+*.timestamp-*.mjs
+api_docs.md
