@@ -7,8 +7,16 @@ import './global.css';
 import '@fontsource/geist-sans';
 import '@fontsource/geist-mono';
 
+import { PostHogProvider } from 'posthog-js/react'
+
+const options = {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={options}>
+      <App />
+    </PostHogProvider>
   </React.StrictMode>
 );
