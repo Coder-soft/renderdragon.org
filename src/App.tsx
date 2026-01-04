@@ -11,6 +11,7 @@ import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { IconLoader2 } from "@tabler/icons-react";
 import DonateButton from "@/components/DonateButton";
+import { AdBlockDetector } from "@/components/AdBlockDetector";
 
 // Global components wrapper to use hooks like useLocation
 const GlobalComponents = () => {
@@ -18,7 +19,12 @@ const GlobalComponents = () => {
   const hideDonateButton = location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/account');
 
-  return !hideDonateButton ? <DonateButton /> : null;
+  return (
+    <>
+      {!hideDonateButton && <DonateButton />}
+      <AdBlockDetector />
+    </>
+  );
 };
 
 // Lazy Pages
