@@ -24,14 +24,14 @@ const FeaturedResources = () => {
         const allResources: Resource[] = Object.entries(resourcesData).flatMap(
           ([category, resources]) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (resources as any[]).map((resource) => ({ 
-              ...resource, 
+            (resources as any[]).map((resource) => ({
+              ...resource,
               category: category as 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets',
             })),
         );
-        
+
         const sortedResources = [...allResources].slice(0, 4);
-        
+
         setFeaturedResources(sortedResources);
         setIsLoading(false);
       } catch (error) {
@@ -68,7 +68,7 @@ const FeaturedResources = () => {
   return (
     <section className="py-20 bg-background cow-grid-bg">
       <div className="container mx-auto px-4">
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -90,7 +90,7 @@ const FeaturedResources = () => {
             ))}
           </div>
         ) : (
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
             variants={containerVariants}
             initial="hidden"
@@ -110,8 +110,7 @@ const FeaturedResources = () => {
                 >
                   <ResourceCard
                     resource={resource}
-                    downloadCount={0}
-                    onClick={() => {}} 
+                    onClick={() => { }}
                   />
                 </Link>
               </motion.div>
@@ -119,15 +118,15 @@ const FeaturedResources = () => {
           </motion.div>
         )}
 
-        <motion.div 
+        <motion.div
           className="text-center mt-10"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6 }}
         >
-          <Link 
-            to="/resources" 
+          <Link
+            to="/resources"
             className="pixel-btn-secondary inline-flex items-center space-x-2 group"
           >
             <span>View All</span>

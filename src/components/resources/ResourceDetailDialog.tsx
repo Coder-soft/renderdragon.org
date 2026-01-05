@@ -18,7 +18,6 @@ interface ResourceDetailDialogProps {
   resource: Resource | null;
   onClose: () => void;
   onDownload: (resource: Resource) => void;
-  downloadCount: number;
   loadedFonts: string[];
   setLoadedFonts: (fonts: string[]) => void;
   filteredResources: Resource[]; // Add this prop
@@ -30,7 +29,6 @@ const ResourceDetailDialog = ({
   resource,
   onClose,
   onDownload,
-  downloadCount,
   loadedFonts,
   setLoadedFonts,
   filteredResources,
@@ -179,11 +177,6 @@ const ResourceDetailDialog = ({
                 {resource.subcategory && (
                   <span className="ml-1">({resource.subcategory})</span>
                 )}
-              </Badge>
-
-              <Badge variant="outline" className="bg-blue-500/10 text-blue-500">
-                <IconDownload className="h-3 w-3 mr-1" />
-                {downloadCount || 0} downloads
               </Badge>
             </div>
           </DialogDescription>
