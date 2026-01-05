@@ -10,12 +10,30 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+const ADBLOCK_CACHE_KEY = 'adblock_warning_dismissed';
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+
 export function AdBlockDetector() {
     const [isBlocked, setIsBlocked] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
+    const handleContinue = () => {
+        localStorage.setItem(ADBLOCK_CACHE_KEY, Date.now().toString());
+        setIsOpen(false);
+    };
+
     useEffect(() => {
         const checkAdBlock = async () => {
+            // Check cache first
+            const dismissedAt = localStorage.getItem(ADBLOCK_CACHE_KEY);
+            if (dismissedAt) {
+                const timePassed = Date.now() - parseInt(dismissedAt, 10);
+                if (timePassed < CACHE_DURATION) {
+                    console.log('AdBlock warning recently dismissed, skipping check.');
+                    return;
+                }
+            }
+
             try {
                 const host = import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
                 // Try fetching the /decide endpoint which is critical for PostHog and often blocked
@@ -60,7 +78,7 @@ export function AdBlockDetector() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setIsOpen(false)}>Continue with AdBlocker</AlertDialogCancel>
+                    <AlertDialogCancel onClick={handleContinue}>Continue with AdBlocker</AlertDialogCancel>
                     <AlertDialogAction onClick={() => window.location.reload()}>I've Disabled It (Refresh)</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
