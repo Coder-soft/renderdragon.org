@@ -5,7 +5,6 @@ import Footer from '@/components/Footer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { useResources } from '@/hooks/useResources';
-import { useDownloadCounts } from '@/hooks/useDownloadCounts';
 import { Resource } from '@/types/resources';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
@@ -54,8 +53,6 @@ const ResourcesHub = () => {
     handleDownload,
     availableSubcategories,
   } = useResources();
-
-  const { downloadCounts } = useDownloadCounts();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
@@ -192,7 +189,6 @@ const ResourcesHub = () => {
                       isSearching={isSearching}
                       selectedCategory={selectedCategory}
                       searchQuery={searchQuery}
-                      downloadCounts={downloadCounts}
                       onSelectResource={setSelectedResource}
                       onClearFilters={handleClearSearch}
                       hasCategoryResources={hasCategoryResources}
@@ -213,7 +209,6 @@ const ResourcesHub = () => {
           resource={selectedResource}
           onClose={() => setSelectedResource(null)}
           onDownload={onDownload}
-          downloadCount={selectedResource ? downloadCounts[selectedResource.id] || 0 : 0}
           loadedFonts={loadedFonts}
           setLoadedFonts={setLoadedFonts}
           filteredResources={filteredResources}

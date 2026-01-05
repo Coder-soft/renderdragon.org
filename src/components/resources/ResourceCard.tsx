@@ -10,11 +10,10 @@ import AudioPlayer from '@/components/AudioPlayer';
 
 interface ResourceCardProps {
     resource: Resource;
-    downloadCount: number;
     onClick: (resource: Resource) => void;
 }
 
-const ResourceCard = ({ resource, downloadCount, onClick }: ResourceCardProps) => {
+const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const { user } = useAuth();
     const { toggleFavorite, isFavorited } = useUserFavorites();
