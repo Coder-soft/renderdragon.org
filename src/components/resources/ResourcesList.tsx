@@ -22,7 +22,6 @@ interface ResourcesListProps {
   isSearching: boolean;
   selectedCategory: string | null;
   searchQuery: string;
-  downloadCounts: Record<string, number>;
   onSelectResource: (resource: Resource) => void;
   onClearFilters: () => void;
   hasCategoryResources: boolean;
@@ -35,7 +34,6 @@ const ResourcesList = ({
   isSearching,
   selectedCategory,
   searchQuery,
-  downloadCounts,
   onSelectResource,
   onClearFilters,
   hasCategoryResources,
@@ -181,7 +179,6 @@ const ResourcesList = ({
           >
             <ResourceCard
               resource={resource}
-              downloadCount={downloadCounts[resource.id] || 0}
               onClick={onSelectResource}
             />
           </motion.div>

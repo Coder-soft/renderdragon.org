@@ -1,15 +1,13 @@
 import { motion } from 'framer-motion';
 import { useUserFavorites } from '@/hooks/useUserFavorites';
 import { useResources } from '@/hooks/useResources';
-import { useDownloadCounts } from '@/hooks/useDownloadCounts';
 import ResourceCard from './ResourceCard';
 import ResourceCardSkeleton from './ResourceCardSkeleton';
 import { IconHeart } from '@tabler/icons-react';
 
 const FavoritesTab = () => {
-  const {favorites, isLoading: favoritesLoading } = useUserFavorites();
+  const { favorites, isLoading: favoritesLoading } = useUserFavorites();
   const { resources, isLoading: resourcesLoading, setSelectedResource } = useResources();
-  const { downloadCounts } = useDownloadCounts();
 
   const isLoading = favoritesLoading || resourcesLoading;
 
@@ -47,7 +45,6 @@ const FavoritesTab = () => {
         <ResourceCard
           key={resource.id}
           resource={resource}
-          downloadCount={downloadCounts[resource.id] || 0}
           onClick={setSelectedResource}
         />
       ))}
