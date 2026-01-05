@@ -61,7 +61,7 @@ export function AdBlockDetector() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel onClick={() => setIsOpen(false)}>Continue with AdBlocker</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => window.location.reload()}>I've Disabled It (Refersh)</AlertDialogAction>
+                    <AlertDialogAction onClick={() => window.location.reload()}>I've Disabled It (Refresh)</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
