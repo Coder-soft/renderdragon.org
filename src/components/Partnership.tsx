@@ -26,7 +26,7 @@ const Partnership = () => {
     },
     {
       name: "Proger's Kitchen",
-      description: 'A place for developers to share their creations and get feedback.',
+      description: 'A place for Minecraft content creators to share their creations and get feedback.',
       logo: "/assets/progerskitchen.webp",
       url: "https://discord.gg/wXhHe5bVgz",
     },

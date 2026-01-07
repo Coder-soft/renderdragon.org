@@ -32,8 +32,8 @@ const Testimonials = () => {
     {
       id: 4,
       name: "ItsProger",
-      role: 'Developer',
-      content: 'As a developer, I appreciate the quality of the code and the ease of use of the tools.',
+      role: 'Minecraft YouTuber and Thumbnail Designer',
+      content: "I really like renderdragon, it's one of the only and best websites for Minecraft content creators. I really like the style, assets, tools and the whole team working on this amazing project. I'll use it for every single video that I make in the future",
     }
   ];
 
@@ -67,9 +67,9 @@ const Testimonials = () => {
         <div className="absolute top-1/4 right-1/4 w-4 h-10 bg-cow-purple pixel-corners"></div>
         <div className="absolute bottom-1/3 left-1/3 w-10 h-4 bg-cow-purple pixel-corners"></div>
       </div>
-      
+
       <div className="container mx-auto px-4">
-        <motion.h2 
+        <motion.h2
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -78,8 +78,8 @@ const Testimonials = () => {
         >
           What <span className="text-cow-purple">Creators</span> Say About Us
         </motion.h2>
-        
-        <motion.p 
+
+        <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -88,8 +88,8 @@ const Testimonials = () => {
         >
           Don't just take our word for it - here's what our community has to say.
         </motion.p>
-        
-        <motion.div 
+
+        <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
@@ -97,7 +97,7 @@ const Testimonials = () => {
           className="grid grid-cols-1 sm:grid-cols-2 gap-8"
         >
           {testimonialsData.map((testimonial) => (
-            <motion.div 
+            <motion.div
               key={testimonial.id}
               variants={item}
               className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 pixel-corners"
@@ -106,9 +106,9 @@ const Testimonials = () => {
               <div className="p-6 bg-gradient-to-r from-cow-purple/10 to-transparent border-b border-border">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 overflow-hidden border-2 border-cow-purple/30 rounded-full">
-                    <img 
+                    <img
                       src={`/assets/${testimonial.name}.jpg`}
-                      alt={testimonial.name} 
+                      alt={testimonial.name}
                       className="w-full h-full object-cover rounded-full"
                       loading="lazy"
                     />
