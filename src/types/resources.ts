@@ -1,7 +1,7 @@
 
 
 export interface Resource {
-  id: number;
+  id: number | string;
   title: string;
   category: 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets' | 'minecraft-icons';
   subcategory?: string;

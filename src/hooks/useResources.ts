@@ -62,13 +62,14 @@ export const useResources = () => {
                             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                             .join(' ');
 
-                        let categoryName = category as Category;
-                        if (category === 'mcicons') {
+                        // Standardize category name
+                        let categoryName = category as any;
+                        if (category === 'mcicons' || category === 'minecraft-icons') {
                             categoryName = 'minecraft-icons';
                         }
 
                         allResources.push({
-                            id: file.id,
+                            id: `main-${file.id}`, // Ensure unique ID
                             title: formattedTitle,
                             category: categoryName,
                             subcategory,
@@ -92,7 +93,7 @@ export const useResources = () => {
                         .join(' ');
 
                     allResources.push({
-                        id: file.id,
+                        id: `hbg-${file.id}`, // Ensure unique ID
                         title: formattedTitle,
                         category: 'minecraft-icons',
                         subcategory: file.subcategory, // Directly use the subcategory from API
@@ -131,10 +132,8 @@ export const useResources = () => {
     const handleCategoryChange = useCallback(
         (category: Category | null | "favorites") => {
             setSelectedCategory(category);
-            // When changing category, reset subcategory unless we're selecting 'presets'
-            if (category !== "presets") {
-                setSelectedSubcategory(null);
-            }
+            // Always reset subcategory when changing category
+            setSelectedSubcategory(null);
             setLastAction("category");
         },
         [],
@@ -158,6 +157,15 @@ export const useResources = () => {
         }
     }, []);
 
+    // Derive unique subcategories for the current selected category
+    const availableSubcategories = useMemo(() => {
+        if (!selectedCategory || selectedCategory === "favorites") return [];
+        const subs = resources
+            .filter(r => r.category === selectedCategory && r.subcategory)
+            .map(r => r.subcategory as string);
+        return Array.from(new Set(subs)).sort();
+    }, [resources, selectedCategory]);
+
     // Check if we have resources in the current selected category
     const hasCategoryResources = useMemo(() => {
         if (!selectedCategory || selectedCategory === "favorites") return true;
@@ -168,20 +176,30 @@ export const useResources = () => {
     const filteredResources = useMemo(() => {
         let result = [...resources];
 
+        // Helper to get download count for sorting
+        const getCount = (id: string | number) => {
+            if (typeof id === 'number') return externalDownloadCounts[id] || 0;
+            if (id.startsWith('main-')) {
+                const numericId = id.replace('main-', '');
+                return externalDownloadCounts[numericId] || 0;
+            }
+            return externalDownloadCounts[id] || 0;
+        };
+
         // Filter by Category
         if (selectedCategory && selectedCategory !== "favorites") {
             result = result.filter(r => r.category === selectedCategory);
         } else if (selectedCategory === null) {
-            // Exclude 'minecraft-icons' and 'mcicons' from the All tab
-            result = result.filter(r => r.category !== 'minecraft-icons' && (r as any).category !== 'mcicons');
+            // Exclude 'minecraft-icons' from the All tab
+            result = result.filter(r => r.category !== 'minecraft-icons');
         }
 
         // Filter by Subcategory
         if (selectedSubcategory && selectedSubcategory !== "all") {
-            result = result.filter(r => {
-                if (r.subcategory === selectedSubcategory) return true;
-                return false;
-            });
+            // Only apply subcategory filter if the subcategory is valid for the current category
+            if (availableSubcategories.includes(selectedSubcategory)) {
+                result = result.filter(r => r.subcategory === selectedSubcategory);
+            }
         }
 
         // Filter by Search
@@ -193,7 +211,7 @@ export const useResources = () => {
         // Sort
         switch (sortOrder) {
             case "popular":
-                result.sort((a, b) => (externalDownloadCounts[b.id] || 0) - (externalDownloadCounts[a.id] || 0));
+                result.sort((a, b) => getCount(b.id) - getCount(a.id));
                 break;
             case "a-z":
                 result.sort((a, b) => a.title.localeCompare(b.title));
@@ -210,15 +228,6 @@ export const useResources = () => {
 
         return result;
     }, [resources, selectedCategory, selectedSubcategory, searchQuery, sortOrder, externalDownloadCounts]);
-
-    // Derive unique subcategories for the current selected category
-    const availableSubcategories = useMemo(() => {
-        if (!selectedCategory || selectedCategory === "favorites") return [];
-        const subs = resources
-            .filter(r => r.category === selectedCategory && r.subcategory)
-            .map(r => r.subcategory as string);
-        return Array.from(new Set(subs)).sort();
-    }, [resources, selectedCategory]);
 
     const handleDownload = useCallback(
         async (resource: Resource): Promise<boolean> => {
