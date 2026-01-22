@@ -16,6 +16,12 @@ interface ResourceCardProps {
 const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const { user } = useAuth();
+
+    // Reset image loaded state when resource changes
+    useEffect(() => {
+        setIsImageLoaded(false);
+    }, [resource.id]);
+
     const { toggleFavorite, isFavorited } = useUserFavorites();
     const isFavorite = isFavorited(String(resource.id));
 

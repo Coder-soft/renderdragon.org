@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useDownloadCounts = () => {
-  const [downloadCounts, setDownloadCounts] = useState<Record<number, number>>({});
+  const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -19,10 +19,10 @@ export const useDownloadCounts = () => {
         if (data) {
           const mapped = data.reduce((acc, row) => {
             if (row.resource_id) {
-              acc[row.resource_id] = row.count || 0;
+              acc[row.resource_id.toString()] = row.count || 0;
             }
             return acc;
-          }, {} as Record<number, number>);
+          }, {} as Record<string, number>);
           setDownloadCounts(mapped);
         }
       } catch (err) {
@@ -33,28 +33,42 @@ export const useDownloadCounts = () => {
     fetchCounts();
   }, []);
 
-  const incrementDownload = useCallback(async (resourceId: number) => {
+  const incrementDownload = useCallback(async (resourceId: string | number) => {
     try {
-      const currentCount = downloadCounts[resourceId] || 0;
+      const resIdStr = resourceId.toString();
+      const currentCount = downloadCounts[resIdStr] || 0;
       const newCount = currentCount + 1;
 
-      const { error } = await supabase
-        .from('downloads')
-        .upsert({
-          resource_id: resourceId,
-          count: newCount
-        }, {
-          onConflict: 'resource_id'
-        });
+      // Extract numeric ID if possible for DB persistence
+      let numericId: number | null = null;
+      if (typeof resourceId === 'number') {
+        numericId = resourceId;
+      } else if (resourceId.startsWith('main-')) {
+        const idPart = resourceId.replace('main-', '');
+        if (!isNaN(Number(idPart))) {
+          numericId = Number(idPart);
+        }
+      }
 
-      if (error) {
-        console.error('Error incrementing download count:', error);
-        return;
+      if (numericId !== null) {
+        const { error } = await supabase
+          .from('downloads')
+          .upsert({
+            resource_id: numericId,
+            count: newCount
+          }, {
+            onConflict: 'resource_id'
+          });
+
+        if (error) {
+          console.error('Error incrementing download count:', error);
+          return;
+        }
       }
 
       setDownloadCounts(prev => ({
         ...prev,
-        [resourceId]: newCount,
+        [resIdStr]: newCount,
       }));
     } catch (err) {
       console.error('Unexpected error incrementing download count:', err);
