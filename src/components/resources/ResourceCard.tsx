@@ -72,12 +72,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   }, []);
 
   useEffect(() => {
-    if (
-      !isInView ||
-      !isHovered ||
-      resource.category !== "fonts" ||
-      !resource.download_url
-    ) {
+    if (!isInView || resource.category !== "fonts" || !resource.download_url) {
       return;
     }
 
@@ -96,7 +91,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       .catch((err) => {
         console.error(`Failed to load font "${fontName}":`, err);
       });
-  }, [resource, isInView, isHovered]);
+  }, [resource, isInView]);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
