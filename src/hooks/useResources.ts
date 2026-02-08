@@ -16,7 +16,7 @@ type CachedPayload<T> = {
   data: T;
 };
 
-const CACHE_TTL_MS = 1000 * 60 * 60 * 6;
+const CACHE_TTL_MS = 1000 * 60 * 60 * 7; // 7 hours to overlap with 6-hour cron
 const INDEX_CACHE_KEY = "resources-cache:index-v1";
 const ALL_CACHE_KEY = "resources-cache:all-v1";
 const CATEGORY_CACHE_PREFIX = "resources-cache:category-v1:";
@@ -154,7 +154,7 @@ const writeCache = <T>(key: string, data: T) => {
 
 const fetchJson = async <T>(url: string): Promise<T | null> => {
   try {
-    const res = await fetch(url, { cache: "no-cache" });
+    const res = await fetch(url, { cache: "default" });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {

@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: export-resources
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   export:
@@ -41,7 +41,7 @@ jobs:
 
       - name: Commit updated resources
         run: |
-          if git status --porcelain | grep -E -q "public/resources/|public/resources.index.json|public/resources.all.json"; then
+          if git status --porcelain | grep -q "public/resources"; then
             git add public/resources public/resources.index.json public/resources.all.json
             git commit -m "chore: refresh resources JSON"
             git push
