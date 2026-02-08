@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-02-08T11:13:11.028Z",
+  "categories": {
+    "animations": {
+      "count": 100,
+      "file": "resources/animations.json"
+    },
+    "fonts": {
+      "count": 19,
+      "file": "resources/fonts.json"
+    },
+    "images": {
+      "count": 105,
+      "file": "resources/images.json"
+    },
+    "presets": {
+      "count": 100,
+      "file": "resources/presets.json"
+    },
+    "music": {
+      "count": 56,
+      "file": "resources/music.json"
+    },
+    "sfx": {
+      "count": 171,
+      "file": "resources/sfx.json"
+    },
+    "minecraft-icons": {
+      "count": 4703,
+      "file": "resources/minecraft-icons.json"
+    }
+  }
+}

@@ -1,7 +1,0 @@
-ignoredBuiltDependencies:
-  - '@swc/core'
-  - '@vercel/speed-insights'
-  - esbuild
-  - sharp
-onlyBuiltDependencies:
-  - ffmpeg-static
