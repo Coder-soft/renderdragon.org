@@ -1,300 +1,495 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Resource } from '@/types/resources';
-import { useDownloadCounts } from '@/hooks/useDownloadCounts';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Resource } from "@/types/resources";
+import { useDownloadCounts } from "@/hooks/useDownloadCounts";
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
 
+type IndexFile = {
+  generated_at?: string;
+  categories?: Record<string, { count: number; file: string }>;
+};
+
+type CachedPayload<T> = {
+  savedAt: number;
+  data: T;
+};
+
+const CACHE_TTL_MS = 1000 * 60 * 60 * 6;
+const INDEX_CACHE_KEY = "resources-cache:index-v1";
+const ALL_CACHE_KEY = "resources-cache:all-v1";
+const CATEGORY_CACHE_PREFIX = "resources-cache:category-v1:";
+
+const INDEX_URL = "/resources.index.json";
+const ALL_URL = "/resources.all.json";
+const LEGACY_URL = "/resources.json";
+const CATEGORY_DIR = "/resources";
+
+const isSafeUrl = (value?: string) => {
+  if (!value || typeof value !== "string") return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const pickFirstSafeUrl = (...candidates: Array<string | undefined>) =>
+  candidates.find((value) => isSafeUrl(value));
+
+const getExtension = (url?: string) => {
+  if (!url) return undefined;
+  const clean = url.split("?")[0];
+  const last = clean.split("/").pop();
+  if (!last || !last.includes(".")) return undefined;
+  return last.split(".").pop();
+};
+
+const normalizeCategoryItems = (category: string, items: any[]): Resource[] => {
+  const list = Array.isArray(items) ? items : [];
+  const normalized: Resource[] = [];
+
+  list.forEach((item, index) => {
+    let categoryName = category;
+    if (category === "minecraft_icons" || category === "mcicons") {
+      categoryName = "minecraft-icons";
+    }
+
+    const title = String(item?.title || "").trim();
+    if (!title) return;
+
+    const fallbackDownload = pickFirstSafeUrl(
+      item.download_url,
+      item.url,
+      item.preview_url,
+      item.image_url,
+    );
+
+    let inferredSubcategory: string | undefined = item.subcategory || undefined;
+    if (!inferredSubcategory && categoryName === "presets") {
+      const lower = (fallbackDownload || "").toLowerCase();
+      if (lower.includes("/adobe/")) inferredSubcategory = "adobe";
+      else if (lower.includes("/davinci/")) inferredSubcategory = "davinci";
+      else if (lower.includes("/previews/")) inferredSubcategory = "previews";
+    }
+
+    const filetype =
+      item.filetype || item.ext || getExtension(fallbackDownload);
+
+    normalized.push({
+      id: item.id ?? `${categoryName}-${index}`,
+      title,
+      category: categoryName as Resource["category"],
+      subcategory: inferredSubcategory,
+      credit: item.credit || undefined,
+      filetype,
+      download_url: fallbackDownload,
+      preview_url: item.preview_url || undefined,
+      image_url: item.image_url || undefined,
+      software: item.software || undefined,
+      description: item.description || undefined,
+    });
+  });
+
+  return normalized;
+};
+
+const normalizeGroupedOrFlat = (data: Record<string, any[]>): Resource[] => {
+  if (!data || typeof data !== "object") return [];
+
+  const source =
+    typeof (data as any).categories === "object" &&
+    (data as any).categories !== null
+      ? ((data as any).categories as Record<string, any[]>)
+      : data;
+
+  return Object.entries(source).flatMap(([category, items]) =>
+    normalizeCategoryItems(category, items as any[]),
+  );
+};
+
+const normalizeAllArray = (items: any[]): Resource[] => {
+  const list = Array.isArray(items) ? items : [];
+  const byCategory = new Map<string, any[]>();
+
+  list.forEach((item) => {
+    const category = String(item?.category || "uncategorized");
+    if (!byCategory.has(category)) byCategory.set(category, []);
+    byCategory.get(category)!.push(item);
+  });
+
+  return Array.from(byCategory.entries()).flatMap(([category, items]) =>
+    normalizeCategoryItems(category, items),
+  );
+};
+
+const readCache = <T>(key: string): T | null => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CachedPayload<T>;
+    if (!parsed?.savedAt || parsed?.data === undefined) return null;
+    if (Date.now() - parsed.savedAt > CACHE_TTL_MS) return null;
+    return parsed.data;
+  } catch {
+    return null;
+  }
+};
+
+const writeCache = <T>(key: string, data: T) => {
+  try {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        savedAt: Date.now(),
+        data,
+      } satisfies CachedPayload<T>),
+    );
+  } catch {
+    // ignore quota/storage errors
+  }
+};
+
+const fetchJson = async <T>(url: string): Promise<T | null> => {
+  try {
+    const res = await fetch(url, { cache: "no-cache" });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+};
+
 export const useResources = () => {
-    const [resources, setResources] = useState<Resource[]>([]);
-    const { downloadCounts: externalDownloadCounts, incrementDownload } =
-        useDownloadCounts();
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState<
-        Category | null | "favorites"
-    >(null);
-    const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-        null,
-    );
-    const [sortOrder, setSortOrder] = useState("newest");
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedResource, setSelectedResource] = useState<Resource | null>(
-        null,
-    );
-    const [isSearching, setIsSearching] = useState(false);
-    const [lastAction, setLastAction] = useState<string>("");
-    const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const { downloadCounts: externalDownloadCounts, incrementDownload } =
+    useDownloadCounts();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<
+    Category | null | "favorites"
+  >(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null,
+  );
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(
+    null,
+  );
+  const [isSearching, setIsSearching] = useState(false);
+  const [lastAction, setLastAction] = useState<string>("");
+  const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
 
-    const fetchResources = useCallback(async () => {
-        try {
-            setIsLoading(true);
+  const loadIndex = useCallback(async (): Promise<IndexFile | null> => {
+    const cached = readCache<IndexFile>(INDEX_CACHE_KEY);
+    if (cached) return cached;
 
-            // Fetch main resources and mcicons in parallel
-            const [resourcesRes, mciconsRes] = await Promise.all([
-                fetch('https://hamburger-api.powernplant101-c6b.workers.dev/all'),
-                fetch('https://hamburger-api.powernplant101-c6b.workers.dev/mcicons')
-            ]);
+    const index = await fetchJson<IndexFile>(INDEX_URL);
+    if (index?.categories) {
+      writeCache(INDEX_CACHE_KEY, index);
+      return index;
+    }
+    return null;
+  }, []);
 
-            if (!resourcesRes.ok) throw new Error(`Failed to fetch resources: ${resourcesRes.status}`);
-            if (!mciconsRes.ok) throw new Error(`Failed to fetch mcicons: ${mciconsRes.status}`);
+  const loadAllResources = useCallback(async (): Promise<Resource[]> => {
+    const cached = readCache<any>(ALL_CACHE_KEY);
+    if (cached) {
+      if (Array.isArray(cached)) return normalizeAllArray(cached);
+      return normalizeGroupedOrFlat(cached);
+    }
 
-            const data = await resourcesRes.json();
-            const mciconsData = await mciconsRes.json();
+    const allJson = await fetchJson<any>(ALL_URL);
+    if (allJson) {
+      writeCache(ALL_CACHE_KEY, allJson);
+      if (Array.isArray(allJson)) return normalizeAllArray(allJson);
+      return normalizeGroupedOrFlat(allJson);
+    }
 
-            const allResources: Resource[] = [];
+    const legacy = await fetchJson<any>(LEGACY_URL);
+    if (legacy) {
+      writeCache(ALL_CACHE_KEY, legacy);
+      return normalizeGroupedOrFlat(legacy);
+    }
 
-            // Parse main resources
-            if (data && data.categories) {
-                Object.entries(data.categories).forEach(([category, files]: [string, any[]]) => {
-                    files.forEach(file => {
-                        let subcategory: string | undefined = undefined;
-                        if (file.url) {
-                            if (file.url.includes('/adobe/')) subcategory = 'adobe';
-                            else if (file.url.includes('/davinci/')) subcategory = 'davinci';
-                            else if (file.url.includes('/PREVIEWS/')) subcategory = 'previews';
-                        }
+    return [];
+  }, []);
 
-                        const formattedTitle = file.title
-                            .replace(/_/g, ' ')
-                            .split(' ')
-                            .filter(Boolean)
-                            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                            .join(' ');
+  const loadCategoryResources = useCallback(
+    async (category: string): Promise<Resource[]> => {
+      const cacheKey = `${CATEGORY_CACHE_PREFIX}${category}`;
+      const cached = readCache<any>(cacheKey);
+      if (cached) return normalizeCategoryItems(category, cached);
 
-                        // Standardize category name
-                        let categoryName = category as any;
-                        if (category === 'mcicons' || category === 'minecraft-icons') {
-                            categoryName = 'minecraft-icons';
-                        }
+      const index = await loadIndex();
+      const fileFromIndex = index?.categories?.[category]?.file;
+      const categoryUrl = fileFromIndex
+        ? `/${fileFromIndex}`
+        : `${CATEGORY_DIR}/${category}.json`;
 
-                        allResources.push({
-                            id: `main-${file.id}`, // Ensure unique ID
-                            title: formattedTitle,
-                            category: categoryName,
-                            subcategory,
-                            credit: file.credit,
-                            filetype: file.ext,
-                            download_url: file.url,
-                        });
-                    });
-                });
-            }
+      const categoryJson = await fetchJson<any>(categoryUrl);
+      if (categoryJson) {
+        writeCache(cacheKey, categoryJson);
+        return normalizeCategoryItems(category, categoryJson);
+      }
 
-            // Parse mcicons from Hamburger API
-            if (mciconsData && mciconsData.files) {
-                mciconsData.files.forEach((file: any) => {
-                    const formattedTitle = file.title
-                        .replace(/_/g, ' ')
-                        .replace(/\.[^/.]+$/, "") // Remove extension if present in title
-                        .split(' ')
-                        .filter(Boolean)
-                        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                        .join(' ');
+      const legacy = await fetchJson<any>(LEGACY_URL);
+      if (legacy) {
+        writeCache(ALL_CACHE_KEY, legacy);
+        const source =
+          typeof legacy.categories === "object" && legacy.categories !== null
+            ? legacy.categories
+            : legacy;
+        const items = source?.[category] || [];
+        return normalizeCategoryItems(category, items);
+      }
 
-                    allResources.push({
-                        id: `hbg-${file.id}`, // Ensure unique ID
-                        title: formattedTitle,
-                        category: 'minecraft-icons',
-                        subcategory: file.subcategory, // Directly use the subcategory from API
-                        credit: file.credit || "",
-                        filetype: file.ext,
-                        download_url: file.url,
-                    });
-                });
-            }
+      return [];
+    },
+    [loadIndex],
+  );
 
-            setResources(allResources);
-        } catch (error) {
-            console.error("Error fetching resources:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+  const fetchResources = useCallback(async () => {
+    try {
+      setIsLoading(true);
 
-    // Initial load
-    useEffect(() => {
-        fetchResources();
-    }, [fetchResources]);
+      const mode =
+        selectedCategory === null || selectedCategory === "favorites"
+          ? "all"
+          : "category";
 
-    const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
-        e?.preventDefault();
-        setIsSearching(true);
-        setLastAction("search");
-    }, []);
+      if (mode === "all") {
+        const all = await loadAllResources();
+        setResources(all);
+        return;
+      }
 
-    const handleClearSearch = useCallback(() => {
-        setSearchQuery("");
-        setIsSearching(false);
-        setLastAction("clear");
-    }, []);
+      const categoryItems = await loadCategoryResources(
+        selectedCategory as string,
+      );
+      setResources(categoryItems);
+    } catch (error) {
+      console.error("Error fetching resources:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadAllResources, loadCategoryResources, selectedCategory]);
 
-    const handleCategoryChange = useCallback(
-        (category: Category | null | "favorites") => {
-            setSelectedCategory(category);
-            // Always reset subcategory when changing category
-            setSelectedSubcategory(null);
-            setLastAction("category");
-        },
-        [],
-    );
+  useEffect(() => {
+    fetchResources();
+  }, [fetchResources]);
 
-    const handleSubcategoryChange = useCallback(
-        (subcategory: Subcategory | "all" | null) => {
-            setSelectedSubcategory(subcategory);
-            setLastAction("subcategory");
-        },
-        [],
-    );
+  const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
+    e?.preventDefault();
+    setIsSearching(true);
+    setLastAction("search");
+  }, []);
 
-    const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
-        setLastAction("search");
-        if (e.target.value === "") {
-            setIsSearching(false);
-        } else {
-            setIsSearching(true);
-        }
-    }, []);
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery("");
+    setIsSearching(false);
+    setLastAction("clear");
+  }, []);
 
-    // Derive unique subcategories for the current selected category
-    const availableSubcategories = useMemo(() => {
-        if (!selectedCategory || selectedCategory === "favorites") return [];
-        const subs = resources
-            .filter(r => r.category === selectedCategory && r.subcategory)
-            .map(r => r.subcategory as string);
-        return Array.from(new Set(subs)).sort();
-    }, [resources, selectedCategory]);
+  const handleCategoryChange = useCallback(
+    (category: Category | null | "favorites") => {
+      setSelectedCategory(category);
+      setSelectedSubcategory(null);
+      setLastAction("category");
+    },
+    [],
+  );
 
-    // Check if we have resources in the current selected category
-    const hasCategoryResources = useMemo(() => {
-        if (!selectedCategory || selectedCategory === "favorites") return true;
-        return resources.some((resource) => resource.category === selectedCategory);
-    }, [resources, selectedCategory]);
+  const handleSubcategoryChange = useCallback(
+    (subcategory: Subcategory | "all" | null) => {
+      setSelectedSubcategory(subcategory);
+      setLastAction("subcategory");
+    },
+    [],
+  );
 
-    // Determine which resources to display based on filters and sorting
-    const filteredResources = useMemo(() => {
-        let result = [...resources];
+  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setLastAction("search");
+    if (e.target.value === "") {
+      setIsSearching(false);
+    } else {
+      setIsSearching(true);
+    }
+  }, []);
 
-        // Helper to get download count for sorting
-        const getCount = (id: string | number) => {
-            if (typeof id === 'number') return externalDownloadCounts[id] || 0;
-            if (id.startsWith('main-')) {
-                const numericId = id.replace('main-', '');
-                return externalDownloadCounts[numericId] || 0;
-            }
-            return externalDownloadCounts[id] || 0;
-        };
+  const availableSubcategories = useMemo(() => {
+    if (!selectedCategory || selectedCategory === "favorites") return [];
+    const subs = resources
+      .filter((r) => r.category === selectedCategory && r.subcategory)
+      .map((r) => r.subcategory as string);
+    return Array.from(new Set(subs)).sort();
+  }, [resources, selectedCategory]);
 
-        // Filter by Category
-        if (selectedCategory && selectedCategory !== "favorites") {
-            result = result.filter(r => r.category === selectedCategory);
-        } else if (selectedCategory === null) {
-            // Exclude 'minecraft-icons' from the All tab
-            result = result.filter(r => r.category !== 'minecraft-icons');
-        }
+  const hasCategoryResources = useMemo(() => {
+    if (!selectedCategory || selectedCategory === "favorites") return true;
+    return resources.some((resource) => resource.category === selectedCategory);
+  }, [resources, selectedCategory]);
 
-        // Filter by Subcategory
-        if (selectedSubcategory && selectedSubcategory !== "all") {
-            // Only apply subcategory filter if the subcategory is valid for the current category
-            if (availableSubcategories.includes(selectedSubcategory)) {
-                result = result.filter(r => r.subcategory === selectedSubcategory);
-            }
-        }
+  const filteredResources = useMemo(() => {
+    let result = [...resources];
 
-        // Filter by Search
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            result = result.filter(r => r.title.toLowerCase().includes(query));
-        }
-
-        // Sort
-        switch (sortOrder) {
-            case "popular":
-                result.sort((a, b) => getCount(b.id) - getCount(a.id));
-                break;
-            case "a-z":
-                result.sort((a, b) => a.title.localeCompare(b.title));
-                break;
-            case "z-a":
-                result.sort((a, b) => b.title.localeCompare(a.title));
-                break;
-            case "newest":
-            default:
-                // Fallback to ID sort since we don't have dates, higher ID = newer usually
-                result.sort((a, b) => b.id - a.id);
-                break;
-        }
-
-        return result;
-    }, [resources, selectedCategory, selectedSubcategory, searchQuery, sortOrder, externalDownloadCounts]);
-
-    const handleDownload = useCallback(
-        async (resource: Resource): Promise<boolean> => {
-            if (!resource || !resource.download_url) return false;
-
-            const fileUrl = resource.download_url;
-            const filename = `${resource.title}.${resource.filetype || "file"}`;
-
-            const shouldForceDownload = ["presets", "images", "animations", "fonts", "music", "sfx", "minecraft-icons"].includes(
-                resource.category,
-            );
-
-            try {
-                if (shouldForceDownload) {
-                    const res = await fetch(fileUrl);
-                    if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
-                    const blob = await res.blob();
-
-                    const a = document.createElement("a");
-                    a.href = URL.createObjectURL(blob);
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    URL.revokeObjectURL(a.href);
-                } else {
-                    const a = document.createElement("a");
-                    a.href = fileUrl;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                }
-
-                incrementDownload(resource.id);
-                return true;
-            } catch (err) {
-                console.error("Download failed", err);
-                return false;
-            }
-        },
-        [incrementDownload],
-    );
-
-    return {
-        resources,
-        selectedResource,
-        setSelectedResource,
-        searchQuery,
-        selectedCategory,
-        selectedSubcategory,
-        isLoading,
-        isSearching,
-        downloadCounts: externalDownloadCounts,
-        lastAction,
-        loadedFonts,
-        setLoadedFonts,
-        filteredResources,
-        availableSubcategories,
-        hasCategoryResources,
-        handleSearchSubmit,
-        handleClearSearch,
-        handleCategoryChange,
-        handleSubcategoryChange,
-        sortOrder,
-        handleSortOrderChange: setSortOrder,
-        handleSearch,
-        handleDownload,
+    const getCount = (id: string | number) => {
+      if (typeof id === "number") return externalDownloadCounts[id] || 0;
+      if (id.startsWith("main-")) {
+        const numericId = id.replace("main-", "");
+        return externalDownloadCounts[numericId] || 0;
+      }
+      return externalDownloadCounts[id] || 0;
     };
+
+    if (selectedCategory && selectedCategory !== "favorites") {
+      result = result.filter((r) => r.category === selectedCategory);
+    } else if (selectedCategory === null) {
+      result = result.filter((r) => r.category !== "minecraft-icons");
+    }
+
+    if (selectedSubcategory && selectedSubcategory !== "all") {
+      if (availableSubcategories.includes(selectedSubcategory)) {
+        result = result.filter((r) => r.subcategory === selectedSubcategory);
+      }
+    }
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((r) => r.title.toLowerCase().includes(query));
+    }
+
+    const getNumericId = (id: Resource["id"]) => {
+      if (typeof id === "number") return id;
+      const parsed = Number(id.toString().replace(/^[^0-9]+/, ""));
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    switch (sortOrder) {
+      case "popular":
+        result.sort((a, b) => getCount(b.id) - getCount(a.id));
+        break;
+      case "a-z":
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "z-a":
+        result.sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      case "newest":
+      default:
+        result.sort((a, b) => getNumericId(b.id) - getNumericId(a.id));
+        break;
+    }
+
+    return result;
+  }, [
+    resources,
+    selectedCategory,
+    selectedSubcategory,
+    searchQuery,
+    sortOrder,
+    externalDownloadCounts,
+    availableSubcategories,
+  ]);
+
+  const resolveDownloadUrl = (resource: Resource) => {
+    const direct =
+      resource.download_url || resource.preview_url || resource.image_url;
+    if (direct) return direct;
+
+    const titleLowered = resource.title.toLowerCase().replace(/ /g, "%20");
+    const base =
+      "https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main";
+
+    if (resource.category === "presets") {
+      const prefix = resource.subcategory === "adobe" ? "a" : "d";
+      return `${base}/presets/PREVIEWS/${prefix}${titleLowered}.mp4`;
+    }
+
+    if (resource.credit) {
+      const creditName = resource.credit.replace(/ /g, "_");
+      return `${base}/${resource.category}/${titleLowered}__${creditName}.${resource.filetype || "file"}`;
+    }
+
+    return `${base}/${resource.category}/${titleLowered}.${resource.filetype || "file"}`;
+  };
+
+  const handleDownload = useCallback(
+    async (resource: Resource): Promise<boolean> => {
+      if (!resource) return false;
+
+      const fileUrl = resolveDownloadUrl(resource);
+      if (!fileUrl) return false;
+
+      const filename = `${resource.title}.${resource.filetype || "file"}`;
+      const shouldForceDownload = [
+        "presets",
+        "images",
+        "animations",
+        "fonts",
+        "music",
+        "sfx",
+        "minecraft-icons",
+      ].includes(resource.category);
+
+      try {
+        if (shouldForceDownload) {
+          const res = await fetch(fileUrl);
+          if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+          const blob = await res.blob();
+
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(a.href);
+        } else {
+          const a = document.createElement("a");
+          a.href = fileUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+
+        incrementDownload(resource.id);
+        return true;
+      } catch (err) {
+        console.error("Download failed", err);
+        return false;
+      }
+    },
+    [incrementDownload],
+  );
+
+  return {
+    resources,
+    selectedResource,
+    setSelectedResource,
+    searchQuery,
+    selectedCategory,
+    selectedSubcategory,
+    isLoading,
+    isSearching,
+    downloadCounts: externalDownloadCounts,
+    lastAction,
+    loadedFonts,
+    setLoadedFonts,
+    filteredResources,
+    availableSubcategories,
+    hasCategoryResources,
+    handleSearchSubmit,
+    handleClearSearch,
+    handleCategoryChange,
+    handleSubcategoryChange,
+    sortOrder,
+    handleSortOrderChange: setSortOrder,
+    handleSearch,
+    handleDownload,
+  };
 };

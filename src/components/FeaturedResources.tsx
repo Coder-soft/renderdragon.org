@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { IconArrowRight } from '@tabler/icons-react';
-import { motion } from 'framer-motion';
-import { Resource } from '@/types/resources';
-import ResourceCard from '@/components/resources/ResourceCard';
-import ResourceCardSkeleton from './resources/ResourceCardSkeleton';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { IconArrowRight } from "@tabler/icons-react";
+import { motion } from "framer-motion";
+import { Resource } from "@/types/resources";
+import ResourceCard from "@/components/resources/ResourceCard";
+import ResourceCardSkeleton from "./resources/ResourceCardSkeleton";
 
 const FeaturedResources = () => {
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [hoveredId, setHoveredId] = useState<number | string | null>(null);
   const [featuredResources, setFeaturedResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,27 +15,54 @@ const FeaturedResources = () => {
     const fetchResources = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/resources.json');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch resources: ${response.status} ${response.statusText}`);
-        }
-        const resourcesData = await response.json();
+        let resourcesData: any = null;
 
-        const allResources: Resource[] = Object.entries(resourcesData).flatMap(
-          ([category, resources]) =>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (resources as any[]).map((resource) => ({
+        const allResponse = await fetch("/resources.all.json");
+        if (allResponse.ok) {
+          resourcesData = await allResponse.json();
+        } else {
+          const legacyResponse = await fetch("/resources.json");
+          if (!legacyResponse.ok) {
+            throw new Error(
+              `Failed to fetch resources: ${legacyResponse.status} ${legacyResponse.statusText}`,
+            );
+          }
+          resourcesData = await legacyResponse.json();
+        }
+
+        const allResources: Resource[] = Array.isArray(resourcesData)
+          ? resourcesData.map((resource) => ({
               ...resource,
-              category: category as 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets',
-            })),
-        );
+              category: resource.category as
+                | "music"
+                | "sfx"
+                | "images"
+                | "animations"
+                | "fonts"
+                | "presets"
+                | "minecraft-icons",
+            }))
+          : Object.entries(resourcesData).flatMap(([category, resources]) =>
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (resources as any[]).map((resource) => ({
+                ...resource,
+                category: category as
+                  | "music"
+                  | "sfx"
+                  | "images"
+                  | "animations"
+                  | "fonts"
+                  | "presets"
+                  | "minecraft-icons",
+              })),
+            );
 
         const sortedResources = [...allResources].slice(0, 4);
 
         setFeaturedResources(sortedResources);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching resources:', error);
+        console.error("Error fetching resources:", error);
         setIsLoading(false);
       }
     };
@@ -49,9 +76,9 @@ const FeaturedResources = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
+        delayChildren: 0.3,
+      },
+    },
   };
 
   const itemVariants = {
@@ -60,9 +87,9 @@ const FeaturedResources = () => {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.25
-      }
-    }
+        duration: 0.25,
+      },
+    },
   };
 
   return (
@@ -98,20 +125,14 @@ const FeaturedResources = () => {
             viewport={{ once: true }}
           >
             {featuredResources.map((resource) => (
-              <motion.div
-                key={resource.id}
-                variants={itemVariants}
-              >
+              <motion.div key={resource.id} variants={itemVariants}>
                 <Link
                   to="/resources"
                   onMouseEnter={() => setHoveredId(resource.id)}
                   onMouseLeave={() => setHoveredId(null)}
                   className="block group"
                 >
-                  <ResourceCard
-                    resource={resource}
-                    onClick={() => { }}
-                  />
+                  <ResourceCard resource={resource} onClick={() => {}} />
                 </Link>
               </motion.div>
             ))}
