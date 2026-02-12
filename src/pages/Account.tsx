@@ -8,10 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
-import { IconUser, IconMail, IconCalendar, IconLogout } from '@tabler/icons-react';
+import { IconUser, IconMail, IconCalendar, IconLogout, IconVideo } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import AccountPageSkeleton from '@/components/skeletons/AccountPageSkeleton';
@@ -24,6 +25,10 @@ const Account = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [hoverToPlay, setHoverToPlay] = useState(() => {
+    const stored = localStorage.getItem('hoverToPlay');
+    return stored === null ? true : stored === 'true';
+  });
   const avatarSrc: string | undefined =
     profile?.avatar_url ??
     ((user?.user_metadata as Record<string, unknown> | undefined)?.avatar_url as string | undefined) ??
@@ -122,9 +127,9 @@ const Account = () => {
         <title>My Account - Renderdragon</title>
         <meta name="description" content="Manage your Renderdragon account settings and profile information." />
       </Helmet>
-      
+
       <Navbar />
-      
+
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <motion.div
@@ -165,7 +170,7 @@ const Account = () => {
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                   <div className="space-y-4">
                     <h3 className="text-lg font-vt323 text-cow-purple">Profile Information</h3>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="displayName">Display Name</Label>
                       <Input
@@ -206,14 +211,14 @@ const Account = () => {
 
                   <div className="space-y-4">
                     <h3 className="text-lg font-vt323 text-cow-purple">Account Details</h3>
-                    
+
                     <div className="space-y-3 text-sm">
                       <div className="flex items-center gap-2">
                         <IconMail className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">Email:</span>
                         <span>{user.email}</span>
                       </div>
-                      
+
                       {user.created_at && (
                         <div className="flex items-center gap-2">
                           <IconCalendar className="h-4 w-4 text-muted-foreground" />
@@ -221,6 +226,30 @@ const Account = () => {
                           <span>{new Date(user.created_at).toLocaleDateString()}</span>
                         </div>
                       )}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-vt323 text-cow-purple">Preferences</h3>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <IconVideo className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <span className="text-sm font-medium">Hover to Play Videos</span>
+                          <p className="text-xs text-muted-foreground">Auto-play video previews when hovering over animation cards</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={hoverToPlay}
+                        onCheckedChange={(checked) => {
+                          setHoverToPlay(checked);
+                          localStorage.setItem('hoverToPlay', String(checked));
+                          toast.success(checked ? 'Hover to play enabled' : 'Hover to play disabled');
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -249,7 +278,7 @@ const Account = () => {
           </motion.div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
