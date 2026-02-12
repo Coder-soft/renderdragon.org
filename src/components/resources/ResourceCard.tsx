@@ -25,6 +25,10 @@ interface ResourceCardProps {
 const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoverToPlayEnabled] = useState(() => {
+    const stored = localStorage.getItem('hoverToPlay');
+    return stored === null ? true : stored === 'true';
+  });
   const { user } = useAuth();
 
   // Reset image loaded state when resource changes
@@ -189,7 +193,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           </div>
         );
       case "music":
-        return isHovered ? (
+        return (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
@@ -199,17 +203,10 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
               isInView={isInView}
               className="w-full shadow-none border-none bg-transparent p-0"
             />
-          </div>
-        ) : (
-          <div className="relative aspect-video bg-muted/10 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center text-muted-foreground text-xs">
-            <div className="flex items-center gap-2">
-              <IconMusic className="h-5 w-5" />
-              <span>Hover to preview</span>
-            </div>
           </div>
         );
       case "sfx":
-        return isHovered ? (
+        return (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
@@ -220,16 +217,9 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
               className="w-full shadow-none border-none bg-transparent p-0"
             />
           </div>
-        ) : (
-          <div className="relative aspect-video bg-muted/10 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center text-muted-foreground text-xs">
-            <div className="flex items-center gap-2">
-              <IconFileMusic className="h-5 w-5" />
-              <span>Hover to preview</span>
-            </div>
-          </div>
         );
       case "animations":
-        return isHovered ? (
+        return (isHovered && hoverToPlayEnabled) ? (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
@@ -308,9 +298,9 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           animate={
             isFavorite
               ? {
-                  scale: [1, 1.2, 1],
-                  transition: { duration: 0.3 },
-                }
+                scale: [1, 1.2, 1],
+                transition: { duration: 0.3 },
+              }
               : undefined
           }
         >
