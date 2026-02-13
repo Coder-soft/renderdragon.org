@@ -150,7 +150,7 @@ const App = () => {
                     <Route path="/showcase" element={<Showcase />} />
                     <Route path="/u/:username" element={<Profile />} />
                     <Route path="/changelogs" element={<Changelogs />} />
-<Route path="/blogs" element={<Blogs />} />
+                    <Route path="/blogs" element={<Blogs />} />
                     <Route path="/blogs/:slug" element={<BlogView />} />
                     <Route path="/native-application" element={<NativeApplication />} />
                     <Route path="*" element={<NotFound />} />
