@@ -65,6 +65,7 @@ const mainLinks: (NavLink | NavDropdown)[] = [
         tag: "NEW",
       },
       { name: "Community", path: "/community", icon: "yt-videos" },
+      { name: "Native Application", path: "/native-application", icon: "software", tag: "NEW" },
     ],
   },
   {
