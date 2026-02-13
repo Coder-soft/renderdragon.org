@@ -52,7 +52,7 @@ const mainLinks: (NavLink | NavDropdown)[] = [
   { name: "Home", path: "/", icon: "home" },
   { name: "Blogs", path: "/blogs", icon: "text", tag: "NEW" },
   { name: "Contact", path: "/contact", icon: "contact" },
-{
+  {
     name: "Resources",
     icon: "resources",
     links: [
