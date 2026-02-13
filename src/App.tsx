@@ -58,6 +58,7 @@ const Changelogs = lazy(() => import("@/pages/Changelogs"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Blogs = lazy(() => import("@/pages/Blogs"));
 const BlogView = lazy(() => import("@/pages/BlogView"));
+const NativeApplication = lazy(() => import("@/pages/NativeApplication"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
@@ -149,8 +150,9 @@ const App = () => {
                     <Route path="/showcase" element={<Showcase />} />
                     <Route path="/u/:username" element={<Profile />} />
                     <Route path="/changelogs" element={<Changelogs />} />
-                    <Route path="/blogs" element={<Blogs />} />
+<Route path="/blogs" element={<Blogs />} />
                     <Route path="/blogs/:slug" element={<BlogView />} />
+                    <Route path="/native-application" element={<NativeApplication />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

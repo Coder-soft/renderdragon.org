@@ -52,7 +52,7 @@ const mainLinks: (NavLink | NavDropdown)[] = [
   { name: "Home", path: "/", icon: "home" },
   { name: "Blogs", path: "/blogs", icon: "text", tag: "NEW" },
   { name: "Contact", path: "/contact", icon: "contact" },
-  {
+{
     name: "Resources",
     icon: "resources",
     links: [
@@ -65,6 +65,7 @@ const mainLinks: (NavLink | NavDropdown)[] = [
         tag: "NEW",
       },
       { name: "Community", path: "/community", icon: "yt-videos" },
+      { name: "Native Application", path: "/native-application", icon: "software", tag: "NEW" },
     ],
   },
   {

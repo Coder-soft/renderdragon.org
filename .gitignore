@@ -26,3 +26,4 @@ dist-ssr
 .env
 *.timestamp-*.mjs
 api_docs.md
+telemetry-id
