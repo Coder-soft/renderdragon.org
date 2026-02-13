@@ -233,13 +233,7 @@ const Navbar = () => {
             to="/"
             className="flex items-center space-x-2 text-xl md:text-2xl font-bold tracking-wider"
           >
-            <div className="flex items-center justify-center">
-              <Logo size={isMobile ? "sm" : "md"} />
-            </div>
-            {!isMobile && (
-              <span className="hidden md:inline font-vt323">Renderdragon</span>
-            )}
-            {isMobile && <span className="font-vt323">RD</span>}
+            <Logo size="lg" />
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
@@ -357,13 +351,9 @@ const Navbar = () => {
                   <div className="flex items-center justify-between mb-6">
                     <Link
                       to="/"
-                      className="flex items-center space-x-2 text-xl font-bold"
-                      onClick={() => setIsDrawerOpen(false)} // Close drawer on logo click
+                      onClick={() => setIsDrawerOpen(false)}
                     >
-                      <div className="w-8 h-8 flex items-center justify-center font-bold text-xs">
-                        <Logo size="sm" />
-                      </div>
-                      <span className="font-vt323">Renderdragon</span>
+                      <Logo size="lg" />
                     </Link>
                   </div>
 

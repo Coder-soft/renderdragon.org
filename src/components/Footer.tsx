@@ -67,12 +67,9 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <Link
               to="/"
-              className="flex items-center space-x-2 text-xl font-bold mb-4"
+              className="flex items-center mb-4"
             >
-              <div className="flex items-center justify-center">
-                <Logo size="sm" />
-              </div>
-              <span className="font-pixel">Renderdragon</span>
+              <Logo size="xl" />
             </Link>
 
             <p className="text-white/70 mb-6 max-w-md">

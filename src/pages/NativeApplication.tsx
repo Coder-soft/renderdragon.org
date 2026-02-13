@@ -91,22 +91,11 @@ const NativeApplication = () => {
             >
               <Card className="overflow-hidden pixel-corners border-2 border-primary/20">
                 <div className="aspect-video bg-gradient-to-br from-cow-purple/10 to-cow-purple/5 flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="w-32 h-32 mx-auto mb-6 rounded-xl bg-cow-purple/20 flex items-center justify-center">
-                      <img 
-                        src="/placeholder-native-app.png" 
-                        alt="Renderdragon Native Application" 
-                        className="w-24 h-24 object-contain opacity-50"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement!.innerHTML = '<div class="text-4xl text-cow-purple/50 font-vt323">RD</div>';
-                        }}
-                      />
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      Screenshot coming soon
-                    </p>
-                  </div>
+                  <img 
+                    src="/ss.png" 
+                    alt="Renderdragon Native Application" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -177,28 +166,7 @@ const NativeApplication = () => {
               ))}
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="mt-12 text-center"
-            >
-              <Card className="inline-block pixel-corners border-2 border-cow-purple/30 bg-cow-purple/5">
-                <CardContent className="p-6">
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Need help getting started?
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => window.open('https://github.com/Renderdragonorg/Renderdragon-native#readme', '_blank')}
-                    className="pixel-corners"
-                  >
-                    View Documentation
-                    <IconExternalLink className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+
           </div>
         </div>
       </main>
