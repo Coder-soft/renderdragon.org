@@ -27,3 +27,5 @@ dist-ssr
 *.timestamp-*.mjs
 api_docs.md
 telemetry-id
+public/qrafty.otf
+public/JetBrainsMono-Regular.ttf
