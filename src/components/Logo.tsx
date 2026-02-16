@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Logo = ({ className = "", size = "md" }: { className?: string, size?: "sm" | "md" | "lg" | "xl" }) => {
+export const Logo = ({ className = "", size = "md", mobile = false }: { className?: string, size?: "sm" | "md" | "lg" | "xl", mobile?: boolean }) => {
   const dimensions = {
     sm: "h-8",
     md: "h-10",
@@ -8,9 +8,11 @@ export const Logo = ({ className = "", size = "md" }: { className?: string, size
     xl: "h-14"
   }[size];
 
+  const src = mobile ? "/renderdragon.png" : "/icon.png";
+
   return (
     <img
-      src="/icon.png"
+      src={src}
       alt="Renderdragon"
       className={`${dimensions} w-auto object-contain ${className}`}
     />
