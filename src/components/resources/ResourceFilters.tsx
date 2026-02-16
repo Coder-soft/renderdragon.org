@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart } from '@tabler/icons-react';
@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { MCICONS_BLACKLISTED_SUBCATEGORIES } from '@/lib/api';
 
 type ResourceFiltersProps = {
   searchQuery: string;
@@ -25,6 +26,51 @@ type ResourceFiltersProps = {
   isMobile: boolean;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
   availableSubcategories: string[];
+};
+
+const groupMciconsSubcategories = (subcategories: string[]): { parent: string; label: string; value: string }[] => {
+  const grouped = new Map<string, Set<string>>();
+  
+  subcategories.forEach(sub => {
+    if (MCICONS_BLACKLISTED_SUBCATEGORIES.includes(sub)) return;
+    
+    const parts = sub.split('/');
+    if (parts.length > 1) {
+      const parent = parts[0];
+      if (!grouped.has(parent)) {
+        grouped.set(parent, new Set());
+      }
+      grouped.get(parent)!.add(sub);
+    } else {
+      if (!grouped.has('other')) {
+        grouped.set('other', new Set());
+      }
+      grouped.get('other')!.add(sub);
+    }
+  });
+  
+  const result: { parent: string; label: string; value: string }[] = [];
+  
+  const formatLabel = (sub: string): string => {
+    const parts = sub.split('/');
+    const name = parts[parts.length - 1];
+    return name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+  
+  const sortedParents = Array.from(grouped.keys()).sort();
+  
+  sortedParents.forEach(parent => {
+    const children = Array.from(grouped.get(parent)!).sort();
+    children.forEach(sub => {
+      result.push({
+        parent: parent === 'other' ? '' : parent.charAt(0).toUpperCase() + parent.slice(1),
+        label: formatLabel(sub),
+        value: sub,
+      });
+    });
+  });
+  
+  return result;
 };
 
 const ResourceFilters = ({
@@ -107,6 +153,11 @@ const MobileFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
+  const groupedSubcategories = useMemo(() => 
+    selectedCategory === 'minecraft-icons' ? groupMciconsSubcategories(availableSubcategories) : [],
+    [availableSubcategories, selectedCategory]
+  );
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -204,7 +255,7 @@ const MobileFilters = ({
               </div>
             )}
 
-            {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+            {selectedCategory === 'minecraft-icons' && groupedSubcategories.length > 0 && (
               <div className="mt-2 ml-2">
                 <Select
                   value={selectedSubcategory || "all"}
@@ -215,8 +266,10 @@ const MobileFilters = ({
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
                     <SelectItem value="all">All Icons</SelectItem>
-                    {availableSubcategories.map(sub => (
-                      <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    {groupedSubcategories.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.parent ? `${item.parent} - ${item.label}` : item.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -242,6 +295,11 @@ const DesktopFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
+  const groupedSubcategories = useMemo(() => 
+    selectedCategory === 'minecraft-icons' ? groupMciconsSubcategories(availableSubcategories) : [],
+    [availableSubcategories, selectedCategory]
+  );
+
   return (
     <div className="flex flex-wrap gap-2">
       <Button
@@ -327,18 +385,20 @@ const DesktopFilters = ({
         </Select>
       )}
 
-      {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+      {selectedCategory === 'minecraft-icons' && groupedSubcategories.length > 0 && (
         <Select
           value={selectedSubcategory || "all"}
           onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
         >
-          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+          <SelectTrigger className="h-10 w-[220px] pixel-corners">
             <SelectValue placeholder="Select icon type" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <SelectItem value="all">All Icons</SelectItem>
-            {availableSubcategories.map(sub => (
-              <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+            {groupedSubcategories.map(item => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.parent ? `${item.parent} - ${item.label}` : item.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
