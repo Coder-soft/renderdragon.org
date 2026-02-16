@@ -233,7 +233,7 @@ const Navbar = () => {
             to="/"
             className="flex items-center space-x-2 text-xl md:text-2xl font-bold tracking-wider"
           >
-            <Logo size="lg" />
+            <Logo size="lg" mobile={isMobile} />
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
@@ -353,7 +353,7 @@ const Navbar = () => {
                       to="/"
                       onClick={() => setIsDrawerOpen(false)}
                     >
-                      <Logo size="lg" />
+                      <Logo size="lg" mobile />
                     </Link>
                   </div>
 
