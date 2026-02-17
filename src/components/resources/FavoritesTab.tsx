@@ -1,21 +1,25 @@
 import { motion } from 'framer-motion';
-import { useUserFavorites } from '@/hooks/useUserFavorites';
+import { useHeartedResources } from '@/hooks/useHeartedResources';
 import { useResources } from '@/hooks/useResources';
+import { getResourceUrl } from '@/types/resources';
 import ResourceCard from './ResourceCard';
 import ResourceCardSkeleton from './ResourceCardSkeleton';
 import { IconHeart } from '@tabler/icons-react';
 
 const FavoritesTab = () => {
-  const { favorites, isLoading: favoritesLoading } = useUserFavorites();
+  const { heartedResources, isLoading: favoritesLoading } = useHeartedResources();
   const { resources, isLoading: resourcesLoading, setSelectedResource } = useResources();
 
   const isLoading = favoritesLoading || resourcesLoading;
 
-  const favoriteResources = resources.filter(resource => favorites.includes(String(resource.id)));
+  const favoriteResources = resources.filter(resource => {
+    const resourceUrl = getResourceUrl(resource);
+    return resourceUrl ? heartedResources.includes(resourceUrl) : false;
+  });
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {Array.from({ length: 8 }).map((_, idx) => (
           <ResourceCardSkeleton key={`fav-skel-${idx}`} />
         ))}
@@ -40,14 +44,17 @@ const FavoritesTab = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {favoriteResources.map(resource => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {favoriteResources.map(resource => {
+        const resourceUrl = getResourceUrl(resource);
+        return (
         <ResourceCard
-          key={resource.id}
+          key={resourceUrl}
           resource={resource}
           onClick={setSelectedResource}
         />
-      ))}
+        );
+      })}
     </div>
   );
 };

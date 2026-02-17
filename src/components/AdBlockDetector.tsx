@@ -36,6 +36,10 @@ export function AdBlockDetector() {
 
             try {
                 const host = import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
+                const apiKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
+                if (!apiKey) {
+                    return;
+                }
                 // Try fetching the /decide endpoint which is critical for PostHog and often blocked
                 // We use string concatenation to ensure the URL is well-formed
                 const url = `${host}/decide?v=3&ip=1&_=`;
@@ -45,7 +49,7 @@ export function AdBlockDetector() {
                 await fetch(url + Date.now(), {
                     method: 'POST', // POST requests to tracking endpoints are more likely to be blocked
                     mode: 'no-cors',
-                    body: JSON.stringify({ token: 'test' })
+                    body: JSON.stringify({ token: apiKey })
                 });
 
             } catch (error) {
