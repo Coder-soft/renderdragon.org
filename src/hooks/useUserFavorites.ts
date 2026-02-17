@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -6,49 +7,60 @@ import { toast } from 'sonner';
 export const useUserFavorites = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [isSchemaReady, setIsSchemaReady] = useState(true);
 
   const { data: favorites = [], isLoading } = useQuery({
     queryKey: ['userFavorites', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
+      if (!isSchemaReady) return [];
 
       const { data, error } = await supabase
         .from('user_favorites')
-        .select('resource_id')
+        .select('resource_url')
         .eq('user_id', user.id);
 
       if (error) {
+        if (error.code === '42703' || error.message.includes('resource_url')) {
+          setIsSchemaReady(false);
+          toast.error('Favorites storage needs a database update');
+          return [];
+        }
         console.error('Error fetching favorites:', error);
         toast.error('Failed to load favorites');
         throw error;
       }
 
-      return data?.map(fav => fav.resource_id.toString()) || [];
+      return data?.map(fav => fav.resource_url.toString()) || [];
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   const toggleMutation = useMutation({
-    mutationFn: async (resourceId: string) => {
+    mutationFn: async (resourceUrl: string) => {
       if (!user) throw new Error('User not authenticated');
+      if (!isSchemaReady) throw new Error('Favorites storage needs a database update');
 
-      const isFavorited = favorites.includes(resourceId);
+      const isFavorited = favorites.includes(resourceUrl);
 
       if (isFavorited) {
         const { error } = await supabase
           .from('user_favorites')
           .delete()
           .eq('user_id', user.id)
-          .eq('resource_id', resourceId);
+          .eq('resource_url', resourceUrl);
         if (error) throw error;
-        return { action: 'removed', resourceId };
+        return { action: 'removed', resourceUrl };
       } else {
         const { error } = await supabase
           .from('user_favorites')
-          .insert({ user_id: user.id, resource_id: resourceId });
+          .upsert(
+            { user_id: user.id, resource_url: resourceUrl },
+            { onConflict: 'user_id,resource_url', ignoreDuplicates: true }
+          );
         if (error) throw error;
-        return { action: 'added', resourceId };
+        return { action: 'added', resourceUrl };
       }
     },
     onSuccess: (data) => {
@@ -56,20 +68,33 @@ export const useUserFavorites = () => {
       toast.success(data.action === 'added' ? 'Added to favorites' : 'Removed from favorites');
     },
     onError: (error) => {
+      const errorMessage = error instanceof Error ? error.message : '';
+      if (errorMessage.includes('database update')) {
+        toast.error('Favorites storage needs a database update');
+        return;
+      }
       console.error('Error toggling favorite:', error);
       toast.error('Failed to update favorites');
     }
   });
 
-  const toggleFavorite = (resourceId: string) => {
+  const toggleFavorite = (resourceUrl: string) => {
     if (!user) {
       toast.error('Please sign in to save favorites');
       return;
     }
-    toggleMutation.mutate(resourceId);
+    if (!resourceUrl) {
+      toast.error('Unable to favorite this resource');
+      return;
+    }
+    if (!isSchemaReady) {
+      toast.error('Favorites storage needs a database update');
+      return;
+    }
+    toggleMutation.mutate(resourceUrl);
   };
 
-  const isFavorited = (resourceId: string) => favorites.includes(resourceId);
+  const isFavorited = (resourceUrl: string) => favorites.includes(resourceUrl);
 
   return {
     favorites,

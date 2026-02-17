@@ -11,10 +11,9 @@ import {
   IconHeart,
   IconBoxModel,
 } from "@tabler/icons-react";
-import { Resource } from "@/types/resources";
+import { getResourceUrl, Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
-import { useUserFavorites } from "@/hooks/useUserFavorites";
-import { useAuth } from "@/hooks/useAuth";
+import { useHeartedResources } from "@/hooks/useHeartedResources";
 import AudioPlayer from "@/components/AudioPlayer";
 
 interface ResourceCardProps {
@@ -29,15 +28,14 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
     const stored = localStorage.getItem('hoverToPlay');
     return stored === null ? true : stored === 'true';
   });
-  const { user } = useAuth();
-
   // Reset image loaded state when resource changes
   useEffect(() => {
     setIsImageLoaded(false);
   }, [resource.id]);
 
-  const { toggleFavorite, isFavorited } = useUserFavorites();
-  const isFavorite = isFavorited(String(resource.id));
+  const { toggleHeart, isHearted } = useHeartedResources();
+  const resourceUrl = getResourceUrl(resource);
+  const isFavorite = isHearted(resourceUrl);
 
   const getPreviewUrl = (resource: Resource) => {
     if (resource.download_url) return resource.download_url;
@@ -141,9 +139,9 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   const handleFavoriteClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      toggleFavorite(String(resource.id));
+      toggleHeart(resourceUrl);
     },
-    [toggleFavorite, resource.id],
+    [toggleHeart, resourceUrl],
   );
 
   const handlePreviewClick = (e: React.MouseEvent) => {
