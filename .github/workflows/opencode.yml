@@ -30,4 +30,4 @@ jobs:
         env:
           KILO_API_KEY: ${{ secrets.KILO_API_KEY }}
         with:
-          model: kilo/z-ai/glm-5:free
+          model: z-ai/glm-5:free
