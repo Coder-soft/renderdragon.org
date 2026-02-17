@@ -1,56 +1,81 @@
 
+import { useCallback, useEffect, useState } from 'react';
 import { useUserFavorites } from './useUserFavorites';
 import { useAuth } from './useAuth';
+import { getResourceUrl, Resource } from '@/types/resources';
 
 export const useHeartedResources = () => {
   const { user } = useAuth();
   const userFavorites = useUserFavorites();
-
-  // If user is logged in, use user favorites, otherwise fall back to localStorage
-  if (user) {
-    return {
-      heartedResources: userFavorites.favorites,
-      toggleHeart: userFavorites.toggleFavorite,
-      isHearted: userFavorites.isFavorited
-    };
-  }
-
-  // Legacy localStorage fallback for non-authenticated users
   const localStorageKey = 'heartedResources';
   
-  const getLocalHeartedResources = (): string[] => {
+  const getLocalHeartedResources = useCallback((): string[] => {
     try {
       const stored = localStorage.getItem(localStorageKey);
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
     }
-  };
+  }, []);
 
   const setLocalHeartedResources = (resources: string[]) => {
     localStorage.setItem(localStorageKey, JSON.stringify(resources));
   };
 
-  const heartedResources = getLocalHeartedResources();
+  const [heartedResources, setHeartedResources] = useState<string[]>(() => getLocalHeartedResources());
 
-  const toggleHeart = (resourceId: string) => {
+  useEffect(() => {
+    const handleLocalUpdate = () => {
+      setHeartedResources(getLocalHeartedResources());
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === localStorageKey) {
+        setHeartedResources(getLocalHeartedResources());
+      }
+    };
+
+    window.addEventListener('localFavoritesChanged', handleLocalUpdate);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener('localFavoritesChanged', handleLocalUpdate);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [getLocalHeartedResources]);
+
+  const toggleHeart = (resource: Resource | string) => {
+    const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
+    if (!resourceUrl) return;
     const current = getLocalHeartedResources();
-    const newHearted = current.includes(resourceId)
-      ? current.filter(id => id !== resourceId)
-      : [...current, resourceId];
+    const newHearted = current.includes(resourceUrl)
+      ? current.filter(id => id !== resourceUrl)
+      : [...current, resourceUrl];
     
     setLocalHeartedResources(newHearted);
-    // Force re-render by dispatching a custom event
+    setHeartedResources(newHearted);
     window.dispatchEvent(new CustomEvent('localFavoritesChanged'));
   };
 
-  const isHearted = (resourceId: string) => {
-    return getLocalHeartedResources().includes(resourceId);
+  const isHearted = (resource: Resource | string) => {
+    const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
+    if (!resourceUrl) return false;
+    return getLocalHeartedResources().includes(resourceUrl);
   };
+
+  if (user) {
+    return {
+      heartedResources: userFavorites.favorites,
+      toggleHeart: userFavorites.toggleFavorite,
+      isHearted: userFavorites.isFavorited,
+      isLoading: userFavorites.isLoading,
+    };
+  }
 
   return {
     heartedResources,
     toggleHeart,
-    isHearted
+    isHearted,
+    isLoading: false,
   };
 };

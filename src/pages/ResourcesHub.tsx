@@ -9,6 +9,7 @@ import { Resource } from '@/types/resources';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
+import FavoritesTab from '@/components/resources/FavoritesTab';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
@@ -137,6 +138,26 @@ const ResourcesHub = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <Button
+                  variant={!showFavorites ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setShowFavorites(false)}
+                  className="pixel-corners"
+                >
+                  <IconSearch className="h-4 w-4 mr-2" />
+                  Resources
+                </Button>
+                <Button
+                  variant={showFavorites ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setShowFavorites(true)}
+                  className="pixel-corners"
+                >
+                  <IconHeart className="h-4 w-4 mr-2" />
+                  Favorites
+                </Button>
+              </div>
               <AnimatePresence mode="wait">
                 {showFavorites ? (
                   <motion.div
@@ -147,9 +168,7 @@ const ResourcesHub = () => {
                     transition={{ duration: 0.3 }}
                     className="text-center"
                   >
-                    <Button onClick={() => setShowFavorites(false)} className="mb-6">
-                      Back to Resources
-                    </Button>
+                    <FavoritesTab />
                   </motion.div>
                 ) : (
                   <motion.div

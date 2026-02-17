@@ -78,7 +78,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     if (isFont) {
       const fontName = `font-${a.id}`;
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 min-h-[14rem] relative overflow-hidden group/font">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video relative overflow-hidden group/font">
           <style>{`
             @font-face {
               font-family: '${fontName}';
@@ -99,7 +99,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
     if (isJson) {
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-[#1e1e1e] p-6 min-h-[14rem] relative group/json">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-[#1e1e1e] p-6 aspect-video relative group/json">
           <div className="absolute top-3 right-3 opacity-20 group-hover/json:opacity-40 transition-opacity">
             <IconCode size={40} className="text-cow-purple" />
           </div>
@@ -118,7 +118,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
 
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 min-h-[14rem]">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video">
         <IconFileText className="h-12 w-12 text-white/20 mb-4" />
         <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono">
           Document File
@@ -128,7 +128,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
   };
 
   return (
-    <Card className="pixel-corners bg-card/40 backdrop-blur-sm border-white/10 w-full flex flex-col h-full overflow-hidden hover:border-cow-purple/50 transition-all duration-300 group hover:shadow-2xl hover:shadow-cow-purple/10">
+    <Card className="pixel-card bg-card/40 backdrop-blur-sm border-white/10 w-full flex flex-col h-full overflow-hidden hover:border-cow-purple/50 transition-all duration-300 group hover:shadow-2xl hover:shadow-cow-purple/10">
       <div className="flex-grow flex flex-col">
         {/* Asset Preview at top */}
         <div className="w-full">
@@ -152,7 +152,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                 }}
                 className={cn(
                   "overflow-hidden transition-all duration-200 w-full",
-                  isAudio ? "h-auto" : "h-64 cursor-zoom-in group-hover:bg-background/40"
+                  isAudio ? "h-auto" : "aspect-video cursor-zoom-in group-hover:bg-background/40"
                 )}
               >
                 {renderAssetPreview(a)}
@@ -490,7 +490,7 @@ const ShowcasePage: React.FC = () => {
             <p className="max-w-md">Be the first to share your art! Click "Create Showcase" to upload an image, video, or audio file.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {items.map((it) => (
               <ShowcaseCard key={it.id} item={it} />
             ))}
