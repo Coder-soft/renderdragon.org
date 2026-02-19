@@ -22,6 +22,16 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const isMobile = useIsMobile();
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://static.copyrighted.com/badges/helper.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const handleCartClick = () => {
     if (cartClicked) return;
 
@@ -109,15 +119,6 @@ const Footer = () => {
                 <img className="w-6 h-6" src="/assets/youtube_icon.png" alt="YouTube" loading="lazy" />
               </a>
 
-              <a
-                href="https://github.com/Yxmura/renderdragon"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
-                aria-label="GitHub"
-              >
-                <img className="w-6 h-6" src="/assets/github_icon.png" alt="GitHub" loading="lazy" />
-              </a>
             </div>
           </div>
 
@@ -245,6 +246,22 @@ const Footer = () => {
             </div>
 
             <div className="flex items-center gap-4">
+              <a
+                className="copyrighted-badge"
+                title="Copyrighted.com Registered & Protected"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://app.copyrighted.com/website/XJWeMuU5JJanip2w/"
+              >
+                <img
+                  alt="Copyrighted.com Registered & Protected"
+                  width={125}
+                  height={25}
+                  srcSet="https://static.copyrighted.com/badges/125x25/04_2_2x.png 2x"
+                  src="https://static.copyrighted.com/badges/125x25/04_2.png"
+                />
+              </a>
+
               <p className="text-white/70 text-sm">
                 &copy; {currentYear} RenderDragon. All rights reserved.
               </p>
