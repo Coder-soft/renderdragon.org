@@ -31,7 +31,7 @@ export const useUserFavorites = () => {
         throw error;
       }
 
-      return data?.map(fav => fav.resource_url.toString()) || [];
+      return data?.filter(fav => fav.resource_url != null).map(fav => fav.resource_url) || [];
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes

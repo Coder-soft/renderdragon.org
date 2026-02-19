@@ -49,7 +49,7 @@ const FavoritesTab = () => {
         const resourceUrl = getResourceUrl(resource);
         return (
         <ResourceCard
-          key={resourceUrl}
+          key={`${resource.id}-${resourceUrl}`}
           resource={resource}
           onClick={setSelectedResource}
         />

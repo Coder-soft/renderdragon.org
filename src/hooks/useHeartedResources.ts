@@ -64,10 +64,22 @@ export const useHeartedResources = () => {
   };
 
   if (user) {
+    const toggleHeart = (resource: Resource | string) => {
+      const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
+      if (!resourceUrl) return;
+      userFavorites.toggleFavorite(resourceUrl);
+    };
+
+    const isHearted = (resource: Resource | string) => {
+      const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
+      if (!resourceUrl) return false;
+      return userFavorites.isFavorited(resourceUrl);
+    };
+
     return {
       heartedResources: userFavorites.favorites,
-      toggleHeart: userFavorites.toggleFavorite,
-      isHearted: userFavorites.isFavorited,
+      toggleHeart,
+      isHearted,
       isLoading: userFavorites.isLoading,
     };
   }
