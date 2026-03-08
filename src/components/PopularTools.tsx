@@ -17,10 +17,10 @@ const PopularTools = () => {
   const tools: Tool[] = [
     {
       id: 1,
-      title: 'Music Copyright Checker',
-      description: 'Check if a song is copyrighted before using it in your videos.',
+      title: 'Osmium',
+      description: 'Osmium will be the first and the last tool for your copyright checks.',
       icon: IconMusic,
-      path: '/gappa',
+      path: 'https://osmiumchecks.vercel.app/',
       color: 'from-blue-500/80 to-blue-600/80'
     },
     {
@@ -97,53 +97,70 @@ const PopularTools = () => {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {tools.map((tool) => (
+          {tools.map((tool) => {
+            const isExternal = tool.path.startsWith('http');
+            const card = (
+              <div 
+                className={cn(
+                  "h-full pixel-corners flex flex-col p-6 bg-gradient-to-br border-2",
+                  tool.color,
+                  "border-white/10 text-white transition-all duration-300",
+                  hoveredId === tool.id ? "border-white/30 shadow-lg scale-[1.02]" : ""
+                )}
+              >
+                <motion.div 
+                  className="p-3 bg-white/10 rounded-md w-fit mb-4"
+                  whileHover={{ rotate: [0, -10, 10, -5, 5, 0] }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <tool.icon className="h-6 w-6" />
+                </motion.div>
+                
+                <h3 className="text-xl font-vt323 mb-2">{tool.title}</h3>
+                
+                <p className="text-white/70 text-sm flex-grow">
+                  {tool.description}
+                </p>
+                
+                <motion.div 
+                  className={cn(
+                    "mt-4 text-sm font-semibold",
+                    "transition-transform duration-300",
+                    hoveredId === tool.id ? "translate-x-2" : ""
+                  )}
+                  whileHover={{ x: 5 }}
+                >
+                  Try it now
+                </motion.div>
+              </div>
+            );
+
+            return (
             <motion.div
               key={tool.id}
               variants={itemVariants}
             >
-              <Link 
-                to={tool.path}
-                className="block"
-                onMouseEnter={() => setHoveredId(tool.id)}
-                onMouseLeave={() => setHoveredId(null)}
-              >
-                <div 
-                  className={cn(
-                    "h-full pixel-corners flex flex-col p-6 bg-gradient-to-br border-2",
-                    tool.color,
-                    "border-white/10 text-white transition-all duration-300",
-                    hoveredId === tool.id ? "border-white/30 shadow-lg scale-[1.02]" : ""
-                  )}
+              {isExternal ? (
+                <a
+                  href={tool.path}
+                  className="block"
+                  onMouseEnter={() => setHoveredId(tool.id)}
+                  onMouseLeave={() => setHoveredId(null)}
                 >
-                  <motion.div 
-                    className="p-3 bg-white/10 rounded-md w-fit mb-4"
-                    whileHover={{ rotate: [0, -10, 10, -5, 5, 0] }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <tool.icon className="h-6 w-6" />
-                  </motion.div>
-                  
-                  <h3 className="text-xl font-vt323 mb-2">{tool.title}</h3>
-                  
-                  <p className="text-white/70 text-sm flex-grow">
-                    {tool.description}
-                  </p>
-                  
-                  <motion.div 
-                    className={cn(
-                      "mt-4 text-sm font-semibold",
-                      "transition-transform duration-300",
-                      hoveredId === tool.id ? "translate-x-2" : ""
-                    )}
-                    whileHover={{ x: 5 }}
-                  >
-                    Try it now
-                  </motion.div>
-                </div>
-              </Link>
+                  {card}
+                </a>
+              ) : (
+                <Link 
+                  to={tool.path}
+                  className="block"
+                  onMouseEnter={() => setHoveredId(tool.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  {card}
+                </Link>
+              )}
             </motion.div>
-          ))}
+          )})}
         </motion.div>
       </div>
     </section>
