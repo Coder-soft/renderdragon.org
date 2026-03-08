@@ -162,13 +162,13 @@ const Hero = () => {
         variants={containerVariants}
       >
         <motion.div variants={itemVariants} className="mb-6 flex justify-center">
-          <Link
-            to="/resources?tab=creator-packs"
+          <a
+            href="https://osmiumchecks.vercel.app/"
             className="inline-flex items-center rounded-full border border-cow-purple/30 bg-cow-purple/10 px-4 py-1.5 text-sm font-medium text-cow-purple transition-colors hover:bg-cow-purple/20 font-geist"
           >
             <span className="mr-2 px-2 py-0.5 rounded-full bg-cow-purple text-white text-xs font-bold">NEW</span>
-            Creator Packs are here! <IconArrowRight className="ml-2 h-4 w-4" />
-          </Link>
+            Osmium out <IconArrowRight className="ml-2 h-4 w-4" />
+          </a>
         </motion.div>
 
         <motion.h1
@@ -226,8 +226,8 @@ const Hero = () => {
             }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link
-              to="/gappa"
+            <a
+              href="https://osmiumchecks.vercel.app/"
               className="pixel-btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm transition-transform"
             >
               <motion.span
@@ -237,7 +237,7 @@ const Hero = () => {
                 <IconMusic className="w-4 h-4" />
               </motion.span>
               Check Music Copyright
-            </Link>
+            </a>
           </motion.div>
         </motion.div>
 
