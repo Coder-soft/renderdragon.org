@@ -92,6 +92,7 @@ const getEmbedInfo = (link: string) => {
 const MusicPacksTab = () => {
   const [musicLinksData, setMusicLinksData] = useState<MusicLinksData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
@@ -100,26 +101,39 @@ const MusicPacksTab = () => {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const loadMusicLinks = async () => {
-      try {
-        const response = await fetch('/data/music-links.json');
-        const data: MusicLinksData = await response.json();
-        setMusicLinksData(data);
-        const firstCategory = data.categories?.[0]?.name || null;
-        setSelectedCategory(firstCategory);
-        if (firstCategory) {
-          setExpandedCategories(new Set([firstCategory]));
-        }
-      } catch {
-        setMusicLinksData({ categories: [] });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const loadMusicLinks = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError(null);
 
-    loadMusicLinks();
+    try {
+      const response = await fetch('/data/music-links.json');
+      if (!response.ok) {
+        throw new Error(`Failed to load music links (${response.status})`);
+      }
+
+      const data: MusicLinksData = await response.json();
+      if (!data || !Array.isArray(data.categories)) {
+        throw new Error('Music links data format is invalid');
+      }
+
+      setMusicLinksData(data);
+      const firstCategory = data.categories[0]?.name || null;
+      setSelectedCategory(firstCategory);
+      if (firstCategory) {
+        setExpandedCategories(new Set([firstCategory]));
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load music links';
+      setLoadError(errorMessage);
+      setMusicLinksData({ categories: [] });
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadMusicLinks();
+  }, [loadMusicLinks]);
 
   const allLinks = useMemo<MusicLinkItem[]>(() => {
     if (!musicLinksData?.categories) return [];
@@ -379,6 +393,17 @@ const MusicPacksTab = () => {
       </div>
 
       <div className="flex-1 min-w-0">
+        {loadError && (
+          <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3">
+            <p className="text-sm text-red-300">
+              Couldn&apos;t load music packs: {loadError}
+            </p>
+            <Button variant="outline" size="sm" className="mt-2" onClick={loadMusicLinks}>
+              Retry
+            </Button>
+          </div>
+        )}
+
         <div className="mb-4 px-1">
           <h2 className="text-2xl font-geist font-bold">Music Packs</h2>
           <p className="text-sm text-muted-foreground">
