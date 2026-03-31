@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconSearch, IconX } from '@tabler/icons-react';
+import { IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconPlayerPlayFilled, IconSearch, IconX } from '@tabler/icons-react';
 
 interface MusicLinksMessage {
   links?: string[];
@@ -96,6 +96,7 @@ const MusicPacksTab = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [activeEmbeds, setActiveEmbeds] = useState<Set<string>>(new Set());
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -198,6 +199,10 @@ const MusicPacksTab = () => {
   }, [selectedCategory, selectedChannel]);
 
   useEffect(() => {
+    setActiveEmbeds(new Set());
+  }, [selectedCategory, selectedChannel]);
+
+  useEffect(() => {
     const target = loadMoreRef.current;
     if (!target || visibleCount >= filteredLinks.length) return;
 
@@ -238,6 +243,14 @@ const MusicPacksTab = () => {
     setSelectedCategory(categoryName);
     setSelectedChannel(channelName);
     setExpandedCategories(prev => new Set(prev).add(categoryName));
+  }, []);
+
+  const handleActivateEmbed = useCallback((itemId: string) => {
+    setActiveEmbeds(prev => {
+      const next = new Set(prev);
+      next.add(itemId);
+      return next;
+    });
   }, []);
 
   if (isLoading) {
@@ -381,19 +394,17 @@ const MusicPacksTab = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {displayedLinks.map(item => {
               const embedInfo = getEmbedInfo(item.link);
+              const isEmbedActive = activeEmbeds.has(item.id);
 
               return (
-                <motion.a
+                <motion.div
                   key={item.id}
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="group block rounded-lg border border-border bg-card/50 p-3 hover:border-cow-purple/50 transition-colors pixel-corners"
                 >
                   <div className="aspect-video rounded-md overflow-hidden border border-border/70 bg-muted/30 mb-3">
-                    {embedInfo.isYoutube && embedInfo.embedUrl ? (
+                    {embedInfo.isYoutube && embedInfo.embedUrl && isEmbedActive ? (
                       <iframe
                         src={embedInfo.embedUrl}
                         title={item.link}
@@ -402,13 +413,24 @@ const MusicPacksTab = () => {
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       />
-                    ) : embedInfo.thumbnailUrl ? (
-                      <img
-                        src={embedInfo.thumbnailUrl}
-                        alt={item.link}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
+                    ) : embedInfo.isYoutube && embedInfo.thumbnailUrl ? (
+                      <button
+                        type="button"
+                        className="relative w-full h-full group/thumb"
+                        onClick={() => handleActivateEmbed(item.id)}
+                      >
+                        <img
+                          src={embedInfo.thumbnailUrl}
+                          alt={item.link}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-black/35 transition-colors flex items-center justify-center">
+                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-cow-purple/90 text-white">
+                            <IconPlayerPlayFilled className="h-6 w-6 ml-0.5" />
+                          </span>
+                        </div>
+                      </button>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                         <IconMusic className="h-10 w-10 opacity-50" />
@@ -417,14 +439,23 @@ const MusicPacksTab = () => {
                   </div>
 
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm text-muted-foreground break-all line-clamp-2">{item.link}</p>
-                    <IconExternalLink className="h-4 w-4 text-cow-purple mt-0.5 flex-shrink-0" />
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground break-all line-clamp-2 hover:text-cow-purple transition-colors"
+                    >
+                      {item.link}
+                    </a>
+                    <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex-shrink-0">
+                      <IconExternalLink className="h-4 w-4 text-cow-purple" />
+                    </a>
                   </div>
 
                   <div className="mt-2 text-xs text-muted-foreground/80">
                     {normalizeLabel(item.category)} / {normalizeLabel(item.channel)}
                   </div>
-                </motion.a>
+                </motion.div>
               );
             })}
           </div>
