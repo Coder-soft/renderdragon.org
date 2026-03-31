@@ -11,11 +11,12 @@ import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
 import FavoritesTab from '@/components/resources/FavoritesTab';
 import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
+import MusicPacksTab from '@/components/resources/MusicPacksTab';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { IconArrowUp, IconHeart, IconSearch, IconPackage } from '@tabler/icons-react';
+import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 
 
@@ -31,7 +32,7 @@ const LoadingSpinner = () => (
 const ResourcesHub = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs'>('resources');
+  const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
 
 
   const {
@@ -112,6 +113,7 @@ const ResourcesHub = () => {
     const tabParam = urlParams.get('tab');
     if (tabParam === 'favorites') setActiveTab('favorites');
     else if (tabParam === 'creator-packs') setActiveTab('creator-packs');
+    else if (tabParam === 'music-packs') setActiveTab('music-packs');
   }, []);
 
   const scrollToTop = () => {
@@ -244,6 +246,20 @@ const ResourcesHub = () => {
                   NEW
                 </span>
               </div>
+              <div className="relative">
+                <Button
+                  variant={activeTab === 'music-packs' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('music-packs')}
+                  className="pixel-corners"
+                >
+                  <IconMusic className="h-4 w-4 mr-2" />
+                  Music Packs
+                </Button>
+                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                  NEW
+                </span>
+              </div>
             </div>
             <AnimatePresence mode="wait">
               {activeTab === 'favorites' ? (
@@ -266,6 +282,16 @@ const ResourcesHub = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <CreatorPacksTab />
+                </motion.div>
+              ) : activeTab === 'music-packs' ? (
+                <motion.div
+                  key="music-packs"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <MusicPacksTab />
                 </motion.div>
               ) : (
                 <motion.div

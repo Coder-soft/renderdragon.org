@@ -1,8 +1,32 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { IconArrowRight, IconMusic } from '@tabler/icons-react'
+import { IconArrowRight, IconExternalLink, IconFolderOpen, IconMusic } from "@tabler/icons-react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import * as motion from "motion/react-client"
+
+const showcaseTracks = [
+  {
+    title: "Battle Edit Vibes",
+    source: "https://music.youtube.com/watch?v=wNrEaISwpf4",
+    thumbnail: "https://i.ytimg.com/vi/wNrEaISwpf4/hqdefault.jpg",
+    category: "Background Music",
+    channel: "background-music",
+  },
+  {
+    title: "Cinematic Highlight",
+    source: "https://music.youtube.com/watch?v=qfWn5herjoc",
+    thumbnail: "https://i.ytimg.com/vi/qfWn5herjoc/hqdefault.jpg",
+    category: "Background Music",
+    channel: "background-music",
+  },
+  {
+    title: "Smooth Montage Flow",
+    source: "https://music.youtube.com/watch?v=3eh0LJHX3jk",
+    thumbnail: "https://i.ytimg.com/vi/3eh0LJHX3jk/hqdefault.jpg",
+    category: "Background Music",
+    channel: "background-music",
+  },
+]
 
 const Hero = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -21,14 +45,13 @@ const Hero = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [isMobile])
 
-  // Animation variants for staggered animations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
+        staggerChildren: 0.12,
+        delayChildren: 0.2,
       },
     },
   }
@@ -40,7 +63,7 @@ const Hero = () => {
       opacity: 1,
       transition: {
         stiffness: 100,
-        damping: 10,
+        damping: 12,
       },
     },
   }
@@ -52,46 +75,7 @@ const Hero = () => {
       opacity: 1,
       transition: {
         delay: 0.2,
-        stiffness: 200,
-        damping: 10,
-      },
-    },
-  }
-
-  const titleVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        stiffness: 100,
-        damping: 10,
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
-  }
-
-  const letterVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        stiffness: 100,
-        damping: 10,
-      },
-    },
-  }
-
-  const badgeVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        delay: 1.2,
-        stiffness: 200,
+        stiffness: 180,
         damping: 10,
       },
     },
@@ -102,155 +86,129 @@ const Hero = () => {
       className="relative min-h-screen flex items-center justify-center bg-background px-6 py-20 overflow-hidden"
       style={{ perspective: "1000px" }}
     >
-      {/* Animated background decorations */}
       <div
         className="absolute inset-0 pointer-events-none transition-transform duration-300"
         style={{
-          transform: `translate3d(${mousePosition.x * -40}px, ${mousePosition.y * -40}px, 0)`,
+          transform: `translate3d(${mousePosition.x * -35}px, ${mousePosition.y * -35}px, 0)`,
         }}
       >
         <motion.div
-          className="absolute left-[10%] top-[15%] w-16 h-16 border-2 border-cow-purple/30 rounded-lg rotate-45"
+          className="absolute left-[9%] top-[14%] w-14 h-14 border-2 border-cow-purple/30 rounded-lg rotate-45"
           initial="hidden"
           animate="visible"
           variants={decorationVariants}
-          whileInView={{
-            rotate: [45, 55, 45],
-            transition: { duration: 5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-          }}
         />
         <motion.div
-          className="absolute right-[12%] top-[20%] w-10 h-10 bg-cow-purple/20 rounded-full"
+          className="absolute right-[11%] top-[18%] w-12 h-12 bg-cow-purple/15 rounded-full"
           initial="hidden"
           animate="visible"
           variants={decorationVariants}
-          whileInView={{
-            x: [0, 15, 0],
-            y: [0, -10, 0],
-            transition: { duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-          }}
         />
         <motion.div
-          className="absolute left-[20%] bottom-[20%] w-12 h-12 bg-cow-purple/20 rotate-12 pixel-corners"
+          className="absolute left-[18%] bottom-[16%] w-10 h-10 bg-cow-purple/20 pixel-corners"
           initial="hidden"
           animate="visible"
           variants={decorationVariants}
-          whileInView={{
-            y: [0, -20, 0],
-            rotate: [12, 0, 12],
-            transition: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-          }}
-        />
-        <motion.div
-          className="absolute right-[25%] bottom-[15%] w-8 h-8 bg-cow-purple/30 pixel-corners"
-          initial="hidden"
-          animate="visible"
-          variants={decorationVariants}
-          whileInView={{
-            x: [0, -15, 0],
-            rotate: [0, 15, 0],
-            transition: { duration: 5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-          }}
         />
       </div>
 
-      {/* Main content with staggered animations */}
       <motion.div
-        className="relative z-10 max-w-4xl text-center"
+        className="relative z-10 max-w-7xl w-full"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        <motion.div variants={itemVariants} className="mb-6 flex justify-center">
-          <a
-            href="https://osmiumchecks.vercel.app/"
-            className="inline-flex items-center rounded-full border border-cow-purple/30 bg-cow-purple/10 px-4 py-1.5 text-sm font-medium text-cow-purple transition-colors hover:bg-cow-purple/20 font-geist"
-          >
-            <span className="mr-2 px-2 py-0.5 rounded-full bg-cow-purple text-white text-xs font-bold">NEW</span>
-            Osmium out <IconArrowRight className="ml-2 h-4 w-4" />
-          </a>
-        </motion.div>
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <motion.div variants={itemVariants}>
+            <div className="inline-flex items-center gap-2 rounded-full border border-cow-purple/35 px-3 py-1.5 text-sm text-cow-purple font-geist mb-6 leading-none">
+              <span className="inline-flex items-center justify-center h-6 px-3 rounded-full bg-cow-purple text-white text-[11px] font-bold tracking-wide shrink-0">
+                NEW
+              </span>
+              <span className="leading-none">Music Packs On Resources Hub</span>
+            </div>
 
-        <motion.h1
-          className="text-4xl md:text-6xl font-bold mb-6 text-foreground dark:text-white leading-tight"
-          style={{
-            fontFamily: "'Press Start 2P', cursive",
-            lineHeight: "1.1",
-          }}
-          variants={titleVariants}
-        >
-          <motion.span className="inline-block" variants={itemVariants}>
-            Unlock Your <br />
-          </motion.span>
-          <motion.span
-            className="text-cow-purple inline-block"
-            variants={itemVariants}
-          >
-            Creation Potential
-          </motion.span>
-        </motion.h1>
-
-        <motion.p
-          className="text-lg md:text-xl text-foreground/80 dark:text-white/80 max-w-2xl mx-auto mb-10"
-          variants={itemVariants}
-        >
-          The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more.
-        </motion.p>
-
-        <motion.div className="flex flex-col sm:flex-row gap-4 justify-center items-center" variants={itemVariants}>
-          <motion.div
-            whileHover={{
-              scale: 1.05,
-              transition: { stiffness: 400, damping: 10 },
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link
-              to="/resources"
-              className="pixel-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm transition-transform"
+            <h1
+              className="text-4xl md:text-6xl font-bold text-foreground dark:text-white leading-tight"
+              style={{ fontFamily: "'Montserrat', 'Inter', sans-serif", lineHeight: "1.1" }}
             >
-              <motion.span
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-              >
-                <IconArrowRight className="w-4 h-4" />
-              </motion.span>
-              Browse Resources
-            </Link>
-          </motion.div>
+              Find The Perfect
+              <span className="block text-cow-purple mt-4">Music Pack Fast</span>
+            </h1>
 
-          <motion.div
-            whileHover={{
-              scale: 1.05,
-              transition: { stiffness: 400, damping: 10 },
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <a
-              href="https://osmiumchecks.vercel.app/"
-              className="pixel-btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm transition-transform"
+            <motion.p
+              className="text-lg md:text-xl text-foreground/80 dark:text-white/80 mt-8 max-w-2xl"
+              variants={itemVariants}
             >
-              <motion.span
-                animate={{ rotate: [0, 10, 0] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-              >
+              Browse embedded tracks from categorized packs, jump through sub categories with a file-style browser, and open every link instantly.
+            </motion.p>
+
+            <motion.div className="flex flex-col sm:flex-row gap-4 mt-8" variants={itemVariants}>
+              <Link to="/resources?tab=music-packs" className="pixel-btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
                 <IconMusic className="w-4 h-4" />
-              </motion.span>
-              Check Music Copyright
-            </a>
-          </motion.div>
-        </motion.div>
+                Open Music Packs
+                <IconArrowRight className="w-4 h-4" />
+              </Link>
+              <Link to="/resources" className="pixel-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
+                Browse All Resources
+              </Link>
+            </motion.div>
 
-        <motion.div className="mt-10" variants={itemVariants}>
-          <motion.span
-            className="text-xl text-foreground/70 dark:text-white/70 bg-cow-purple/10 px-4 py-2 rounded pixel-corners inline-block"
-            variants={badgeVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            100% Free
-          </motion.span>
-        </motion.div>
+            <motion.div className="grid grid-cols-3 gap-3 mt-8 max-w-md" variants={itemVariants}>
+              <div className="rounded-md border border-border bg-card/60 px-3 py-2 text-center">
+                <p className="text-lg font-bold text-cow-purple">2,268</p>
+                <p className="text-xs text-muted-foreground">Links</p>
+              </div>
+              <div className="rounded-md border border-border bg-card/60 px-3 py-2 text-center">
+                <p className="text-lg font-bold text-cow-purple">Cato</p>
+                <p className="text-xs text-muted-foreground">Organized</p>
+              </div>
+              <div className="rounded-md border border-border bg-card/60 px-3 py-2 text-center">
+                <p className="text-lg font-bold text-cow-purple">Sub Cat</p>
+                <p className="text-xs text-muted-foreground">Tree View</p>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="relative">
+            <div className="rounded-xl border border-cow-purple/30 bg-card/60 backdrop-blur-sm p-4 md:p-5 pixel-corners shadow-2xl shadow-cow-purple/10">
+              <div className="flex items-center gap-2 mb-4">
+                <IconFolderOpen className="h-4 w-4 text-cow-purple" />
+                <p className="text-sm text-muted-foreground">background music / background-music</p>
+              </div>
+
+              <div className="space-y-3">
+                {showcaseTracks.map((track, index) => (
+                  <motion.a
+                    key={track.source}
+                    href={track.source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.08 }}
+                    className="block rounded-lg border border-border bg-background/60 overflow-hidden hover:border-cow-purple/40 transition-colors"
+                  >
+                    <div className="flex gap-3 p-3">
+                      <img
+                        src={track.thumbnail}
+                        alt={track.title}
+                        className="w-28 h-16 object-cover rounded-md"
+                        loading="lazy"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{track.title}</p>
+                        <p className="text-xs text-muted-foreground truncate mt-1">{track.category} / {track.channel}</p>
+                        <div className="inline-flex items-center text-xs text-cow-purple mt-2 gap-1">
+                          Open Link <IconExternalLink className="h-3.5 w-3.5" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </motion.div>
     </section>
   )
