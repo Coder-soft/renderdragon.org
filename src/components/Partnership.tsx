@@ -32,7 +32,7 @@ const Partnership = () => {
     },
     {
       name: "Decour SMP",
-      description: 'A friendly and welcoming Minecraft SMP server.',
+      description: 'Home to the best SMP experience you can get.',
       logo: "/Dcore.png",
       url: "https://dsc.gg/decoursmp",
     },
