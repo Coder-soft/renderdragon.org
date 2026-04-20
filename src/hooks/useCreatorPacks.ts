@@ -125,7 +125,6 @@ export const useCreatorPacks = () => {
                 });
                 throw error;
             }
-            console.log('Fetched packs:', data);
             setPacks((data as CreatorPackWithProfiles[])?.map(mapToCreatorPack) || []);
         } catch (error: unknown) {
             console.error('Error fetching creator packs:', error);

@@ -12,3 +12,9 @@ CREATE POLICY "Users can manage their own creator packs" ON creator_packs
 FOR ALL
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
+
+-- Allow admins to review creator packs
+CREATE POLICY "Admins can review creator packs" ON creator_packs
+FOR UPDATE
+USING (auth.jwt() ->> 'email' = 'yamura@duck.com')
+WITH CHECK (auth.jwt() ->> 'email' = 'yamura@duck.com');
