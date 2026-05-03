@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { useResources } from '@/hooks/useResources';
 import { Resource } from '@/types/resources';
+import { MusicMood } from '@/types/music';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
@@ -72,7 +73,7 @@ const ResourcesHub = () => {
   const isMcIconsView = selectedCategory === 'minecraft-icons';
   const isMusicView = selectedCategory === 'music';
 
-  const [musicMoodsData, setMusicMoodsData] = useState<Array<{ filename: string; moods: string[] }>>([]);
+  const [musicMoodsData, setMusicMoodsData] = useState<MusicMood[]>([]);
 
   useEffect(() => {
     if (isMusicView && musicMoodsData.length === 0) {
