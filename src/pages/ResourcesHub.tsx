@@ -17,7 +17,8 @@ import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic } from '@tabler/icons-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 
 
@@ -35,6 +36,7 @@ const ResourcesHub = () => {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+  const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
 
 
   const {
@@ -192,6 +194,42 @@ const ResourcesHub = () => {
         <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
           Powered by Hamburger API
         </p>
+      )}
+
+      {isMusicView && isMobile && (
+        <div className="mb-4">
+          <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="w-full pixel-corners">
+                <IconFilter className="h-4 w-4 mr-2" />
+                Filter by Mood
+                {selectedMoods.length > 0 && (
+                  <span className="ml-2 bg-cow-purple text-white text-xs px-1.5 py-0.5 rounded">
+                    {selectedMoods.length}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[70vh] pixel-corners">
+              <div className="h-full py-2">
+                <h3 className="text-lg font-vt323 mb-4 flex items-center gap-2">
+                  <IconMoodHappy className="h-5 w-5 text-cow-purple" />
+                  Filter by Mood
+                </h3>
+                <MusicMoodFilter
+                  selectedMoods={selectedMoods}
+                  onMoodChange={(moods) => {
+                    setSelectedMoods(moods);
+                    if (moods.length === 0) {
+                      setMobileMoodFilterOpen(false);
+                    }
+                  }}
+                  moodsData={musicMoodsData}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       )}
 
       <ResourcesList
