@@ -12,6 +12,7 @@ import ResourcesList from '@/components/resources/ResourcesList';
 import FavoritesTab from '@/components/resources/FavoritesTab';
 import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
 import MusicPacksTab from '@/components/resources/MusicPacksTab';
+import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -33,6 +34,7 @@ const ResourcesHub = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
+  const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
 
 
   const {
@@ -66,6 +68,31 @@ const ResourcesHub = () => {
 
   const isMcSoundsView = selectedCategory === 'mcsounds';
   const isMcIconsView = selectedCategory === 'minecraft-icons';
+  const isMusicView = selectedCategory === 'music';
+
+  const [musicMoodsData, setMusicMoodsData] = useState<Array<{ filename: string; moods: string[] }>>([]);
+
+  useEffect(() => {
+    if (isMusicView && musicMoodsData.length === 0) {
+      fetch('/data/music_moods.json')
+        .then(res => res.json())
+        .then(data => setMusicMoodsData(data))
+        .catch(err => console.error('Failed to load music moods:', err));
+    }
+  }, [isMusicView, musicMoodsData.length]);
+
+  const moodFilteredResources = useMemo(() => {
+    if (!isMusicView || selectedMoods.length === 0) return filteredResources;
+
+    const moodsMap = new Map(musicMoodsData.map(item => [item.filename.toLowerCase(), item.moods]));
+
+    return filteredResources.filter(resource => {
+      const filename = (resource.filename || resource.title).toLowerCase();
+      const resourceMoods = moodsMap.get(filename);
+      if (!resourceMoods) return false;
+      return selectedMoods.some(mood => resourceMoods.includes(mood));
+    });
+  }, [filteredResources, isMusicView, selectedMoods, musicMoodsData]);
 
   const mcsoundsResourceCount = useMemo(() => {
     if (!isMcSoundsView) return {};
@@ -107,6 +134,12 @@ const ResourcesHub = () => {
       window.removeEventListener('showFavorites', handleShowFavorites);
     };
   }, []);
+
+  useEffect(() => {
+    if (selectedCategory !== 'music') {
+      setSelectedMoods([]);
+    }
+  }, [selectedCategory]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -163,7 +196,7 @@ const ResourcesHub = () => {
 
       <ResourcesList
         resources={resources}
-        filteredResources={filteredResources}
+        filteredResources={isMusicView ? moodFilteredResources : filteredResources}
         isLoading={isLoading}
         isSearching={isSearching}
         selectedCategory={selectedCategory}
@@ -301,30 +334,43 @@ const ResourcesHub = () => {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {(isMcSoundsView || isMcIconsView) && !isMobile ? (
+                  {(isMcSoundsView || isMcIconsView || isMusicView) && !isMobile ? (
                     <div className="flex gap-6 max-w-7xl mx-auto">
+                      {isMusicView && (
+                        <div className="w-64 flex-shrink-0">
+                          <div className="sticky top-28 h-[calc(100vh-8rem)]">
+                            <MusicMoodFilter
+                              selectedMoods={selectedMoods}
+                              onMoodChange={setSelectedMoods}
+                              moodsData={musicMoodsData}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         {renderContent()}
                       </div>
-                      <div className="w-80 flex-shrink-0">
-                        <div className="sticky top-28 h-[calc(100vh-8rem)]">
-                          {isMcSoundsView ? (
-                            <McSoundsBrowser
-                              subcategories={availableSubcategories}
-                              selectedSubcategory={selectedSubcategory}
-                              onSubcategoryChange={handleSubcategoryChange}
-                              resourceCount={mcsoundsResourceCount}
-                            />
-                          ) : (
-                            <McIconsBrowser
-                              subcategories={availableSubcategories}
-                              selectedSubcategory={selectedSubcategory}
-                              onSubcategoryChange={handleSubcategoryChange}
-                              resourceCount={mciconsResourceCount}
-                            />
-                          )}
+                      {(isMcSoundsView || isMcIconsView) && (
+                        <div className="w-80 flex-shrink-0">
+                          <div className="sticky top-28 h-[calc(100vh-8rem)]">
+                            {isMcSoundsView ? (
+                              <McSoundsBrowser
+                                subcategories={availableSubcategories}
+                                selectedSubcategory={selectedSubcategory}
+                                onSubcategoryChange={handleSubcategoryChange}
+                                resourceCount={mcsoundsResourceCount}
+                              />
+                            ) : (
+                              <McIconsBrowser
+                                subcategories={availableSubcategories}
+                                selectedSubcategory={selectedSubcategory}
+                                onSubcategoryChange={handleSubcategoryChange}
+                                resourceCount={mciconsResourceCount}
+                              />
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   ) : (
                     <div className="max-w-4xl mx-auto">
