@@ -28,6 +28,6 @@ jobs:
       - name: Run opencode
         uses: anomalyco/opencode/github@latest
         env:
-          KILO_API_KEY: ${{ secrets.KILO_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
-          model: z-ai/glm-5
+          model: opencode/minimax-m2.5-free
