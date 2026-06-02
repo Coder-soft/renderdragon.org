@@ -86,6 +86,16 @@ const teamMembers: TeamMember[] = [
       discord: "https://discordapp.com/users/758322333437394944",
     },
   },
+  {
+    name: "Utkrista",
+    role: "Team Member - Resource Manager",
+    avatar:
+      "https://images-ext-1.discordapp.net/external/9x3KDeC4d_wC4I9pT-XOYA6bY7VpDR8KK0w2sNEujZg/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/893688296130105375/b2419c4ac0b5591c7ec8324467c404e6.png?format=webp&quality=lossless&width=537&height=537",
+    socials: {
+      website: "https://utkrista.tech/launcher/",
+      discord: "https://discordapp.com/users/1298482806430629959",
+    },
+  },
 ];
 
 const Contact = () => {
