@@ -31,10 +31,10 @@ const Partnership = () => {
       url: "https://discord.gg/wXhHe5bVgz",
     },
     {
-      name: "Decour SMP",
-      description: 'Home to the best SMP experience you can get.',
-      logo: "/Dcore.png",
-      url: "https://dsc.gg/decoursmp",
+      name: 'Moon SMP',
+      description: 'Moon SMP is a Grind Based PvP and economy server making it fun and challenging.',
+      logo: 'https://images-ext-1.discordapp.net/external/p9bRAl2A-0LjGwG3zVUKV2dCq55_QIvrUE_lmBaAr5A/%3Fsize%3D4096/https/cdn.discordapp.com/icons/1063123986537525298/61c13fc9f21bf93eb15a93774a15d4a2.png?format=webp&quality=lossless&width=192&height=192',
+      url: 'https://discord.gg/ZKzu7r9JZV',
     },
   ];
   return (
@@ -55,7 +55,7 @@ const Partnership = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {partners.map((partner, i) => (
             <motion.div
               key={partner.name}
