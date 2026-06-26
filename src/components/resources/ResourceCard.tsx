@@ -1,45 +1,36 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
-  IconMusic,
-  IconPhoto,
   IconVideo,
-  IconFileText,
-  IconFileMusic,
   IconCheck,
   IconHeart,
-  IconBoxModel,
 } from "@tabler/icons-react";
-import { getResourceUrl, Resource } from "@/types/resources";
+import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
-import { useHeartedResources } from "@/hooks/useHeartedResources";
+import { useUserFavorites } from "@/hooks/useUserFavorites";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 import AudioPlayer from "@/components/AudioPlayer";
-import FolderPickerPopover from "./FolderPickerPopover";
+import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 
 interface ResourceCardProps {
   resource: Resource;
   onClick: (resource: Resource) => void;
-  fontPreviewText?: string;
 }
 
-const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps) => {
+const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [hoverToPlayEnabled] = useState(() => {
-    const stored = localStorage.getItem('hoverToPlay');
-    return stored === null ? true : stored === 'true';
-  });
+  const { user } = useAuth();
+
   // Reset image loaded state when resource changes
   useEffect(() => {
     setIsImageLoaded(false);
   }, [resource.id]);
 
-  const { toggleHeart, isHearted, moveFavorite, addFavoriteToFolder, getFolderItemCount, folders } = useHeartedResources();
-  const resourceUrl = getResourceUrl(resource);
-  const isFavorite = isHearted(resourceUrl);
-  const [showFolderPicker, setShowFolderPicker] = useState(false);
-  const heartButtonRef = useRef<HTMLButtonElement>(null);
+  const { toggleFavorite, isFavorited } = useUserFavorites();
+  const isFavorite = isFavorited(String(resource.id));
 
   const getPreviewUrl = (resource: Resource) => {
     if (resource.download_url) return resource.download_url;
@@ -56,6 +47,7 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
   };
 
   const [isInView, setIsInView] = useState(false);
+  const [isFontLoaded, setIsFontLoaded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,91 +78,35 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
     const fontName = resource.title;
 
     // Check if font is already loaded
-    if (document.fonts.check(`1em "${fontName}"`)) return;
+    if (document.fonts.check(`1em "${fontName}"`)) {
+      setIsFontLoaded(true);
+      return;
+    }
 
     const font = new FontFace(fontName, `url(${fontUrl})`);
     font
       .load()
       .then((loadedFont) => {
         document.fonts.add(loadedFont);
+        setIsFontLoaded(true);
       })
       .catch((err) => {
         console.error(`Failed to load font "${fontName}":`, err);
       });
-  }, [resource, isInView]);
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "music":
-        return <IconMusic className="h-5 w-5" />;
-      case "sfx":
-        return <IconFileMusic className="h-5 w-5" />;
-      case "images":
-        return <IconPhoto className="h-5 w-5" />;
-      case "animations":
-        return <IconVideo className="h-5 w-5" />;
-      case "fonts":
-      case "presets":
-        return <IconFileText className="h-5 w-5" />;
-      case "minecraft-icons":
-        return <IconBoxModel className="h-5 w-5" />;
-      case "mcsounds":
-        return <IconFileMusic className="h-5 w-5" />;
-      default:
-        return <IconFileText className="h-5 w-5" />;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "music":
-        return "bg-blue-500/10 text-blue-500";
-      case "sfx":
-        return "bg-yellow-500/10 text-yellow-500";
-      case "images":
-        return "bg-purple-500/10 text-purple-500";
-      case "animations":
-        return "bg-red-500/10 text-red-500";
-      case "fonts":
-        return "bg-green-500/10 text-green-500";
-      case "presets":
-        return "bg-gray-500/10 text-gray-500";
-      case "minecraft-icons":
-        return "bg-green-500/10 text-green-600";
-      case "mcsounds":
-        return "bg-teal-500/10 text-teal-500";
-      default:
-        return "bg-gray-500/10 text-gray-500";
-    }
-  };
-
-  const handleFavoriteClick = useCallback(
-    async (e: React.MouseEvent) => {
-      e.stopPropagation();
-      try {
-        const result = await toggleHeart(resourceUrl);
-        if (result.action === 'added' && folders.length > 0) {
-          setShowFolderPicker(true);
-        }
-      } catch {
-        // toggle failed, already toasted in the hook
-      }
-    },
-    [toggleHeart, resourceUrl, folders.length],
-  );
-
-  const handleFolderSelect = useCallback(
-    (folderId: string | null) => {
-      if (folderId && resourceUrl) {
-        addFavoriteToFolder(resourceUrl, folderId);
-      }
-      setShowFolderPicker(false);
-    },
-    [addFavoriteToFolder, resourceUrl],
-  );
+  }, [resource.id, resource.download_url, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!user) {
+      toast.error("Sign in to save favorites");
+      return;
+    }
+    toggleFavorite(String(resource.id));
   };
 
   const renderPreview = () => {
@@ -207,12 +143,18 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
             onClick={handlePreviewClick}
             className="relative aspect-[4/1] bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
           >
-            <div
-              className="absolute inset-0 flex items-center justify-center text-lg font-medium"
-              style={{ fontFamily: resource.title }}
-            >
-              {fontPreviewText || "Aa Bb Cc"}
-            </div>
+            {isFontLoaded ? (
+              <div
+                className="absolute inset-0 flex items-center justify-center text-lg font-medium"
+                style={{ fontFamily: resource.title }}
+              >
+                Aa Bb Cc
+              </div>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-cow-purple border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </div>
         );
       case "music":
@@ -241,21 +183,8 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
             />
           </div>
         );
-      case "mcsounds":
-        return (
-          <div
-            onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
-          >
-            <AudioPlayer
-              src={previewUrl}
-              isInView={isInView}
-              className="w-full shadow-none border-none bg-transparent p-0"
-            />
-          </div>
-        );
       case "animations":
-        return (isHovered && hoverToPlayEnabled) ? (
+        return isHovered ? (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
@@ -322,7 +251,6 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
         </motion.div>
 
         <motion.button
-          ref={heartButtonRef}
           onClick={handleFavoriteClick}
           className={cn(
             "p-1 rounded-full transition-colors",
@@ -335,9 +263,9 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
           animate={
             isFavorite
               ? {
-                scale: [1, 1.2, 1],
-                transition: { duration: 0.3 },
-              }
+                  scale: [1, 1.2, 1],
+                  transition: { duration: 0.3 },
+                }
               : undefined
           }
         >
@@ -347,15 +275,6 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
           />
         </motion.button>
       </div>
-
-      <FolderPickerPopover
-        isOpen={showFolderPicker}
-        onClose={() => setShowFolderPicker(false)}
-        onSelectFolder={handleFolderSelect}
-        folders={folders}
-        getFolderItemCount={getFolderItemCount}
-        anchorRef={heartButtonRef}
-      />
 
       <motion.h3
         className="text-xl font-vt323 mb-2 group-hover:text-primary transition-colors"
