@@ -129,7 +129,7 @@ const ResourcesList = ({
           <Button
             className="pixel-corners bg-cow-purple hover:bg-cow-purple/80"
             onClick={() =>
-              window.open("https://discord.renderdragon.org", "_blank")
+              window.open("https://discord.renderdragon.org", "_blank", "noopener,noreferrer")
             }
           >
             <img
@@ -145,6 +145,7 @@ const ResourcesList = ({
               window.open(
                 "https://creatoronwheels.netlify.app/resources",
                 "_blank",
+                "noopener,noreferrer",
               )
             }
           >
