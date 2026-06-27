@@ -103,7 +103,7 @@ const NotFound = () => {
             variants={itemVariants}
           >
             <motion.div
-              className="text-9xl drop-shadow-lg font-minecraftia"
+              className="text-9xl drop-shadow-lg font-vt323"
               animate={{
                 textShadow: [
                   "0 0 8px rgba(147, 51, 234, 0.7)",

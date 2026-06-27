@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo, useCallback, lazy, Suspense } from 'react';
+import { useRef, useEffect, useState, lazy, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -6,89 +6,39 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { useResources } from '@/hooks/useResources';
 import { Resource } from '@/types/resources';
+import { MusicMood } from '@/types/music';
 import ResourceFilters from '@/components/resources/ResourceFilters';
+import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
+import FavoritesTab from '@/components/resources/FavoritesTab';
+import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
+import MusicPacksTab from '@/components/resources/MusicPacksTab';
+import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
+import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
+import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { IconArrowUp, IconMusic, IconPhoto, IconVideo, IconFileText, IconFileMusic, IconLayoutGrid } from '@tabler/icons-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
+
+
 
 const ResourceDetailDialog = lazy(() => import('@/components/resources/ResourceDetailDialog'));
 
-const categoryMeta: Record<string, { icon: React.ReactNode; label: string }> = {
-  music: { icon: <IconMusic className="h-10 w-10" />, label: 'Music' },
-  sfx: { icon: <IconFileMusic className="h-10 w-10" />, label: 'SFX' },
-  images: { icon: <IconPhoto className="h-10 w-10" />, label: 'Images' },
-  animations: { icon: <IconVideo className="h-10 w-10" />, label: 'Animations' },
-  fonts: { icon: <IconFileText className="h-10 w-10" />, label: 'Fonts' },
-  presets: { icon: <IconFileText className="h-10 w-10" />, label: 'Presets' },
-  'minecraft-icons': {
-    icon: <IconLayoutGrid className="h-10 w-10" />,
-    label: 'Minecraft Icons',
-  },
-};
-
-function CategoryCards({
-  indexData,
-  onSelectCategory,
-}: {
-  indexData: { categories?: Record<string, { count: number }> } | null;
-  onSelectCategory: (cat: string) => void;
-}) {
-  if (!indexData?.categories) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="pixel-card p-6 animate-pulse">
-            <div className="h-10 w-10 bg-muted rounded mb-3" />
-            <div className="h-5 bg-muted rounded w-24 mb-2" />
-            <div className="h-4 bg-muted rounded w-16" />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  const entries = Object.entries(indexData.categories);
-
-  return (
-    <motion.div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.2 }}
-    >
-      {entries.map(([key, info], idx) => {
-        const meta = categoryMeta[key] || {
-          icon: <IconFileText className="h-10 w-10" />,
-          label: key,
-        };
-        return (
-          <motion.button
-            key={key}
-            onClick={() => onSelectCategory(key)}
-            className="pixel-card p-6 text-left hover:border-cow-purple transition-colors cursor-pointer"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.05, duration: 0.3 }}
-            whileHover={{ y: -4, transition: { duration: 0.15 } }}
-          >
-            <div className="text-cow-purple mb-3">{meta.icon}</div>
-            <h3 className="font-minecraftia text-lg">{meta.label}</h3>
-            <p className="text-sm text-muted-foreground">
-              {info.count.toLocaleString()} resources
-            </p>
-          </motion.button>
-        );
-      })}
-    </motion.div>
-  );
-}
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center p-8">
+    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cow-purple"></div>
+  </div>
+);
 
 const ResourcesHub = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(false);
+  const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
+  const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+  const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
+
 
   const {
     resources,
@@ -101,6 +51,8 @@ const ResourcesHub = () => {
     isSearching,
     loadedFonts,
     setLoadedFonts,
+    fontPreviewText,
+    setFontPreviewText,
     filteredResources,
     hasCategoryResources,
     handleSearchSubmit,
@@ -112,30 +64,72 @@ const ResourcesHub = () => {
     handleSearch,
     handleDownload,
     availableSubcategories,
-    indexData,
   } = useResources();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
+  const isMcSoundsView = selectedCategory === 'mcsounds';
+  const isMcIconsView = selectedCategory === 'minecraft-icons';
+  const isMusicView = selectedCategory === 'music';
+
+  const [musicMoodsData, setMusicMoodsData] = useState<MusicMood[]>([]);
+
   useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const scrolled = window.pageYOffset > 400;
-          setShowScrollTop(scrolled);
-          ticking = false;
-        });
-        ticking = true;
+    if (isMusicView && musicMoodsData.length === 0) {
+      fetch('/data/music_moods.json')
+        .then(res => res.json())
+        .then(data => setMusicMoodsData(data))
+        .catch(err => console.error('Failed to load music moods:', err));
+    }
+  }, [isMusicView, musicMoodsData.length]);
+
+  const moodFilteredResources = useMemo(() => {
+    if (!isMusicView || selectedMoods.length === 0) return filteredResources;
+
+    const moodsMap = new Map(musicMoodsData.map(item => [item.filename.toLowerCase(), item.moods]));
+
+    return filteredResources.filter(resource => {
+      const filename = (resource.filename || resource.title).toLowerCase();
+      const resourceMoods = moodsMap.get(filename);
+      if (!resourceMoods) return false;
+      return selectedMoods.some(mood => resourceMoods.includes(mood));
+    });
+  }, [filteredResources, isMusicView, selectedMoods, musicMoodsData]);
+
+  const mcsoundsResourceCount = useMemo(() => {
+    if (!isMcSoundsView) return {};
+    const countMap: Record<string, number> = {};
+    resources.forEach(r => {
+      if (r.subcategory) {
+        countMap[r.subcategory] = (countMap[r.subcategory] || 0) + 1;
       }
+    });
+    return countMap;
+  }, [resources, isMcSoundsView]);
+
+  const mciconsResourceCount = useMemo(() => {
+    if (!isMcIconsView) return {};
+    const countMap: Record<string, number> = {};
+    resources.forEach(r => {
+      if (r.subcategory) {
+        countMap[r.subcategory] = (countMap[r.subcategory] || 0) + 1;
+      }
+    });
+    return countMap;
+  }, [resources, isMcIconsView]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.pageYOffset > 400;
+      setShowScrollTop(scrolled);
     };
 
     const handleShowFavorites = () => {
-      setShowFavorites(true);
+      setActiveTab('favorites');
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     window.addEventListener('showFavorites', handleShowFavorites);
 
     return () => {
@@ -145,17 +139,27 @@ const ResourcesHub = () => {
   }, []);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('tab') === 'favorites') {
-      setShowFavorites(true);
+    if (selectedCategory !== 'music') {
+      setSelectedMoods([]);
     }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam === 'favorites') setActiveTab('favorites');
+    else if (tabParam === 'creator-packs') setActiveTab('creator-packs');
+    else if (tabParam === 'music-packs') setActiveTab('music-packs');
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
-  const onDownload = useMemo(() => (resource: Resource) => {
+  const onDownload = (resource: Resource) => {
     const success = handleDownload(resource);
     if (success) {
       toast.info('Download starting...', {
@@ -165,9 +169,84 @@ const ResourcesHub = () => {
     } else {
       toast.error('Download error');
     }
-  }, [handleDownload]);
+  };
 
-  const handleCloseDetail = useCallback(() => setSelectedResource(null), [setSelectedResource]);
+  const renderContent = () => (
+    <>
+      <ResourceFilters
+        searchQuery={searchQuery}
+        selectedCategory={selectedCategory}
+        selectedSubcategory={selectedSubcategory}
+        availableSubcategories={availableSubcategories}
+        onSearch={handleSearch}
+        onClearSearch={handleClearSearch}
+        onSearchSubmit={handleSearchSubmit}
+        onCategoryChange={handleCategoryChange}
+        onSubcategoryChange={handleSubcategoryChange}
+        sortOrder={sortOrder}
+        onSortOrderChange={handleSortOrderChange}
+        isMobile={isMobile}
+        inputRef={inputRef}
+        fontPreviewText={fontPreviewText}
+        onFontPreviewTextChange={setFontPreviewText}
+      />
+
+      {(selectedCategory === 'minecraft-icons' || selectedCategory === 'mcsounds') && (
+        <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
+          Powered by Hamburger API
+        </p>
+      )}
+
+      {isMusicView && isMobile && (
+        <div className="mb-4">
+          <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="w-full pixel-corners">
+                <IconFilter className="h-4 w-4 mr-2" />
+                Filter by Mood
+                {selectedMoods.length > 0 && (
+                  <span className="ml-2 bg-cow-purple text-white text-xs px-1.5 py-0.5 rounded">
+                    {selectedMoods.length}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[70vh] pixel-corners">
+              <div className="h-full py-2">
+                <h3 className="text-lg font-vt323 mb-4 flex items-center gap-2">
+                  <IconMoodHappy className="h-5 w-5 text-cow-purple" />
+                  Filter by Mood
+                </h3>
+                <MusicMoodFilter
+                  selectedMoods={selectedMoods}
+                  onMoodChange={(moods) => {
+                    setSelectedMoods(moods);
+                    if (moods.length === 0) {
+                      setMobileMoodFilterOpen(false);
+                    }
+                  }}
+                  moodsData={musicMoodsData}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      )}
+
+      <ResourcesList
+        resources={resources}
+        filteredResources={isMusicView ? moodFilteredResources : filteredResources}
+        isLoading={isLoading}
+        isSearching={isSearching}
+        selectedCategory={selectedCategory}
+        searchQuery={searchQuery}
+        onSelectResource={setSelectedResource}
+        onClearFilters={handleClearSearch}
+        hasCategoryResources={hasCategoryResources}
+        fontPreviewText={fontPreviewText}
+      />
+    </>
+  );
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -186,106 +265,177 @@ const ResourcesHub = () => {
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h1 className="text-4xl md:text-5xl font-minecraftia font-bold mb-2 text-center">Resources Hub</h1>
-              <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-vt323 font-bold mb-2 text-center">Resources Hub</h1>
+            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-            >
-              <AnimatePresence mode="wait">
-                {showFavorites ? (
-                  <motion.div
-                    key="favorites"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="text-center py-12"
-                  >
-                    <Button onClick={() => setShowFavorites(false)} className="mb-6">
-                      Back to Resources
-                    </Button>
-                    <p className="text-muted-foreground">
-                      Your favorited resources are available on the <a href="/account" className="text-cow-purple underline">Account page</a>.
-                    </p>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="browse"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ResourceFilters
-                      searchQuery={searchQuery}
-                      selectedCategory={selectedCategory}
-                      selectedSubcategory={selectedSubcategory}
-                      availableSubcategories={availableSubcategories}
-                      onSearch={handleSearch}
-                      onClearSearch={handleClearSearch}
-                      onSearchSubmit={handleSearchSubmit}
-                      onCategoryChange={handleCategoryChange}
-                      onSubcategoryChange={handleSubcategoryChange}
-                      sortOrder={sortOrder}
-                      onSortOrderChange={handleSortOrderChange}
-                      isMobile={isMobile}
-                      inputRef={inputRef}
-                    />
-
-                    {selectedCategory === 'minecraft-icons' && (
-                      <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
-                        Powered by Hamburger API
-                      </p>
-                    )}
-
-                    {selectedCategory === null && !isSearching ? (
-                      <CategoryCards
-                        indexData={indexData}
-                        onSelectCategory={handleCategoryChange}
-                      />
-                    ) : (
-                      <ResourcesList
-                        resources={resources}
-                        filteredResources={filteredResources}
-                        isLoading={isLoading}
-                        isSearching={isSearching}
-                        selectedCategory={selectedCategory}
-                        searchQuery={searchQuery}
-                        onSelectResource={setSelectedResource}
-                        onClearFilters={handleClearSearch}
-                        hasCategoryResources={hasCategoryResources}
-                      />
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="mt-6"
+          >
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Button
+                variant={activeTab === 'resources' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveTab('resources')}
+                className="pixel-corners"
+              >
+                <IconSearch className="h-4 w-4 mr-2" />
+                Resources
+              </Button>
+              <div className="relative">
+                <Button
+                  variant={activeTab === 'favorites' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('favorites')}
+                  className="pixel-corners"
+                >
+                  <IconHeart className="h-4 w-4 mr-2" />
+                  Favorites
+                </Button>
+                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                  NEW
+                </span>
+              </div>
+              <div className="relative">
+                <Button
+                  variant={activeTab === 'creator-packs' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('creator-packs')}
+                  className="pixel-corners"
+                >
+                  <IconPackage className="h-4 w-4 mr-2" />
+                  Creator Packs
+                </Button>
+                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                  NEW
+                </span>
+              </div>
+              <div className="relative">
+                <Button
+                  variant={activeTab === 'music-packs' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('music-packs')}
+                  className="pixel-corners"
+                >
+                  <IconMusic className="h-4 w-4 mr-2" />
+                  Music Packs
+                </Button>
+                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                  NEW
+                </span>
+              </div>
+            </div>
+            <AnimatePresence mode="wait">
+              {activeTab === 'favorites' ? (
+                <motion.div
+                  key="favorites"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="max-w-7xl mx-auto"
+                >
+                  <FavoritesTab onSelectResource={setSelectedResource} />
+                </motion.div>
+              ) : activeTab === 'creator-packs' ? (
+                <motion.div
+                  key="creator-packs"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <CreatorPacksTab />
+                </motion.div>
+              ) : activeTab === 'music-packs' ? (
+                <motion.div
+                  key="music-packs"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <MusicPacksTab />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="browse"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {(isMcSoundsView || isMcIconsView || isMusicView) && !isMobile ? (
+                    <div className="flex gap-6 max-w-7xl mx-auto">
+                      {isMusicView && (
+                        <div className="w-64 flex-shrink-0">
+                          <div className="sticky top-28 h-[calc(100vh-8rem)]">
+                            <MusicMoodFilter
+                              selectedMoods={selectedMoods}
+                              onMoodChange={setSelectedMoods}
+                              moodsData={musicMoodsData}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        {renderContent()}
+                      </div>
+                      {(isMcSoundsView || isMcIconsView) && (
+                        <div className="w-80 flex-shrink-0">
+                          <div className="sticky top-28 h-[calc(100vh-8rem)]">
+                            {isMcSoundsView ? (
+                              <McSoundsBrowser
+                                subcategories={availableSubcategories}
+                                selectedSubcategory={selectedSubcategory}
+                                onSubcategoryChange={handleSubcategoryChange}
+                                resourceCount={mcsoundsResourceCount}
+                              />
+                            ) : (
+                              <McIconsBrowser
+                                subcategories={availableSubcategories}
+                                selectedSubcategory={selectedSubcategory}
+                                onSubcategoryChange={handleSubcategoryChange}
+                                resourceCount={mciconsResourceCount}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="max-w-4xl mx-auto">
+                      {renderContent()}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </main>
 
       <Footer />
 
+
       <Suspense fallback={null}>
         <ResourceDetailDialog
           resource={selectedResource}
-          onClose={handleCloseDetail}
+          onClose={() => setSelectedResource(null)}
           onDownload={onDownload}
           loadedFonts={loadedFonts}
           setLoadedFonts={setLoadedFonts}
           filteredResources={filteredResources}
           onSelectResource={setSelectedResource}
-          isFavoritesView={showFavorites}
+          isFavoritesView={activeTab === 'favorites'}
         />
       </Suspense>
 
@@ -293,6 +443,9 @@ const ResourcesHub = () => {
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
       />
+
+
+
 
       <AnimatePresence>
         {showScrollTop && (

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-import { IconChevronRight, IconPlayerPlay, IconUsers } from '@tabler/icons-react';
+import { IconChevronRight, IconPlayerPlay, IconUsers, IconExternalLink } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -11,9 +11,7 @@ import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
 import { JoinServerIcon } from '@/components/JoinServerIcon';
-import { Skeleton } from '@/components/ui/skeleton';
-import VideoCardSkeleton from '@/components/skeletons/VideoCardSkeleton';
-import ServerCardSkeleton from '@/components/skeletons/ServerCardSkeleton';
+import CommunityPageSkeleton from '@/components/skeletons/CommunityPageSkeleton';
 
 // Types
 interface VideoCategory {
@@ -251,14 +249,12 @@ const Community = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // Simulate loading data
+    setTimeout(() => {
       setVideoCategories(defaultVideoCategories);
       setServers(SERVERS_DATA);
-      setOpenCategories([1]);
       setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    }, 1500);
   }, []);
 
   const toggleCategory = (categoryId: number) => {
@@ -292,180 +288,172 @@ const Community = () => {
 
       <Navbar />
 
-      <main className="flex-grow pt-24 pb-16 cow-grid-bg">
+      <main className="flex-grow py-24 cow-grid-bg">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
-              <span className="text-cow-purple">Creator</span> Community
-            </h1>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
+                <span className="text-cow-purple">Creator</span> Community
+              </h1>
+              <p className="max-w-2xl mx-auto text-muted-foreground">
+                Connect with other creators, get feedback, and find resources in these active Discord communities.
+              </p>
+            </div>
 
-            <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
-              Connect with other creators, learn from tutorials, and join our growing community.
-              From tutorials to Discord servers, we've got you covered.
-            </p>
+            {isLoading ? <CommunityPageSkeleton /> : (
+              <Tabs defaultValue="tutorials" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6 max-w-lg mx-auto pixel-corners">
+                  <TabsTrigger value="tutorials">Tutorials</TabsTrigger>
+                  <TabsTrigger value="servers">Discord Servers</TabsTrigger>
+                </TabsList>
 
-            <Tabs defaultValue="videos" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="videos" className="text-lg font-vt323">YouTube Tutorials</TabsTrigger>
-                <TabsTrigger value="servers" className="text-lg font-vt323">Discord Servers</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="videos">
-                {isLoading ? (
-                  <div className="space-y-8">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="pixel-corners border border-border rounded-md overflow-hidden">
-                        <div className="bg-card p-4">
-                          <Skeleton className="h-8 w-1/2 mb-2" />
-                          <Skeleton className="h-4 w-3/4" />
-                        </div>
-                        <div className="p-4 bg-background/80">
-                          <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
-                            {[...Array(4)].map((_, j) => <VideoCardSkeleton key={j} />)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-8">
-                    {videoCategories.map(category => (
-                      <Collapsible
-                        key={category.id}
-                        open={openCategories.includes(category.id)}
-                        onOpenChange={() => toggleCategory(category.id)}
-                        className="border border-border rounded-md pixel-corners overflow-hidden"
-                      >
-                        <CollapsibleTrigger asChild>
-                          <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/50 transition-colors">
-                            <div>
-                              <h2 className="text-2xl font-vt323">{category.name}</h2>
-                              <p className="text-muted-foreground text-sm mt-1">
-                                {category.description}
-                              </p>
+                <TabsContent value="tutorials">
+                  {isLoading ? (
+                    <div className="space-y-8 animate-pulse">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="bg-card rounded-md h-20"></div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-8">
+                      {videoCategories.map(category => (
+                        <Collapsible
+                          key={category.id}
+                          open={openCategories.includes(category.id)}
+                          onOpenChange={() => toggleCategory(category.id)}
+                          className="border border-border rounded-md pixel-corners overflow-hidden"
+                        >
+                          <CollapsibleTrigger asChild>
+                            <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/50 transition-colors">
+                              <div>
+                                <h2 className="text-2xl font-vt323">{category.name}</h2>
+                                <p className="text-muted-foreground text-sm mt-1">
+                                  {category.description}
+                                </p>
+                              </div>
+                              <IconChevronRight className={`h-5 w-5 transition-transform duration-200 ${openCategories.includes(category.id) ? 'transform rotate-90' : ''
+                                }`} />
                             </div>
-                            <IconChevronRight className={`h-5 w-5 transition-transform duration-200 ${openCategories.includes(category.id) ? 'transform rotate-90' : ''
-                              }`} />
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <div className="p-4 bg-background/80">
-                            <div className="relative">
-                              <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
-                                {category.videos.map(video => (
-                                  <div
-                                    key={video.id}
-                                    className="min-w-[300px] max-w-[300px] pixel-card cursor-pointer hover:border-primary transition-all group"
-                                    onClick={() => setSelectedVideo(video)}
-                                  >
-                                    <div className="relative rounded-md overflow-hidden mb-3">
-                                      <img
-                                        src={video.thumbnail}
-                                        alt={video.title}
-                                        className="w-full h-[168px] object-cover"
-                                        loading="lazy"
-                                      />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <Button
-                                          variant="outline"
-                                          size="icon"
-                                          className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40"
-                                        >
-                                          <IconPlayerPlay className="h-5 w-5 text-white" fill="white" />
-                                          <span className="sr-only">Play</span>
-                                        </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="p-4 bg-background/80">
+                              <div className="relative">
+                                <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
+                                  {category.videos.map(video => (
+                                    <div
+                                      key={video.id}
+                                      className="min-w-[300px] max-w-[300px] pixel-card cursor-pointer hover:border-primary transition-all group"
+                                      onClick={() => setSelectedVideo(video)}
+                                    >
+                                      <div className="relative rounded-md overflow-hidden mb-3">
+                                        <img
+                                          src={video.thumbnail}
+                                          alt={video.title}
+                                          className="w-full h-[168px] object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                          <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40"
+                                          >
+                                            <IconPlayerPlay className="h-5 w-5 text-white" fill="white" />
+                                            <span className="sr-only">Play</span>
+                                          </Button>
+                                        </div>
+                                        <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-white">
+                                          {video.duration}
+                                        </div>
                                       </div>
-                                      <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-white">
-                                        {video.duration}
+
+                                      <h3 className="font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+                                        {video.title}
+                                      </h3>
+
+                                      <div className="flex items-center text-sm text-muted-foreground">
+                                        <span>{video.creator}</span>
                                       </div>
                                     </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
 
-                                    <h3 className="font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-                                      {video.title}
-                                    </h3>
+                <TabsContent value="servers">
+                  {isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-pulse">
+                      {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="bg-card rounded-md h-64"></div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {servers.map(server => (
+                        <div
+                          key={server.id}
+                          className="pixel-card overflow-hidden p-6 flex flex-col h-full"
+                        >
+                          <div className="flex items-center gap-4 mb-4">
+                            {server.image && (
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={server.image}
+                                  alt={server.name}
+                                  className="w-16 h-16 rounded-full object-cover ring-2 ring-border"
+                                />
+                              </div>
+                            )}
 
-                                    <div className="flex items-center text-sm text-muted-foreground">
-                                      <span>{video.creator}</span>
-                                    </div>
-                                  </div>
-                                ))}
+                            <div className="flex flex-col">
+                              <h3 className="text-xl font-vt323">
+                                {server.name}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <div className="flex gap-2">
+                                  {server.categories.map((category) => (
+                                    <Badge
+                                      key={category}
+                                      variant="secondary"
+                                      className="capitalize"
+                                    >
+                                      {category}
+                                    </Badge>
+                                  ))}
+                                </div>
+                                <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs flex items-center">
+                                  <IconUsers className="h-3 w-3 mr-1" />
+                                  {formatMemberCount(server.members)} members
+                                </span>
                               </div>
                             </div>
                           </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
 
-              <TabsContent value="servers">
-                {isLoading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {[...Array(4)].map((_, i) => <ServerCardSkeleton key={i} />)}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {servers.map(server => (
-                      <div
-                        key={server.id}
-                        className="pixel-card overflow-hidden p-6 flex flex-col h-full"
-                      >
-                        <div className="flex items-center gap-4 mb-4">
-                          {server.image && (
-                            <div className="flex-shrink-0">
-                              <img
-                                src={server.image}
-                                alt={server.name}
-                                className="w-16 h-16 rounded-full object-cover ring-2 ring-border"
-                                loading="lazy"
-                              />
-                            </div>
-                          )}
+                          <p className="text-muted-foreground flex-grow">
+                            {server.description}
+                          </p>
 
-                          <div className="flex flex-col">
-                            <h3 className="text-xl font-vt323">
-                              {server.name}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className="flex gap-2">
-                                {server.categories.map((category) => (
-                                  <Badge
-                                    key={category}
-                                    variant="secondary"
-                                    className="capitalize"
-                                  >
-                                    {category}
-                                  </Badge>
-                                ))}
-                              </div>
-                              <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs flex items-center">
-                                <IconUsers className="h-3 w-3 mr-1" />
-                                {formatMemberCount(server.members)} members
-                              </span>
-                            </div>
+                          <div className="mt-4">
+                            <Button
+                              onClick={() => handleJoinServer(server)}
+                              className="w-full pixel-btn-primary flex items-center justify-center"
+                            >
+                              Join Server
+                              <JoinServerIcon />
+                            </Button>
                           </div>
                         </div>
-
-                        <p className="text-muted-foreground flex-grow">
-                          {server.description}
-                        </p>
-
-                        <div className="mt-4">
-                          <Button
-                            onClick={() => handleJoinServer(server)}
-                            className="w-full pixel-btn-primary flex items-center justify-center"
-                          >
-                            Join Server
-                            <JoinServerIcon />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            )}
           </div>
         </div>
       </main>
@@ -512,4 +500,4 @@ const Community = () => {
   );
 };
 
-export default Community;
+export default Community; 

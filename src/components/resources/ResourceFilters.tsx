@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart, IconLayoutGrid } from '@tabler/icons-react';
+import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch } from '@tabler/icons-react';
+import { motion } from 'framer-motion';
 import {
   Select,
   SelectContent,
@@ -13,18 +14,41 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 type ResourceFiltersProps = {
   searchQuery: string;
-  selectedCategory: string | null;
-  selectedSubcategory: string | null;
+  selectedCategory: string;
+  selectedSubcategory: string;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearSearch: () => void;
   onSearchSubmit: (e: React.FormEvent) => void;
-  onCategoryChange: (category: string | null) => void;
-  onSubcategoryChange: (subcategory: string | null) => void;
+  onCategoryChange: (category: string) => void;
+  onSubcategoryChange: (subcategory: string) => void;
   sortOrder: string;
   onSortOrderChange: (order: string) => void;
   isMobile: boolean;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
   availableSubcategories: string[];
+  fontPreviewText?: string;
+  onFontPreviewTextChange?: (text: string) => void;
+};
+
+const groupMcsoundsSubcategories = (subcategories: string[]): { parent: string; label: string; value: string }[] => {
+  const result: { parent: string; label: string; value: string }[] = [];
+
+  const formatLabel = (sub: string): string => {
+    return sub.split('/').map(part =>
+      part.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    ).join(' > ');
+  };
+
+  subcategories.sort().forEach(sub => {
+    const parts = sub.split('/');
+    result.push({
+      parent: parts.length > 1 ? parts[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : '',
+      label: formatLabel(sub),
+      value: sub,
+    });
+  });
+
+  return result;
 };
 
 const ResourceFilters = ({
@@ -40,6 +64,8 @@ const ResourceFilters = ({
   isMobile,
   inputRef,
   availableSubcategories,
+  fontPreviewText,
+  onFontPreviewTextChange,
 }: ResourceFiltersProps) => {
   return (
     <div className={`mb-8 flex gap-4 ${isMobile ? 'flex-row items-center' : 'flex-col'}`}>
@@ -71,6 +97,22 @@ const ResourceFilters = ({
 
           <Button type="submit" className="sr-only">Search</Button>
         </form>
+
+        {selectedCategory === 'fonts' && onFontPreviewTextChange && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+            className="relative w-full lg:w-1/2"
+          >
+            <Input
+              placeholder="Type to preview fonts..."
+              value={fontPreviewText}
+              onChange={(e) => onFontPreviewTextChange(e.target.value)}
+              className="pixel-input w-full font-geist"
+              maxLength={40}
+            />
+          </motion.div>
+        )}
       </div>
 
       {isMobile ? (
@@ -107,6 +149,11 @@ const MobileFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
+  const groupedMcsoundsSubcategories = useMemo(() =>
+    selectedCategory === 'mcsounds' ? groupMcsoundsSubcategories(availableSubcategories) : [],
+    [availableSubcategories, selectedCategory]
+  );
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -181,8 +228,15 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('minecraft-icons')}
               className="justify-start pixel-corners"
             >
-              <IconLayoutGrid className="h-4 w-4 mr-2" />
+              <img src="/assets/mci_icon.png" className="h-4 w-4 mr-2" alt="MCI" onError={(e) => { e.currentTarget.style.display = 'none' }} />
               Minecraft Icons
+            </Button>
+            <Button
+              variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+              onClick={() => onCategoryChange('mcsounds')}
+              className="justify-start pixel-corners"
+            >
+              MC Sounds
             </Button>
 
 
@@ -204,19 +258,21 @@ const MobileFilters = ({
               </div>
             )}
 
-            {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+            {selectedCategory === 'mcsounds' && groupedMcsoundsSubcategories.length > 0 && (
               <div className="mt-2 ml-2">
                 <Select
                   value={selectedSubcategory || "all"}
                   onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select icon type" />
+                    <SelectValue placeholder="Select sound category" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
-                    <SelectItem value="all">All Icons</SelectItem>
-                    {availableSubcategories.map(sub => (
-                      <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    <SelectItem value="all">All Sounds</SelectItem>
+                    {groupedMcsoundsSubcategories.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -242,6 +298,11 @@ const DesktopFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
+  const groupedMcsoundsSubcategories = useMemo(() =>
+    selectedCategory === 'mcsounds' ? groupMcsoundsSubcategories(availableSubcategories) : [],
+    [availableSubcategories, selectedCategory]
+  );
+
   return (
     <div className="flex flex-wrap gap-2">
       <Button
@@ -308,6 +369,14 @@ const DesktopFilters = ({
       >
         Minecraft Icons
       </Button>
+      <Button
+        variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+        size="sm"
+        onClick={() => onCategoryChange('mcsounds')}
+        className="h-10 pixel-corners"
+      >
+        MC Sounds
+      </Button>
 
 
 
@@ -327,18 +396,20 @@ const DesktopFilters = ({
         </Select>
       )}
 
-      {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+      {selectedCategory === 'mcsounds' && groupedMcsoundsSubcategories.length > 0 && (
         <Select
           value={selectedSubcategory || "all"}
           onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
         >
           <SelectTrigger className="h-10 w-[200px] pixel-corners">
-            <SelectValue placeholder="Select icon type" />
+            <SelectValue placeholder="Select sound category" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
-            <SelectItem value="all">All Icons</SelectItem>
-            {availableSubcategories.map(sub => (
-              <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+            <SelectItem value="all">All Sounds</SelectItem>
+            {groupedMcsoundsSubcategories.map(item => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -347,4 +418,4 @@ const DesktopFilters = ({
   );
 };
 
-export default React.memo(ResourceFilters);
+export default ResourceFilters;

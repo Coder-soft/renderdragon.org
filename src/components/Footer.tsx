@@ -1,9 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { IconShoppingCart } from '@tabler/icons-react';
+import { IconShoppingCart, IconChevronDown, IconCheck } from '@tabler/icons-react';
 import { toast } from 'sonner';
+import confetti from 'canvas-confetti';
+import { Menu, Transition } from '@headlessui/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import HyperpingBadge from '@/components/ui/StatusBadge';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const languageOptions = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -16,11 +20,20 @@ const Footer = () => {
   const [cartClicked, setCartClicked] = useState(false);
   const cartButtonRef = useRef<HTMLButtonElement>(null);
   const currentYear = new Date().getFullYear();
+  const isMobile = useIsMobile();
 
-  const handleCartClick = async () => {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://static.copyrighted.com/badges/helper.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleCartClick = () => {
     if (cartClicked) return;
-
-    const confetti = (await import('canvas-confetti')).default;
 
     const canvas = document.createElement('canvas');
     canvas.style.position = 'fixed';
@@ -62,28 +75,25 @@ const Footer = () => {
   return (
     <footer className="bg-cow-dark text-white overflow-x-hidden">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-2">
             <Link
               to="/"
-              className="flex items-center space-x-2 text-xl font-bold mb-4"
+              className="flex items-center mb-4 justify-center sm:justify-start"
             >
-              <div className="flex items-center justify-center">
-                <Logo size="sm" />
-              </div>
-              <span className="font-minecraftia">Renderdragon</span>
+              <Logo size={isMobile ? "lg" : "xl"} mobile={isMobile} />
             </Link>
 
-            <p className="text-white/70 mb-6 max-w-md">
+            <p className="text-white/70 mb-6 max-w-md text-center sm:text-left">
               The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more.
             </p>
 
-            <div className="flex space-x-4 mb-3">
+            <div className="flex space-x-4 mb-3 justify-center sm:justify-start">
               <a
                 href="https://discord.renderdragon.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
                 aria-label="Discord"
               >
                 <img className="w-6 h-6" src="/assets/discord_icon.png" alt="Discord" loading="lazy" />
@@ -93,7 +103,7 @@ const Footer = () => {
                 href="https://x.com/_renderdragon"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
                 aria-label="Twitter"
               >
                 <img className="w-6 h-6" src="/assets/twitter_icon.png" alt="Twitter" loading="lazy" />
@@ -103,25 +113,16 @@ const Footer = () => {
                 href="https://www.youtube.com/channel/UCOheNYpPEHcS2ljttRmllxg"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
                 aria-label="YouTube"
               >
                 <img className="w-6 h-6" src="/assets/youtube_icon.png" alt="YouTube" loading="lazy" />
               </a>
 
-              <a
-                href="https://github.com/Yxmura/renderdragon"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
-                aria-label="GitHub"
-              >
-                <img className="w-6 h-6" src="/assets/github_icon.png" alt="GitHub" loading="lazy" />
-              </a>
             </div>
           </div>
 
-          <div>
+          <div className="text-center sm:text-left">
             <h3 className="text-lg font-vt323 mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
@@ -173,7 +174,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div>
+          <div className="text-center sm:text-left">
             <h3 className="text-lg font-vt323 mb-4">Tools</h3>
             <ul className="space-y-2">
               <li>
@@ -222,45 +223,65 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="pt-8 mt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-4 mb-4 md:mb-0">
-            <Link to="/faq" className="text-white/70 hover:text-white transition-colors text-sm relative">
-              FAQ
-            </Link>
+        <div className="pt-8 mt-8 border-t border-white/10 flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-x-4 gap-y-2">
+              <Link to="/faq" className="text-white/70 hover:text-white transition-colors text-sm">
+                FAQ
+              </Link>
 
-            <Link to="/tos" className="text-white/70 hover:text-white transition-colors text-sm">
-              Terms
-            </Link>
+              <Link to="/tos" className="text-white/70 hover:text-white transition-colors text-sm">
+                Terms
+              </Link>
 
-            <Link to="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">
-              Privacy
-            </Link>
+              <Link to="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">
+                Privacy
+              </Link>
 
-            <Link to="/renderbot" className="text-white/70 hover:text-white transition-colors text-sm">
-              Renderbot
-            </Link>
+              <Link to="/renderbot" className="text-white/70 hover:text-white transition-colors text-sm">
+                Renderbot
+              </Link>
 
-            <HyperpingBadge status="online" />
+              <HyperpingBadge status="online" />
+            </div>
 
-            <div className="text-white/70 text-sm">
-              <span className="mr-4">Not associated with Mojang, AB.</span>
-              <a href="https://www.flaticon.com/free-icons/pixel" title="pixel icons" className="hover:text-white transition-colors">Pixel icons created by Freepik - Flaticon</a>
+            <div className="flex items-center gap-4">
+              <a
+                className="copyrighted-badge"
+                title="Copyrighted.com Registered & Protected"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://app.copyrighted.com/website/XJWeMuU5JJanip2w/"
+              >
+                <img
+                  alt="Copyrighted.com Registered & Protected"
+                  width={125}
+                  height={25}
+                  srcSet="https://static.copyrighted.com/badges/125x25/04_2_2x.png 2x"
+                  src="https://static.copyrighted.com/badges/125x25/04_2.png"
+                />
+              </a>
+
+              <p className="text-white/70 text-sm">
+                &copy; {currentYear} RenderDragon. All rights reserved.
+              </p>
+
+              <button
+                ref={cartButtonRef}
+                onClick={handleCartClick}
+                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-all duration-1000"
+                disabled={cartClicked}
+              >
+                <IconShoppingCart className="h-5 w-5" />
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <p className="text-white/70 text-sm">
-              &copy; {currentYear} RenderDragon. All rights reserved.
+          <div className="text-center sm:text-left text-white/70 text-xs space-y-1">
+            <p>Not associated with Mojang, AB.</p>
+            <p>
+              <a href="https://www.flaticon.com/free-icons/pixel" title="pixel icons" className="hover:text-white transition-colors">Pixel icons created by Freepik - Flaticon</a>
             </p>
-
-            <button
-              ref={cartButtonRef}
-              onClick={handleCartClick}
-              className="ml-4 p-2 bg-white/10 hover:bg-white/20 rounded-md transition-all duration-1000"
-              disabled={cartClicked}
-            >
-              <IconShoppingCart className="h-5 w-5" />
-            </button>
           </div>
         </div>
       </div>

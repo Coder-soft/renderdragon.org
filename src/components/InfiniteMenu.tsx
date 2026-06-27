@@ -1096,9 +1096,9 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items = [] }) => {
   const handleButtonClick = () => {
     if (!activeItem?.link) return;
     if (activeItem.link.startsWith('http')) {
-      window.open(activeItem.link, '_blank', 'noopener,noreferrer');
+      window.open(activeItem.link, '_blank');
     } else {
-      
+      console.log('Internal route:', activeItem.link);
     }
   };
 
