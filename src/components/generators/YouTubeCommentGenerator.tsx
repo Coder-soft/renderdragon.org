@@ -15,8 +15,11 @@ const YouTubeCommentGenerator = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const commentCardRef = useRef<HTMLDivElement>(null);
 
+  const escapeHtml = (str: string) =>
+    str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
   const styleTimestamps = (text: string) => {
-    return text.replace(/\b(\d{1,2}:)?\d{1,2}:\d{2}\b/g, match => `<span class="text-blue-500 font-bold cursor-pointer">${match}</span>`);
+    return escapeHtml(text).replace(/\b(\d{1,2}:)?\d{1,2}:\d{2}\b/g, match => `<span class="text-blue-500 font-bold cursor-pointer">${match}</span>`);
   };
 
   const exportAsPNG = () => {

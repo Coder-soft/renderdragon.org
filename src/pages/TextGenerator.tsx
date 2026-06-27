@@ -17,8 +17,13 @@ import { toast } from 'sonner';
 import TextGeneratorControlsSkeleton from '@/components/skeletons/TextGeneratorControlsSkeleton';
 
 const TextGenerator = () => {
-  const { resources, isLoading: isLoadingResources } = useResources();
+  const { resources, isLoading: isLoadingResources, handleCategoryChange } = useResources();
   const [fonts, setFonts] = useState<Resource[]>([]);
+
+  // Load fonts on mount
+  useEffect(() => {
+    handleCategoryChange('fonts');
+  }, [handleCategoryChange]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [settings, setSettings] = useState<TextSettings>({
     text: 'Renderdragon',
