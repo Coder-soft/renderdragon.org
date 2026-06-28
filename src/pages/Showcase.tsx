@@ -171,7 +171,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                     <AvatarFallback className="bg-cow-purple/20 text-cow-purple text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <div className="text-sm font-vt323 truncate text-white/90 leading-none mb-1">{name}</div>
+                    <div className="text-sm font-jetbrains-mono truncate text-white/90 leading-none mb-1">{name}</div>
                     <div className="text-[9px] text-white/40 uppercase tracking-tighter">{formatDistanceToNow(new Date(item.created_at))} ago</div>
                   </div>
                 </Link>
@@ -182,7 +182,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                     <AvatarFallback className="bg-cow-purple/20 text-cow-purple text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <div className="text-sm font-vt323 truncate text-white/90 leading-none mb-1">{name}</div>
+                    <div className="text-sm font-jetbrains-mono truncate text-white/90 leading-none mb-1">{name}</div>
                     <div className="text-[9px] text-white/40 uppercase tracking-tighter">{formatDistanceToNow(new Date(item.created_at))} ago</div>
                   </div>
                 </>

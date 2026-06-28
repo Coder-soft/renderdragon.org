@@ -213,7 +213,7 @@ const ResourcesHub = () => {
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[70vh] pixel-corners">
               <div className="h-full py-2">
-                <h3 className="text-lg font-vt323 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-jetbrains-mono mb-4 flex items-center gap-2">
                   <IconMoodHappy className="h-5 w-5 text-cow-purple" />
                   Filter by Mood
                 </h3>
@@ -270,8 +270,8 @@ const ResourcesHub = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-vt323 font-bold mb-2 text-center">Resources Hub</h1>
-            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
+            <h1 className="text-4xl md:text-5xl font-minecraftia font-bold mb-2 text-center">Resources Hub</h1>
+            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto font-jetbrains-mono">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
           </motion.div>
 
           <motion.div
@@ -280,7 +280,7 @@ const ResourcesHub = () => {
             transition={{ delay: 0.1, duration: 0.5 }}
             className="mt-6"
           >
-            <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="flex items-center justify-center gap-2 mb-6 flex-wrap">
               <Button
                 variant={activeTab === 'resources' ? 'default' : 'outline'}
                 size="sm"

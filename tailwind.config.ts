@@ -23,7 +23,7 @@ export default {
 				geist: ['Geist Sans', 'sans-serif'],
 				'geist-mono': ['Geist Mono', 'monospace'],
 				minecraftia: ['Minecraftia', 'monospace'],
-				vt323: ['VT323', 'monospace'],
+				'jetbrains-mono': ['JetBrains Mono', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

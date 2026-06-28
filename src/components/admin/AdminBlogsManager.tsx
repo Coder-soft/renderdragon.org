@@ -59,7 +59,7 @@ export default function AdminBlogsManager() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-2xl font-vt323 mb-2">Blog Posts</h2>
+                    <h2 className="text-2xl font-jetbrains-mono mb-2">Blog Posts</h2>
                     <p className="text-muted-foreground text-sm">Manage your blog content.</p>
                 </div>
                 <Button asChild className="bg-cow-purple hover:bg-cow-purple/90 pixel-corners">

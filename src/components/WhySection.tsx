@@ -2,7 +2,7 @@ import React from "react"
 import { motion } from 'framer-motion'
 
 const stats = [
-  { value: "500+", label: "Free Resources", sub: "music, SFX, fonts, presets, more" },
+  { value: "5000+", label: "Free Resources", sub: "music, SFX, fonts, presets, more" },
   { value: "12+", label: "Creator Tools", sub: "generators, checkers, renderers" },
   { value: "0", label: "Ads. Paywalls.", sub: "just open and use" },
 ]
@@ -17,7 +17,7 @@ const WhySection = () => {
           >
             Why <span className="text-cow-purple">RenderDragon</span>?
           </h2>
-          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
             Every other "free resource" site makes you sign up, watch an ad, or sit through a download timer. We don't.
           </p>
         </div>
@@ -35,10 +35,10 @@ const WhySection = () => {
               <div className="font-minecraftia text-4xl md:text-5xl text-cow-purple mb-3 leading-none">
                 {stat.value}
               </div>
-              <div className="font-vt323 text-lg md:text-xl text-foreground uppercase tracking-wider mb-1">
+              <div className="font-jetbrains-mono text-lg md:text-xl text-foreground uppercase tracking-wider mb-1">
                 {stat.label}
               </div>
-              <div className="font-vt323 text-base text-foreground/60 leading-tight">
+              <div className="font-jetbrains-mono text-base text-foreground/60 leading-tight">
                 {stat.sub}
               </div>
             </motion.div>

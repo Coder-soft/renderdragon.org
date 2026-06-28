@@ -47,7 +47,7 @@ const DonateButton = () => {
               className="flex items-center pr-6 whitespace-nowrap"
             >
               <div className="h-5 w-[1px] bg-white/20 mr-4" />
-              <span className="text-white text-sm font-bold uppercase tracking-[0.2em] font-vt323">
+              <span className="text-white text-sm font-bold uppercase tracking-[0.2em] font-jetbrains-mono">
                 Donate 🍕
               </span>
             </motion.div>

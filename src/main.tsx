@@ -6,6 +6,7 @@ import './index.css';
 import './global.css';
 import '@fontsource/geist-sans';
 import '@fontsource/geist-mono';
+import '@fontsource/jetbrains-mono';
 
 import { PostHogProvider } from 'posthog-js/react'
 

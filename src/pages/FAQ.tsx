@@ -53,7 +53,7 @@ const FAQ = () => {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-vt323 text-foreground mb-4">Technical Questions</h2>
+                  <h2 className="text-2xl font-jetbrains-mono text-foreground mb-4">Technical Questions</h2>
 
                   <div className="space-y-6">
                     <div>
@@ -74,7 +74,7 @@ const FAQ = () => {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-vt323 text-foreground mb-4">Resource Usage</h2>
+                  <h2 className="text-2xl font-jetbrains-mono text-foreground mb-4">Resource Usage</h2>
 
                   <div className="space-y-6">
                     <div>
@@ -95,7 +95,7 @@ const FAQ = () => {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-vt323 text-foreground mb-4">Contact & Support</h2>
+                  <h2 className="text-2xl font-jetbrains-mono text-foreground mb-4">Contact & Support</h2>
 
                   <div className="space-y-6">
                     <div>

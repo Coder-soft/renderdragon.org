@@ -180,7 +180,7 @@ const Contact = () => {
               </div>
 
               <div className="mb-8">
-                <h2 className="text-2xl font-vt323 mb-4">Join Our Community</h2>
+                <h2 className="text-2xl font-jetbrains-mono mb-4">Join Our Community</h2>
                 <p className="text-muted-foreground mb-4">
                   Connect with other creators and our team on Discord.
                 </p>

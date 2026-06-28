@@ -129,14 +129,14 @@ const AdminResourcesManager = () => {
     <div className="space-y-6">
       {/* Migration Section */}
       <div className="mb-8">
-        <h3 className="text-lg font-vt323 mb-4">Data Migration</h3>
+        <h3 className="text-lg font-jetbrains-mono mb-4">Data Migration</h3>
         <ResourceMigration />
       </div>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-vt323 mb-2">Resources Manager</h2>
+          <h2 className="text-2xl font-jetbrains-mono mb-2">Resources Manager</h2>
           <p className="text-muted-foreground">
             Manage all resources in your database. Total: {resources.length} resources
           </p>
@@ -194,7 +194,7 @@ const AdminResourcesManager = () => {
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-lg font-vt323 mb-1">{resource.title}</CardTitle>
+                  <CardTitle className="text-lg font-jetbrains-mono mb-1">{resource.title}</CardTitle>
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant="secondary" className="text-xs">
                       {resource.category}

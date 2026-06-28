@@ -123,7 +123,7 @@ const TweetGenerator = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-vt323">Twitter Preview</h2>
+        <h2 className="text-xl font-jetbrains-mono">Twitter Preview</h2>
         <div
           ref={tweetPreviewRef}
           className="w-full max-w-xl"

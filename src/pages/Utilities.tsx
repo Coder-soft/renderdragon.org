@@ -251,7 +251,7 @@ const Utils = () => {
                         <Card className="h-full transition-all duration-300 hover:shadow-xl pixel-corners border-2 border-primary/20 hover:border-primary/40">
                           <CardHeader>
                             <CardTitle className="flex items-center justify-between">
-                              <span className="font-vt323 text-xl">{item.name}</span>
+                              <span className="font-jetbrains-mono text-xl">{item.name}</span>
                               {item.isFree && (
                                 <span className="bg-green-500/10 text-green-500 text-xs px-2 py-1 rounded-md">
                                   Free

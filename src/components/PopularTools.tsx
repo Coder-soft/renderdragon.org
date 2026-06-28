@@ -62,7 +62,7 @@ const PopularTools = () => {
           >
             Creator <span className="text-cow-purple">Tools</span>
           </h2>
-          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
             Built for the boring parts so you can focus on the fun.
           </p>
         </motion.div>
@@ -87,10 +87,10 @@ const PopularTools = () => {
                   <IconArrowRight className="w-5 h-5 text-cow-purple opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
 
-                <h3 className="font-vt323 text-xl md:text-2xl text-foreground mb-2 tracking-wide uppercase">
+                <h3 className="font-jetbrains-mono text-xl md:text-2xl text-foreground mb-2 tracking-wide uppercase">
                   {tool.title}
                 </h3>
-                <p className="font-vt323 text-base text-foreground/70 leading-snug">
+                <p className="font-jetbrains-mono text-base text-foreground/70 leading-snug">
                   {tool.description}
                 </p>
               </Link>

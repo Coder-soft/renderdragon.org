@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart, IconLayoutGrid } from '@tabler/icons-react';
+import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart, IconLayoutGrid, IconVolume } from '@tabler/icons-react';
 import {
   Select,
   SelectContent,
@@ -117,7 +117,7 @@ const MobileFilters = ({
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[80vh] pixel-corners">
         <div className="h-full py-4 space-y-4">
-          <h3 className="text-lg font-vt323 mb-2">
+          <h3 className="text-lg font-jetbrains-mono mb-2">
             Filter by Category
           </h3>
           <div className="flex flex-col gap-2">
@@ -175,6 +175,14 @@ const MobileFilters = ({
             >
               <IconFileText className="h-4 w-4 mr-2" />
               Presets
+            </Button>
+            <Button
+              variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+              onClick={() => onCategoryChange('mcsounds')}
+              className="justify-start pixel-corners"
+            >
+              <IconVolume className="h-4 w-4 mr-2" />
+              Minecraft Sounds
             </Button>
             <Button
               variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
@@ -299,6 +307,14 @@ const DesktopFilters = ({
         className="h-10 pixel-corners"
       >
         Presets
+      </Button>
+      <Button
+        variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+        size="sm"
+        onClick={() => onCategoryChange('mcsounds')}
+        className="h-10 pixel-corners"
+      >
+        Minecraft Sounds
       </Button>
       <Button
         variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}

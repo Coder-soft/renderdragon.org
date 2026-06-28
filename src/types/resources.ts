@@ -30,4 +30,5 @@ export interface ResourcesData {
   fonts: Resource[];
   presets: Resource[];
   minecraft_icons: Resource[];
+  mcsounds: Resource[];
 }

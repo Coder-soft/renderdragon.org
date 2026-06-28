@@ -3,12 +3,10 @@ import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import TrustBar from '@/components/TrustBar';
-import ValueProps from '@/components/ValueProps';
 import PopularTools from '@/components/PopularTools';
 import FeaturedResources from '@/components/FeaturedResources';
 import WhySection from '@/components/WhySection';
 import Testimonials from '@/components/Testimonials';
-import FinalCTA from '@/components/FinalCTA';
 import Partnership from '@/components/Partnership';
 import Footer from '@/components/Footer';
 
@@ -46,10 +44,6 @@ const Index = () => {
         <TrustBar />
 
         <motion.div {...fadeInUp}>
-          <ValueProps />
-        </motion.div>
-
-        <motion.div {...fadeInUp}>
           <PopularTools />
         </motion.div>
 
@@ -65,9 +59,7 @@ const Index = () => {
           <Testimonials />
         </motion.div>
 
-        <motion.div {...fadeInUp}>
-          <FinalCTA />
-        </motion.div>
+        <div className="border-y-4 border-cow-purple" />
 
         <motion.div {...fadeInUp}>
           <Partnership />

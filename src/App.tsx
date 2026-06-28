@@ -14,6 +14,11 @@ import DonateButton from "@/components/DonateButton";
 import { AdBlockDetector } from "@/components/AdBlockDetector";
 import Navbar from "@/components/Navbar";
 
+const ExternalRedirect = ({ url }: { url: string }) => {
+  useEffect(() => { window.location.href = url; }, [url]);
+  return null;
+};
+
 // Global components wrapper to use hooks like useLocation
 const GlobalComponents = () => {
   const location = useLocation();
@@ -106,11 +111,11 @@ const App = () => {
                     />
                     <Route
                       path="/music-copyright"
-                      element={<MusicCopyright />}
+                      element={<ExternalRedirect url="https://github.com/Renderdragonorg/Osmium" />}
                     />
                     <Route
                       path="/gappa"
-                      element={<Navigate to="/music-copyright" replace />}
+                      element={<ExternalRedirect url="https://github.com/Renderdragonorg/Osmium" />}
                     />
                     <Route path="/guides" element={<Guides />} />
                     <Route path="/guides/:slug" element={<GuideView />} />

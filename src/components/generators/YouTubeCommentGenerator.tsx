@@ -110,7 +110,7 @@ const YouTubeCommentGenerator = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-vt323">YouTube Comment Preview</h2>
+        <h2 className="text-xl font-jetbrains-mono">YouTube Comment Preview</h2>
         <div
           ref={commentCardRef}
           className="w-full max-w-xl"

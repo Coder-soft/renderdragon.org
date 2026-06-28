@@ -144,7 +144,7 @@ export default function Blogs() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <p className="text-sm text-muted-foreground line-clamp-3 font-vt323">
+                                                <p className="text-sm text-muted-foreground line-clamp-3 font-jetbrains-mono">
                                                     {removeMarkdown(blog.content || "").slice(0, 150)}...
                                                 </p>
                                             </CardContent>

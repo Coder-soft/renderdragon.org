@@ -155,7 +155,7 @@ const Account = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h2 className="text-2xl font-vt323">{displayName || 'User'}</h2>
+                    <h2 className="text-2xl font-jetbrains-mono">{displayName || 'User'}</h2>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <IconMail className="h-4 w-4" />
                       {user.email}
@@ -169,7 +169,7 @@ const Account = () => {
               <CardContent className="pt-6">
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-vt323 text-cow-purple">Profile Information</h3>
+                    <h3 className="text-lg font-jetbrains-mono text-cow-purple">Profile Information</h3>
 
                     <div className="space-y-2">
                       <Label htmlFor="displayName">Display Name</Label>
@@ -210,7 +210,7 @@ const Account = () => {
                   <Separator />
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-vt323 text-cow-purple">Account Details</h3>
+                    <h3 className="text-lg font-jetbrains-mono text-cow-purple">Account Details</h3>
 
                     <div className="space-y-3 text-sm">
                       <div className="flex items-center gap-2">
@@ -232,7 +232,7 @@ const Account = () => {
                   <Separator />
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-vt323 text-cow-purple">Preferences</h3>
+                    <h3 className="text-lg font-jetbrains-mono text-cow-purple">Preferences</h3>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
