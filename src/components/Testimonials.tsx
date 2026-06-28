@@ -79,7 +79,7 @@ const Testimonials = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight"
+            className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight"
           >
             Don't take our word for it — hear it from the people making the content.
           </motion.p>
@@ -110,17 +110,17 @@ const Testimonials = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-vt323 text-xl text-foreground uppercase tracking-wider">
+                  <h3 className="font-jetbrains-mono text-xl text-foreground uppercase tracking-wider">
                     {testimonial.name}
                   </h3>
-                  <p className="font-vt323 text-sm text-cow-purple">
+                  <p className="font-jetbrains-mono text-sm text-cow-purple">
                     {testimonial.role}
                   </p>
                 </div>
               </div>
 
               <blockquote>
-                <p className="font-vt323 text-lg md:text-xl text-foreground/85 leading-snug">
+                <p className="font-jetbrains-mono text-lg md:text-xl text-foreground/85 leading-snug">
                   "{testimonial.content}"
                 </p>
               </blockquote>

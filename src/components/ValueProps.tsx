@@ -63,7 +63,7 @@ const ValueProps = () => {
             <br />
             <span className="text-cow-purple">Nothing you don't.</span>
           </h2>
-          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
             Three pillars. One hub. Built so you can stop searching and start shipping.
           </p>
         </div>
@@ -90,10 +90,10 @@ const ValueProps = () => {
                     </div>
                   </div>
 
-                  <h3 className="font-vt323 text-2xl md:text-3xl text-foreground mb-3 tracking-wide uppercase">
+                  <h3 className="font-jetbrains-mono text-2xl md:text-3xl text-foreground mb-3 tracking-wide uppercase">
                     {card.title}
                   </h3>
-                  <p className="font-vt323 text-base md:text-lg text-foreground/70 mb-6 leading-snug">
+                  <p className="font-jetbrains-mono text-base md:text-lg text-foreground/70 mb-6 leading-snug">
                     {card.description}
                   </p>
 
@@ -103,7 +103,7 @@ const ValueProps = () => {
                       return (
                         <span
                           key={tag}
-                          className="inline-flex items-center gap-1.5 font-vt323 text-sm text-foreground/80 bg-background border-2 border-border pixel-corners px-2.5 py-1"
+                          className="inline-flex items-center gap-1.5 font-jetbrains-mono text-sm text-foreground/80 bg-background border-2 border-border pixel-corners px-2.5 py-1"
                         >
                           <Icon className="w-3.5 h-3.5" />
                           {tag}
@@ -112,7 +112,7 @@ const ValueProps = () => {
                     })}
                   </div>
 
-                  <div className="flex items-center gap-2 font-vt323 text-lg text-cow-purple uppercase tracking-wider group-hover:gap-3 transition-all pt-2 border-t-2 border-dashed border-border">
+                  <div className="flex items-center gap-2 font-jetbrains-mono text-lg text-cow-purple uppercase tracking-wider group-hover:gap-3 transition-all pt-2 border-t-2 border-dashed border-border">
                     {card.cta}
                     <IconArrowRight className="w-5 h-5" />
                   </div>

@@ -184,7 +184,7 @@ export default function GuideView() {
                 <div className="pixel-corners border border-border p-4 bg-background/60 backdrop-blur">
                   <div className="flex items-center gap-2 mb-3">
                     <IconList className="h-4 w-4 text-cow-purple" />
-                    <h3 className="font-vt323 text-xl">Sections</h3>
+                    <h3 className="font-jetbrains-mono text-xl">Sections</h3>
                   </div>
                   {headings.length === 0 ? (
                     <p className="text-sm text-muted-foreground">

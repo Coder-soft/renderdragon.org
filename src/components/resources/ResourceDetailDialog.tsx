@@ -126,7 +126,7 @@ const ResourceDetailDialog = ({
     <Dialog open={!!resource} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl pixel-corners border-2 border-cow-purple max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-vt323">
+          <DialogTitle className="text-2xl font-jetbrains-mono">
             {resource.title}
           </DialogTitle>
           <DialogDescription asChild className="flex items-center gap-2">
@@ -147,7 +147,7 @@ const ResourceDetailDialog = ({
 
         <div className="space-y-5 py-2">
           <div className="border border-border rounded-md p-4">
-            <h4 className="font-vt323 text-lg mb-1">Attribution</h4>
+            <h4 className="font-jetbrains-mono text-lg mb-1">Attribution</h4>
 
             {resource.credit ? (
               <div className="space-y-2">

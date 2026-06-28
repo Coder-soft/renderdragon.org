@@ -286,7 +286,7 @@ const MusicPacksTab = () => {
         <div className="sticky top-28 h-[calc(100vh-8rem)]">
           <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg pixel-corners overflow-hidden">
             <div className="p-3 border-b border-border">
-              <h3 className="text-sm font-vt323 text-muted-foreground mb-2 flex items-center gap-2">
+              <h3 className="text-sm font-jetbrains-mono text-muted-foreground mb-2 flex items-center gap-2">
                 <IconMusic className="h-4 w-4 text-cow-purple" />
                 Music Packs Browser
               </h3>

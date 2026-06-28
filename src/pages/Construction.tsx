@@ -295,7 +295,7 @@ const Community = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-jetbrains-mono mb-8 text-center">
               <span className="text-cow-purple">Creator</span> Community
             </h1>
 
@@ -306,8 +306,8 @@ const Community = () => {
 
             <Tabs defaultValue="videos" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="videos" className="text-lg font-vt323">YouTube Tutorials</TabsTrigger>
-                <TabsTrigger value="servers" className="text-lg font-vt323">Discord Servers</TabsTrigger>
+                <TabsTrigger value="videos" className="text-lg font-jetbrains-mono">YouTube Tutorials</TabsTrigger>
+                <TabsTrigger value="servers" className="text-lg font-jetbrains-mono">Discord Servers</TabsTrigger>
               </TabsList>
 
               <TabsContent value="videos">
@@ -339,7 +339,7 @@ const Community = () => {
                         <CollapsibleTrigger asChild>
                           <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/50 transition-colors">
                             <div>
-                              <h2 className="text-2xl font-vt323">{category.name}</h2>
+                              <h2 className="text-2xl font-jetbrains-mono">{category.name}</h2>
                               <p className="text-muted-foreground text-sm mt-1">
                                 {category.description}
                               </p>
@@ -424,7 +424,7 @@ const Community = () => {
                           )}
 
                           <div className="flex flex-col">
-                            <h3 className="text-xl font-vt323">
+                            <h3 className="text-xl font-jetbrains-mono">
                               {server.name}
                             </h3>
                             <div className="flex items-center gap-2 mt-1">
@@ -477,7 +477,7 @@ const Community = () => {
       <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideo(null)}>
         <DialogContent className="sm:max-w-4xl pixel-corners overflow-y-auto max-h-[90vh] custom-scrollbar">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-vt323">{selectedVideo?.title}</DialogTitle>
+            <DialogTitle className="text-2xl font-jetbrains-mono">{selectedVideo?.title}</DialogTitle>
             <DialogDescription className="flex items-center gap-2">
               <Badge variant="secondary">
                 {selectedVideo?.creator}

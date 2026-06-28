@@ -21,7 +21,7 @@ const DiscordPopup = ({ isOpen, onClose, onNeverShowAgain }: DiscordPopupProps) 
           transition={{ duration: 0.3 }}
         >
           <DialogHeader>
-            <DialogTitle className="font-vt323 text-2xl text-primary">Join our Discord</DialogTitle>
+            <DialogTitle className="font-jetbrains-mono text-2xl text-primary">Join our Discord</DialogTitle>
             <DialogDescription className="text-muted-foreground">
               Join our Discord server to get the latest updates, share your creations, and connect with other creators.
             </DialogDescription>

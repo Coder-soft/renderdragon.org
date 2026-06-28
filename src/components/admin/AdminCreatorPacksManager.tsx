@@ -72,7 +72,7 @@ const AdminCreatorPacksManager = () => {
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <IconPackage className="h-6 w-6 text-cow-purple" />
-                    <h2 className="text-2xl font-vt323">Pending Creator Packs</h2>
+                    <h2 className="text-2xl font-jetbrains-mono">Pending Creator Packs</h2>
                 </div>
                 <div className="bg-muted px-3 py-1 rounded-full text-sm font-medium">
                     {pendingPacks.length} Pending
@@ -137,7 +137,7 @@ const AdminCreatorPacksManager = () => {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="pixel-corners">
                     <DialogHeader>
-                        <DialogTitle className="font-vt323 text-2xl">Reject Creator Pack</DialogTitle>
+                        <DialogTitle className="font-jetbrains-mono text-2xl">Reject Creator Pack</DialogTitle>
                         <DialogDescription>
                             Please provide a reason for rejecting this pack. The creator will see this message and can resubmit after making changes.
                         </DialogDescription>

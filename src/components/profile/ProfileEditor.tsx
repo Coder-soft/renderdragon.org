@@ -340,7 +340,7 @@ const ProfileEditor: React.FC = () => {
             {/* Editor Column */}
             <div className="flex-1 overflow-y-auto pr-1 space-y-6">
                 <div className="flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-20 py-4 border-b rounded-t-lg mb-4">
-                    <h1 className="text-2xl font-vt323 px-2">Edit Profile</h1>
+                    <h1 className="text-2xl font-jetbrains-mono px-2">Edit Profile</h1>
                     <div className="flex gap-2 px-2">
                         <Button variant="ghost" size="icon" onClick={discardDraft} title="Discard Draft">
                             <IconRefresh className="w-4 h-4" />

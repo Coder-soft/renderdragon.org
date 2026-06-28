@@ -200,8 +200,8 @@ const Navbar = () => {
         <div className="fixed top-0 left-0 right-0 z-[60]">
           <div className="w-full bg-gradient-to-r from-cow-purple/90 via-cow-purple to-cow-purple/90 text-white">
             <div className="container mx-auto px-4 py-2 flex items-center justify-center gap-3 text-sm">
-              <span className="font-vt323">Check out our new</span>
-              <Link to="/blogs" className="underline underline-offset-2 font-vt323">
+              <span className="font-sans">Check out our new</span>
+              <Link to="/blogs" className="underline underline-offset-2 font-sans">
                 Blogs feature!
               </Link>
               <button
@@ -236,9 +236,9 @@ const Navbar = () => {
               <Logo size={isMobile ? "sm" : "md"} />
             </div>
             {!isMobile && (
-              <span className="hidden md:inline font-minecraftia">Renderdragon</span>
+              <span className="hidden md:inline font-minecraftia">Render<span className="text-cow-purple">Dragon</span></span>
             )}
-            {isMobile && <span className="font-minecraftia">RD</span>}
+            {isMobile && <span className="font-minecraftia">R<span className="text-cow-purple">D</span></span>}
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
@@ -247,7 +247,7 @@ const Navbar = () => {
                 <Link
                   key={index}
                   to={link.path}
-                  className={`flex items-center gap-1 transition-colors font-vt323 text-xl ${isLinkActive(link.path) ? 'text-primary' : 'text-foreground hover:text-primary'}`}
+                  className={`flex items-center gap-1 transition-colors font-sans text-base ${isLinkActive(link.path) ? 'text-primary' : 'text-foreground hover:text-primary'}`}
                 >
                   {/* no icons for desktop */}
                   <span>{link.name}</span>
@@ -268,7 +268,7 @@ const Navbar = () => {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`flex items-center transition-colors font-vt323 text-xl ${isDropdownActive(link) ? 'text-primary' : 'text-foreground hover:text-primary'}`}
+                        className={`flex items-center transition-colors font-sans text-base ${isDropdownActive(link) ? 'text-primary' : 'text-foreground hover:text-primary'}`}
                         style={{ transform: 'none' }}
                         onPointerEnter={() => setActiveDropdown(link.name)}
                         onPointerDown={() => setActiveDropdown(null)}
@@ -291,7 +291,7 @@ const Navbar = () => {
                                 href={subLink.path}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-vt323 text-xl pixel-corners`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm pixel-corners`}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 <span>{subLink.name}</span>
@@ -303,7 +303,7 @@ const Navbar = () => {
                             ) : (
                               <Link
                                 to={subLink.path}
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-vt323 text-xl pixel-corners ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm pixel-corners ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 {/* sub link name */}
@@ -365,7 +365,7 @@ const Navbar = () => {
                       <div className="w-8 h-8 flex items-center justify-center font-bold text-xs">
                         <Logo size="sm" />
                       </div>
-                      <span className="font-vt323">Renderdragon</span>
+                      <span className="font-sans">Render<span className="text-cow-purple">dragon</span></span>
                     </Link>
                   </div>
 
@@ -375,7 +375,7 @@ const Navbar = () => {
                         <Link
                           key={index}
                           to={link.path}
-                          className={`flex items-center gap-1 text-xl py-3 border-b border-border font-vt323 ${isLinkActive(link.path) ? 'text-primary' : ''}`}
+                          className={`flex items-center gap-1 text-base py-3 border-b border-border font-sans ${isLinkActive(link.path) ? 'text-primary' : ''}`}
                           onClick={() => setIsDrawerOpen(false)} // Close drawer on link click
                         >
                           <span>{link.name}</span>
@@ -388,8 +388,8 @@ const Navbar = () => {
                           open={openMobileCollapsible === link.name}
                           onOpenChange={() => handleMobileCollapsibleToggle(link.name)}
                         >
-                          <CollapsibleTrigger className="w-full flex items-center justify-between text-xl py-3">
-                            <div className="flex items-center space-x-3 font-vt323">
+                          <CollapsibleTrigger className="w-full flex items-center justify-between text-base py-3">
+                            <div className="flex items-center space-x-3 font-sans">
                               <span>{link.name}</span>
                             </div>
                             <IconChevronDown
@@ -406,7 +406,7 @@ const Navbar = () => {
                                     href={subLink.path}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`flex items-center space-x-3 py-2 font-vt323 text-xl text-muted-foreground hover:text-foreground`}
+                                    className={`flex items-center space-x-3 py-2 font-sans text-base text-muted-foreground hover:text-foreground`}
                                     onClick={() => setIsDrawerOpen(false)}
                                   >
                                     <span>{subLink.name}</span>
@@ -419,7 +419,7 @@ const Navbar = () => {
                                   <Link
                                     key={subIndex}
                                     to={subLink.path}
-                                    className={`flex items-center space-x-3 py-2 font-vt323 text-xl ${isLinkActive(subLink.path) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                                    className={`flex items-center space-x-3 py-2 font-sans text-base ${isLinkActive(subLink.path) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                                     onClick={() => setIsDrawerOpen(false)} // Close drawer on sub-link click
                                   >
                                     <span>{subLink.name}</span>
@@ -458,7 +458,7 @@ const Navbar = () => {
                         <Button
                           onClick={() => { handleShowFavorites(); setIsDrawerOpen(false); }}
                           variant="outline"
-                          className="w-full pixel-corners font-vt323"
+                          className="w-full pixel-corners font-sans"
                         >
                           My Favorites
                         </Button>
@@ -468,7 +468,7 @@ const Navbar = () => {
                             setIsDrawerOpen(false);
                           }}
                           variant="outline"
-                          className="w-full pixel-corners font-vt323"
+                          className="w-full pixel-corners font-sans"
                         >
                           Sign Out
                         </Button>
@@ -479,7 +479,7 @@ const Navbar = () => {
                           setAuthDialogOpen(true);
                           setIsDrawerOpen(false); // Close drawer when opening auth dialog
                         }}
-                        className="w-full pixel-btn-primary font-vt323"
+                        className="w-full pixel-btn-primary font-sans"
                       >
                         Sign In
                       </Button>
@@ -491,7 +491,7 @@ const Navbar = () => {
                   <Toggle
                     pressed={theme === 'dark'}
                     onPressedChange={toggleTheme}
-                    className="w-full flex items-center justify-center gap-2 py-2 font-vt323"
+                    className="w-full flex items-center justify-center gap-2 py-2 font-sans"
                   >
                     {theme === 'dark' ? (
                       <>

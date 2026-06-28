@@ -22,7 +22,7 @@ const FinalCTA = () => {
             <span className="text-cow-purple">starts here.</span>
           </h2>
 
-          <p className="font-vt323 text-xl md:text-2xl text-foreground/80 mb-10 max-w-2xl mx-auto leading-tight">
+          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/80 mb-10 max-w-2xl mx-auto leading-tight">
             Browse the hub, run a tool, or hang out with the community. No strings, no waitlist, no watermarks.
           </p>
 

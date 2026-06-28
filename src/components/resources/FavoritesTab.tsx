@@ -283,7 +283,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
                 className="text-center py-20 bg-muted/5 rounded-xl border border-border/50"
               >
                 <IconHeart className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-                <h3 className="text-xl font-vt323 mb-2 font-medium">No resources found</h3>
+                <h3 className="text-xl font-jetbrains-mono mb-2 font-medium">No resources found</h3>
                 <p className="text-muted-foreground">
                   {selectedFolderId
                     ? "This folder is currently empty. Drop some resources here!"

@@ -84,56 +84,56 @@ const AiTitleHelper = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-minecraftia">AI Title Helper</h1>
-            <p className="text-neutral-300 mt-2 font-vt323">Generate multiple short, SEO-friendly YouTube titles. Only the titles are shown below.</p>
+            <p className="text-neutral-300 mt-2 font-jetbrains-mono">Generate multiple short, SEO-friendly YouTube titles. Only the titles are shown below.</p>
           </div>
 
           <form onSubmit={onSubmit} className="bg-background border border-border pixel-corners p-4 md:p-6 shadow-xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <Label className="text-neutral-300 mb-2 inline-block font-vt323">Description<span className="text-red-500">*</span></Label>
+                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Description<span className="text-red-500">*</span></Label>
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe your video idea and value proposition..."
-                  className="font-vt323 h-28 resize-y pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className="font-jetbrains-mono h-28 resize-y pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
                 />
               </div>
 
               <div>
-                <Label className="text-neutral-300 mb-2 inline-block font-vt323">Keywords (comma-separated)</Label>
+                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Keywords (comma-separated)</Label>
                 <Input
                   type="text"
                   value={keywords}
                   onChange={(e) => setKeywords(e.target.value)}
                   placeholder="e.g. AI, coding, tutorials"
-                  className="font-vt323 pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className="font-jetbrains-mono pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
                 />
               </div>
 
               <div>
-                <Label className="text-neutral-300 mb-2 inline-block font-vt323">Niche</Label>
+                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Niche</Label>
                 <Input
                   type="text"
                   value={niche}
                   onChange={(e) => setNiche(e.target.value)}
                   placeholder="e.g. programming, fitness"
-                  className="font-vt323 pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className="font-jetbrains-mono pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
                 />
               </div>
 
               <div>
-                <Label className="text-neutral-300 mb-2 inline-block font-vt323">Language</Label>
+                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Language</Label>
                 <Input
                   type="text"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                   placeholder="e.g. English"
-                  className="font-vt323 pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className="font-jetbrains-mono pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
                 />
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-3 font-vt323">
+            <div className="mt-4 flex items-center gap-3 font-jetbrains-mono">
               <Button
                 type="submit"
                 disabled={loading}
@@ -148,7 +148,7 @@ const AiTitleHelper = () => {
           {titles.length > 0 && (
             <section className="mt-10">
               <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-2xl font-vt323">Titles</h2>
+                <h2 className="text-2xl font-jetbrains-mono">Titles</h2>
                 <span className="text-xs text-neutral-400">{titles.length} suggestions</span>
               </div>
               <div className="flex flex-wrap items-start gap-2">

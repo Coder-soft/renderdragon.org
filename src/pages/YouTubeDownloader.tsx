@@ -325,7 +325,7 @@ const YouTubeDownloader: React.FC = () => {
                     <img src={getBestThumbnailUrl(video.thumbnails)} alt={video.title} className="rounded-md w-full h-auto" />
                   </div>
                   <div className="w-full md:w-3/5">
-                    <h2 className="text-xl font-vt323 mb-2">{video.title}</h2>
+                    <h2 className="text-xl font-jetbrains-mono mb-2">{video.title}</h2>
                     <div className="flex flex-wrap gap-3 mb-4">
                       <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
                         <span className="mr-1">Duration:</span> {humanizeDuration(video.duration)}
@@ -363,7 +363,7 @@ const YouTubeDownloader: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-vt323 text-lg">Description</h3>
+                  <h3 className="font-jetbrains-mono text-lg">Description</h3>
                   <p className="text-sm text-muted-foreground whitespace-pre-line">
                     {(() => {
                       const desc = video.description || '';
@@ -383,7 +383,7 @@ const YouTubeDownloader: React.FC = () => {
                 {/* Tags */}
                 {video.tags && video.tags.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="font-vt323 text-lg">Tags</h3>
+                    <h3 className="font-jetbrains-mono text-lg">Tags</h3>
                     <div className="flex flex-wrap gap-2">
                       {video.tags.slice(0, 20).map((t) => (
                         <span key={t} className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs">{t}</span>
@@ -394,7 +394,7 @@ const YouTubeDownloader: React.FC = () => {
 
                 {/* Channel section */}
                 <div className="space-y-2">
-                  <h3 className="font-vt323 text-lg">Channel</h3>
+                  <h3 className="font-jetbrains-mono text-lg">Channel</h3>
                   <div className="flex items-start gap-3">
                     {video.channel?.thumbnails && (
                       <img

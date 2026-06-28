@@ -471,7 +471,7 @@ const BackgroundGenerator = () => {
 
               <div className="md:col-span-2 pixel-card flex flex-col">
                 <div className="mb-4 text-center">
-                  <h3 className="text-lg font-vt323">Preview</h3>
+                  <h3 className="text-lg font-jetbrains-mono">Preview</h3>
                 </div>
 
                 <div className="flex-grow flex items-center justify-center bg-black/20 rounded-md overflow-hidden relative min-h-[300px]">
@@ -526,9 +526,9 @@ const BackgroundGenerator = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                 <div className="pixel-card p-6">
                   <div className="h-12 w-12 bg-cow-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="font-vt323 text-xl">1</span>
+                    <span className="font-jetbrains-mono text-xl">1</span>
                   </div>
-                  <h3 className="font-vt323 mb-2">Upload</h3>
+                  <h3 className="font-jetbrains-mono mb-2">Upload</h3>
                   <p className="text-sm text-muted-foreground">
                     Upload your image and adjust settings
                   </p>
@@ -536,9 +536,9 @@ const BackgroundGenerator = () => {
 
                 <div className="pixel-card p-6">
                   <div className="h-12 w-12 bg-cow-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="font-vt323 text-xl">2</span>
+                    <span className="font-jetbrains-mono text-xl">2</span>
                   </div>
-                  <h3 className="font-vt323 mb-2">Adjust</h3>
+                  <h3 className="font-jetbrains-mono mb-2">Adjust</h3>
                   <p className="text-sm text-muted-foreground">
                     Customize spacing, opacity, and color in real-time
                   </p>
@@ -546,9 +546,9 @@ const BackgroundGenerator = () => {
 
                 <div className="pixel-card p-6">
                   <div className="h-12 w-12 bg-cow-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="font-vt323 text-xl">3</span>
+                    <span className="font-jetbrains-mono text-xl">3</span>
                   </div>
-                  <h3 className="font-vt323 mb-2">Download</h3>
+                  <h3 className="font-jetbrains-mono mb-2">Download</h3>
                   <p className="text-sm text-muted-foreground">
                     Download your background and use it in your content
                   </p>

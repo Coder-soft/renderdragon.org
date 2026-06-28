@@ -117,7 +117,7 @@ const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
           {isLoading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/60 backdrop-blur-[1px]">
               <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
-              <span className="ml-2 text-xs font-vt323 tracking-wider text-muted-foreground">LOADING WAVEFORM...</span>
+              <span className="ml-2 text-xs font-jetbrains-mono tracking-wider text-muted-foreground">LOADING WAVEFORM...</span>
             </div>
           )}
           <div ref={containerRef} className="w-full" />

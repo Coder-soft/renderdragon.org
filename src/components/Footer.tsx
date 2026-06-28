@@ -122,7 +122,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-vt323 mb-4">Legal</h3>
+            <h3 className="text-lg font-jetbrains-mono mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/tos" className="text-white/70 hover:text-white transition-colors">
@@ -136,7 +136,7 @@ const Footer = () => {
               </li>
             </ul>
 
-            <h3 className="text-lg font-vt323 mb-4 mt-6">Navigate</h3>
+            <h3 className="text-lg font-jetbrains-mono mb-4 mt-6">Navigate</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-white/70 hover:text-white transition-colors">
@@ -174,7 +174,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-vt323 mb-4">Tools</h3>
+            <h3 className="text-lg font-jetbrains-mono mb-4">Tools</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/gappa" className="text-white/70 hover:text-white transition-colors">

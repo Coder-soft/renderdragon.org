@@ -51,7 +51,7 @@ const MinecraftNametagGenerator = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-vt323">Rendered Nametag</h2>
+        <h2 className="text-xl font-jetbrains-mono">Rendered Nametag</h2>
         <div className="flex flex-col items-center gap-4">
           <Card 
             ref={nametagContainerRef}

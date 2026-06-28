@@ -8,7 +8,7 @@ export const Logo = ({ className = "", size = "md", mobile = false }: { classNam
     xl: "h-14"
   }[size];
 
-  const src = mobile ? "/renderdragon.png" : "/icon.png";
+  const src = mobile ? "/renderdragon.png" : "/favicon.ico";
 
   return (
     <img

@@ -70,29 +70,46 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   }, []);
 
   useEffect(() => {
-    if (!isInView || resource.category !== "fonts" || !resource.download_url) {
+    if (resource.category !== "fonts" || !resource.download_url) {
       return;
     }
 
     const fontUrl = resource.download_url;
     const fontName = resource.title;
+    const styleId = `font-preview-${resource.id}-${btoa(fontName + fontUrl).slice(0, 12)}`;
 
-    // Check if font is already loaded
     if (document.fonts.check(`1em "${fontName}"`)) {
       setIsFontLoaded(true);
       return;
     }
 
-    const font = new FontFace(fontName, `url(${fontUrl})`);
-    font
-      .load()
-      .then((loadedFont) => {
-        document.fonts.add(loadedFont);
+    const maybeLoadFont = () => {
+      if (document.fonts.check(`1em "${fontName}"`)) {
         setIsFontLoaded(true);
-      })
-      .catch((err) => {
-        console.error(`Failed to load font "${fontName}":`, err);
+        return;
+      }
+
+      if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        const escapedName = fontName.replace(/["'\\]/g, '');
+        style.textContent = `@font-face { font-family: "${escapedName}"; src: url("${fontUrl}"); font-display: swap; }`;
+        document.head.appendChild(style);
+      }
+
+      document.fonts.load(`1em "${fontName}"`).then(() => {
+        setIsFontLoaded(true);
+      }).catch(() => {
+        setTimeout(() => setIsFontLoaded(true), 3000);
       });
+    };
+
+    if (isInView) {
+      maybeLoadFont();
+    } else {
+      const timer = setTimeout(maybeLoadFont, 2000);
+      return () => clearTimeout(timer);
+    }
   }, [resource.id, resource.download_url, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
@@ -146,7 +163,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
             {isFontLoaded ? (
               <div
                 className="absolute inset-0 flex items-center justify-center text-lg font-medium"
-                style={{ fontFamily: resource.title }}
+                style={{ fontFamily: `"${resource.title}"` }}
               >
                 Aa Bb Cc
               </div>
@@ -158,19 +175,8 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           </div>
         );
       case "music":
-        return (
-          <div
-            onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
-          >
-            <AudioPlayer
-              src={previewUrl}
-              isInView={isInView}
-              className="w-full shadow-none border-none bg-transparent p-0"
-            />
-          </div>
-        );
       case "sfx":
+      case "mcsounds":
         return (
           <div
             onClick={handlePreviewClick}
@@ -277,7 +283,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       </div>
 
       <motion.h3
-        className="text-xl font-vt323 mb-2 group-hover:text-primary transition-colors"
+        className="text-xl font-jetbrains-mono mb-2 group-hover:text-primary transition-colors"
         whileHover={{ x: 5 }}
         transition={{ duration: 0.2 }}
       >

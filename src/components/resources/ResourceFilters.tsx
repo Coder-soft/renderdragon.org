@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart, IconLayoutGrid } from '@tabler/icons-react';
+import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart, IconLayoutGrid, IconVolume } from '@tabler/icons-react';
 import {
   Select,
   SelectContent,
@@ -117,7 +117,7 @@ const MobileFilters = ({
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[80vh] pixel-corners">
         <div className="h-full py-4 space-y-4">
-          <h3 className="text-lg font-vt323 mb-2">
+          <h3 className="text-lg font-jetbrains-mono mb-2">
             Filter by Category
           </h3>
           <div className="flex flex-col gap-2">
@@ -177,6 +177,14 @@ const MobileFilters = ({
               Presets
             </Button>
             <Button
+              variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+              onClick={() => onCategoryChange('mcsounds')}
+              className="justify-start pixel-corners"
+            >
+              <IconVolume className="h-4 w-4 mr-2" />
+              Minecraft Sounds
+            </Button>
+            <Button
               variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('minecraft-icons')}
               className="justify-start pixel-corners"
@@ -204,7 +212,43 @@ const MobileFilters = ({
               </div>
             )}
 
-            {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+            {selectedCategory === 'mcsounds' && availableSubcategories.length > 0 && (
+              <div className="mt-2 ml-2">
+                <Select
+                  value={selectedSubcategory || "all"}
+                  onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select sound type" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="all">All Sounds</SelectItem>
+                    {availableSubcategories.map(sub => (
+                      <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+      {selectedCategory === 'mcsounds' && availableSubcategories.length > 0 && (
+        <Select
+          value={selectedSubcategory || "all"}
+          onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+        >
+          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+            <SelectValue placeholder="Select sound type" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px]">
+            <SelectItem value="all">All Sounds</SelectItem>
+            {availableSubcategories.map(sub => (
+              <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+
+      {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
               <div className="mt-2 ml-2">
                 <Select
                   value={selectedSubcategory || "all"}
@@ -299,6 +343,14 @@ const DesktopFilters = ({
         className="h-10 pixel-corners"
       >
         Presets
+      </Button>
+      <Button
+        variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+        size="sm"
+        onClick={() => onCategoryChange('mcsounds')}
+        className="h-10 pixel-corners"
+      >
+        Minecraft Sounds
       </Button>
       <Button
         variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}

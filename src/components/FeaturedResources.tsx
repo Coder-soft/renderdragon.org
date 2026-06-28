@@ -94,7 +94,7 @@ const FeaturedResources = () => {
           >
             Featured <span className="text-cow-purple">Resources</span>
           </h2>
-          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
             A taste of what's inside. Browse the full library anytime.
           </p>
         </motion.div>

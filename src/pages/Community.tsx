@@ -365,14 +365,14 @@ const Community = () => {
               <TabsList className="grid w-full grid-cols-2 mb-12 bg-background/80 backdrop-blur-sm border border-border p-1 rounded-lg">
                 <TabsTrigger
                   value="videos"
-                  className="text-lg font-vt323 data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
+                  className="text-lg font-jetbrains-mono data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
                 >
                   <IconPlayerPlay className="w-5 h-5 mr-2" />
                   Tutorials
                 </TabsTrigger>
                 <TabsTrigger
                   value="servers"
-                  className="text-lg font-vt323 data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
+                  className="text-lg font-jetbrains-mono data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
                 >
                   <IconUsers className="w-5 h-5 mr-2" />
                   Servers
@@ -416,7 +416,7 @@ const Community = () => {
                             <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/30 transition-colors">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
-                                  <h2 className="text-2xl font-vt323">
+                                  <h2 className="text-2xl font-jetbrains-mono">
                                     {category.name}
                                   </h2>
                                   <Badge
@@ -521,7 +521,7 @@ const Community = () => {
                             )}
 
                             <div className="flex flex-col">
-                              <h3 className="text-xl font-vt323">
+                              <h3 className="text-xl font-jetbrains-mono">
                                 {server.name}
                               </h3>
                               <div className="flex items-center gap-2 mt-1">
@@ -579,7 +579,7 @@ const Community = () => {
       >
         <DialogContent className="sm:max-w-5xl pixel-corners overflow-hidden max-h-[90vh] custom-scrollbar bg-background/95 backdrop-blur-sm">
           <DialogHeader className="pb-4 border-b border-border/50">
-            <DialogTitle className="text-2xl font-vt323 text-cow-purple">
+            <DialogTitle className="text-2xl font-jetbrains-mono text-cow-purple">
               {selectedVideo?.title}
             </DialogTitle>
             <DialogDescription className="flex items-center gap-3 text-base">

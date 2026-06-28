@@ -120,7 +120,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="pixel-corners max-w-md border-2 border-cow-purple">
         <DialogHeader>
-          <DialogTitle className="font-vt323 text-center text-2xl">
+          <DialogTitle className="font-jetbrains-mono text-center text-2xl">
             {isLogin ? 'Sign In' : 'Create Account'}
           </DialogTitle>
         </DialogHeader>

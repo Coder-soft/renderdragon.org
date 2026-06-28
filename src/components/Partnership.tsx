@@ -20,7 +20,7 @@ const partners = [
   {
     name: "Creators' Kingdom",
     description: 'A community for creators to collaborate and grow together.',
-    logo: "https://cdn.bsky.app/img/avatar/plain/did:plc:2v6n63ayh4zfevupgxrkufx4/bafkreibufdbu2k76p5mdnwo64bmptl6g2wnl6imd3wxm3nvkstoqgjkz2q@jpeg",
+    logo: "/assets/ca.png",
     url: "https://bsky.app/profile/creatorskingdom.bsky.social",
   },
   {
@@ -30,17 +30,17 @@ const partners = [
     url: "https://discord.gg/wXhHe5bVgz",
   },
   {
-    name: "Decour SMP",
+    name: "Moon SMP",
     description: 'A friendly and welcoming Minecraft SMP server.',
-    logo: "/assets/Decour.jpg",
-    url: "https://dsc.gg/decoursmp",
+    logo: "/assets/image.png",
+    url: "https://discord.gg/Vj5K9efp7G",
   },
 ];
 
 const Partnership = () => {
   return (
     <section className="relative py-20 md:py-28 bg-background overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-30" />
+      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-50" />
 
       <div className="relative container mx-auto px-4">
         <motion.div
@@ -55,7 +55,7 @@ const Partnership = () => {
           >
             Our <span className="text-cow-purple">Partners</span>
           </h2>
-          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
             Communities we work with to make RenderDragon better for everyone.
           </p>
         </motion.div>
@@ -91,10 +91,10 @@ const Partnership = () => {
                       <IconArrowRight className="w-3.5 h-3.5 text-white" />
                     </div>
                   </div>
-                  <h3 className="font-vt323 text-2xl text-foreground uppercase tracking-wider mb-2">
+                  <h3 className="font-minecraftia text-2xl text-foreground uppercase tracking-wider mb-2">
                     {partner.name}
                   </h3>
-                  <p className="font-vt323 text-base text-foreground/70 leading-snug flex-grow">
+                  <p className="font-jetbrains-mono text-base text-foreground/70 leading-snug flex-grow">
                     {partner.description}
                   </p>
                 </div>

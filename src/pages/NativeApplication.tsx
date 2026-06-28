@@ -74,7 +74,7 @@ const NativeApplication = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-4">
+            <h1 className="text-4xl md:text-5xl font-jetbrains-mono mb-4">
               <span className="text-cow-purple">Native</span> Application
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -100,7 +100,7 @@ const NativeApplication = () => {
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                      <h3 className="font-vt323 text-xl mb-1">Renderdragon Native</h3>
+                      <h3 className="font-jetbrains-mono text-xl mb-1">Renderdragon Native</h3>
                       <p className="text-sm text-muted-foreground">Available for Windows, macOS, and Linux</p>
                     </div>
                     <div className="flex gap-3">
@@ -132,7 +132,7 @@ const NativeApplication = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mb-8"
             >
-              <h2 className="text-2xl font-vt323 text-center mb-8">
+              <h2 className="text-2xl font-jetbrains-mono text-center mb-8">
                 Key <span className="text-cow-purple">Features</span>
               </h2>
             </motion.div>
@@ -156,7 +156,7 @@ const NativeApplication = () => {
                           <feature.icon className="h-6 w-6" />
                         </div>
                         <div>
-                          <h3 className="font-vt323 text-xl mb-2">{feature.title}</h3>
+                          <h3 className="font-jetbrains-mono text-xl mb-2">{feature.title}</h3>
                           <p className="text-muted-foreground text-sm">{feature.description}</p>
                         </div>
                       </div>

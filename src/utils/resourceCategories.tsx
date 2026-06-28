@@ -5,6 +5,7 @@ import {
   IconFileText,
   IconFileMusic,
   IconBoxModel,
+  IconVolume,
 } from "@tabler/icons-react";
 
 export const getCategoryIcon = (category: string) => {
@@ -22,6 +23,8 @@ export const getCategoryIcon = (category: string) => {
       return <IconFileText className="h-5 w-5" />;
     case "minecraft-icons":
       return <IconBoxModel className="h-5 w-5" />;
+    case "mcsounds":
+      return <IconVolume className="h-5 w-5" />;
     default:
       return <IconFileText className="h-5 w-5" />;
   }
@@ -43,6 +46,8 @@ export const getCategoryColor = (category: string) => {
       return "bg-gray-500/10 text-gray-500";
     case "minecraft-icons":
       return "bg-green-500/10 text-green-600";
+    case "mcsounds":
+      return "bg-orange-500/10 text-orange-500";
     default:
       return "bg-gray-500/10 text-gray-500";
   }

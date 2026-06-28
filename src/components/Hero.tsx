@@ -1,7 +1,17 @@
-import React from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { IconArrowRight, IconBolt } from '@tabler/icons-react'
 import { motion } from 'framer-motion'
+import Logo from '@/components/Logo'
+
+const toolPaths = [
+  '/background-generator',
+  '/player-renderer',
+  '/text-generator',
+  '/youtube-downloader',
+  '/ai-title-helper',
+  '/generators',
+]
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -14,28 +24,28 @@ const stagger = {
 }
 
 const Hero = () => {
+  const [randomTool] = useState(() => toolPaths[Math.floor(Math.random() * toolPaths.length)])
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background px-6 py-20 md:py-28">
       <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-50" />
 
       <motion.div
-        className="relative z-10 max-w-5xl mx-auto text-center"
+        className="relative z-10 max-w-2xl mx-auto text-center flex flex-col items-center"
         variants={stagger}
         initial="hidden"
         animate="show"
       >
-        <motion.h1
-          variants={fadeUp}
-          className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.2] mb-8 text-foreground"
-        >
-          Stop hunting for assets.
-          <br />
-          <span className="text-cow-purple">Start making videos.</span>
-        </motion.h1>
+        <motion.div variants={fadeUp} className="flex items-center gap-4 mb-6">
+          <Logo size="xl" />
+          <h1 className="font-minecraftia text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight">
+            Render<span className="text-cow-purple">Dragon</span>
+          </h1>
+        </motion.div>
 
         <motion.p
           variants={fadeUp}
-          className="font-vt323 text-xl md:text-2xl text-foreground/80 max-w-2xl mx-auto mb-10 leading-tight"
+          className="font-jetbrains-mono text-lg md:text-xl text-foreground/80 max-w-xl mb-8 leading-relaxed"
         >
           Free music, SFX, fonts, presets, and editing tools — all in one place.
           Built for Minecraft YouTubers who'd rather film than file-cabinet.
@@ -43,7 +53,7 @@ const Hero = () => {
 
         <motion.div
           variants={fadeUp}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          className="flex flex-col sm:flex-row gap-4"
         >
           <Link
             to="/resources"
@@ -53,7 +63,7 @@ const Hero = () => {
             <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link
-            to="/generators"
+            to={randomTool}
             className="pixel-btn-secondary group flex items-center gap-2 text-base md:text-lg"
           >
             <IconBolt className="w-5 h-5" />

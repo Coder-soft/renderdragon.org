@@ -127,7 +127,7 @@ export default function BlogEditor() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link to="/admin" className="text-muted-foreground hover:text-foreground"><IconArrowLeft /></Link>
-                    <h2 className="text-2xl font-vt323">{id ? "Edit Blog" : "New Blog"}</h2>
+                    <h2 className="text-2xl font-jetbrains-mono">{id ? "Edit Blog" : "New Blog"}</h2>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={() => setPreview(!preview)}>
