@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { IconArrowRight, IconBolt } from '@tabler/icons-react'
 import { motion } from 'framer-motion'
@@ -24,11 +24,7 @@ const stagger = {
 }
 
 const Hero = () => {
-  const [randomTool, setRandomTool] = useState('/generators')
-
-  useEffect(() => {
-    setRandomTool(toolPaths[Math.floor(Math.random() * toolPaths.length)])
-  }, [])
+  const [randomTool] = useState(() => toolPaths[Math.floor(Math.random() * toolPaths.length)])
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background px-6 py-20 md:py-28">

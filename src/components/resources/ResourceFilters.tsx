@@ -212,7 +212,43 @@ const MobileFilters = ({
               </div>
             )}
 
-            {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
+            {selectedCategory === 'mcsounds' && availableSubcategories.length > 0 && (
+              <div className="mt-2 ml-2">
+                <Select
+                  value={selectedSubcategory || "all"}
+                  onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select sound type" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="all">All Sounds</SelectItem>
+                    {availableSubcategories.map(sub => (
+                      <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+      {selectedCategory === 'mcsounds' && availableSubcategories.length > 0 && (
+        <Select
+          value={selectedSubcategory || "all"}
+          onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+        >
+          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+            <SelectValue placeholder="Select sound type" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px]">
+            <SelectItem value="all">All Sounds</SelectItem>
+            {availableSubcategories.map(sub => (
+              <SelectItem key={sub} value={sub}>{sub.split('/').pop()?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+
+      {selectedCategory === 'minecraft-icons' && availableSubcategories.length > 0 && (
               <div className="mt-2 ml-2">
                 <Select
                   value={selectedSubcategory || "all"}

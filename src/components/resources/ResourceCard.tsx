@@ -76,7 +76,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
 
     const fontUrl = resource.download_url;
     const fontName = resource.title;
-    const styleId = `font-preview-${resource.id}`;
+    const styleId = `font-preview-${resource.id}-${btoa(fontName + fontUrl).slice(0, 12)}`;
 
     if (document.fonts.check(`1em "${fontName}"`)) {
       setIsFontLoaded(true);
