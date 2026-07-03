@@ -2,6 +2,28 @@
 
 ![Static Badge](https://img.shields.io/badge/By-Codersoft-green?style=flat&link=https%3A%2F%2Fs0.renderdragon.org%2Fdocs)
 
+## Latest Changes (July 2026)
+
+### Music Library Expansion
+- Added **345 new music tracks** to the library with full mood classifications
+- Each track now includes mood tags (e.g., cheerful, intense, ambient) and source attribution
+
+### Hover-to-Play Disabled by Default
+- Video hover-to-play is now **off by default** for resource cards
+- Users can re-enable it in Account → Preferences → Hover to Play Videos
+
+### Creator Packs Fix
+- Fixed creator packs not showing for non-signed-in users (profiles RLS policy)
+- Added public SELECT policy on profiles table
+
+### Navigation Cleanup
+- Removed "AI Title Helper" and "s0" entries from the Tools dropdown
+- Removed the blogs promotional banner from the navbar entirely
+
+### UI Changes
+- Resource card titles now use **Geist Mono** font instead of JetBrains Mono
+- Signed-in users are now redirected to **/resources** when visiting the home page
+
 This update made me tired! We have made alot of changes in this update. New tools easter eggs and much more....
 
 ## Community Assets

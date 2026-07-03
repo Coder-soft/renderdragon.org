@@ -22,6 +22,10 @@ interface ResourceCardProps {
 const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoverToPlay] = useState(() => {
+    const stored = localStorage.getItem('hoverToPlay');
+    return stored === null ? false : stored === 'true';
+  });
   const { user } = useAuth();
 
   // Reset image loaded state when resource changes
@@ -190,7 +194,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           </div>
         );
       case "animations":
-        return isHovered ? (
+        return isHovered && hoverToPlay ? (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
@@ -283,7 +287,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       </div>
 
       <motion.h3
-        className="text-xl font-jetbrains-mono mb-2 group-hover:text-primary transition-colors"
+        className="text-xl font-geist-mono mb-2 group-hover:text-primary transition-colors"
         whileHover={{ x: 5 }}
         transition={{ duration: 0.2 }}
       >

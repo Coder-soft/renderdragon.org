@@ -63,9 +63,7 @@ const mainLinks: (NavLink | NavDropdown)[] = [
       { name: 'Player Renderer', path: '/player-renderer', icon: 'player' },
       { name: 'Text Generator', path: '/text-generator', icon: 'text' },
       { name: 'Youtube Tools', path: '/youtube-downloader', icon: 'yt-downloader', tag: 'NEW' },
-      { name: 'AI Title Helper', path: '/ai-title-helper', icon: 'text', tag: 'NEW' },
-      { name: 'Content Generators', path: '/generators', icon: 'text' },
-      { name: 's0', path: 'https://s0.renderdragon.org/docs', icon: 'external', tag: 'NEW' }
+      { name: 'Content Generators', path: '/generators', icon: 'text' }
     ]
   }
 ];
@@ -95,19 +93,6 @@ const Navbar = () => {
   const { user, loading, signOut } = useAuth(); // Added for auth
   const { profile } = useProfile();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Manages Drawer open state
-  const [showBlogsBanner, setShowBlogsBanner] = useState(true);
-
-  // Initialize banner state from localStorage
-  useEffect(() => {
-    const hidden = localStorage.getItem('hideBlogsBanner');
-    if (hidden === '1') setShowBlogsBanner(false);
-  }, []);
-
-  const dismissBanner = () => {
-    setShowBlogsBanner(false);
-    localStorage.setItem('hideBlogsBanner', '1');
-  };
-
   useEffect(() => {
     let ticking = false;
     const handleScroll = () => {
@@ -196,29 +181,10 @@ const Navbar = () => {
 
   return (
     <>
-      {showBlogsBanner && (
-        <div className="fixed top-0 left-0 right-0 z-[60]">
-          <div className="w-full bg-gradient-to-r from-cow-purple/90 via-cow-purple to-cow-purple/90 text-white">
-            <div className="container mx-auto px-4 py-2 flex items-center justify-center gap-3 text-sm">
-              <span className="font-sans">Check out our new</span>
-              <Link to="/blogs" className="underline underline-offset-2 font-sans">
-                Blogs feature!
-              </Link>
-              <button
-                aria-label="Dismiss"
-                onClick={dismissBanner}
-                className="ml-3 text-white/80 hover:text-white"
-              >
-                <IconX className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <header
         className={`fixed w-full z-50 transition-all duration-300 py-4 ${scrolled ? 'shadow-lg' : ''
           }`}
-        style={{ top: showBlogsBanner ? 36 : 0 }}
+        style={{ top: 0 }}
       >
         <div
           className={`absolute inset-0 z-[-1] pointer-events-none transition-all duration-300 ${isTransparent

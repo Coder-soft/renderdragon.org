@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import VercelAnalytics from "@/components/VercelAnalytics";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { IconLoader2 } from "@tabler/icons-react";
@@ -77,6 +78,13 @@ const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   </div>
 );
 
+const HomeRedirect = () => {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingFallback />;
+  if (user) return <Navigate to="/resources" replace />;
+  return <Index />;
+};
+
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
 
@@ -102,7 +110,7 @@ const App = () => {
               <BrowserRouter>
                 <Suspense fallback={<LoadingFallback />}>
                   <Routes>
-                    <Route path="/" element={<Index />} />
+                    <Route path="/" element={<HomeRedirect />} />
                     <Route path="/resources" element={<ResourcesHub />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route
