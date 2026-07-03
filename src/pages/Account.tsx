@@ -27,7 +27,7 @@ const Account = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [hoverToPlay, setHoverToPlay] = useState(() => {
     const stored = localStorage.getItem('hoverToPlay');
-    return stored === null ? true : stored === 'true';
+    return stored === null ? false : stored === 'true';
   });
   const avatarSrc: string | undefined =
     profile?.avatar_url ??

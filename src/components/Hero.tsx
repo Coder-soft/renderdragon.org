@@ -9,7 +9,6 @@ const toolPaths = [
   '/player-renderer',
   '/text-generator',
   '/youtube-downloader',
-  '/ai-title-helper',
   '/generators',
 ]
 

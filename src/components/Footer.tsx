@@ -212,12 +212,6 @@ const Footer = () => {
                   <span className="ml-1 px-1.5 py-0.5 bg-cow-purple text-white text-[10px] rounded align-middle">NEW</span>
                 </Link>
               </li>
-              <li>
-                <Link to="/ai-title-helper" className="text-white/70 hover:text-white transition-colors flex items-center">
-                  <span>AI Title Helper</span>
-                  <span className="ml-1 px-1.5 py-0.5 bg-cow-purple text-white text-[10px] rounded align-middle">NEW</span>
-                </Link>
-              </li>
             </ul>
           </div>
         </div>

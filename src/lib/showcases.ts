@@ -106,19 +106,14 @@ export async function getShowcasesWithProfiles(search?: string): Promise<Showcas
   const legacyIds = showcases.filter(s => !s.id.startsWith('new-')).map(s => s.user_id);
   const newEmails = showcases.filter(s => s.id.startsWith('new-')).map(s => s.user_id);
 
-  const profilesMap: Record<string, { display_name?: string | null; avatar_url?: string | null; email?: string | null; username?: string | null }> = {};
+  const profilesMap: Record<string, { display_name?: string | null; avatar_url?: string | null; username?: string | null }> = {};
 
   if (legacyIds.length > 0 || newEmails.length > 0) {
-    let query = sb.from("profiles").select("id, display_name, email, avatar_url, username");
+    let query = sb.from("profiles").select("id, display_name, avatar_url, username");
 
     const conditions: string[] = [];
     if (legacyIds.length > 0) {
       conditions.push(`id.in.(${legacyIds.join(',')})`);
-    }
-    if (newEmails.length > 0) {
-      // Emails need to be quoted for PostgREST filter syntax
-      const quotedEmails = newEmails.map(e => `"${e}"`).join(',');
-      conditions.push(`email.in.(${quotedEmails})`);
     }
 
     if (conditions.length > 0) {
@@ -129,9 +124,7 @@ export async function getShowcasesWithProfiles(search?: string): Promise<Showcas
 
     if (data) {
       for (const row of (data as any[])) {
-        // Populate map for both ID and Email to ensure lookup works
         if (row.id) profilesMap[row.id] = row;
-        if (row.email) profilesMap[row.email] = row;
       }
     }
   }
