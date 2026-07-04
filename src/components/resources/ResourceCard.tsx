@@ -193,6 +193,20 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
             />
           </div>
         );
+      case "minecraft-music":
+        return (
+          <div
+            onClick={handlePreviewClick}
+            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
+          >
+            <AudioPlayer
+              src={previewUrl}
+              isInView={isInView}
+              allowPlayBeforeReady
+              className="w-full shadow-none border-none bg-transparent p-0"
+            />
+          </div>
+        );
       case "animations":
         return isHovered && hoverToPlay ? (
           <div
@@ -287,7 +301,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       </div>
 
       <motion.h3
-        className="text-xl font-geist-mono mb-2 group-hover:text-primary transition-colors"
+        className="text-lg font-geist-mono mb-2 group-hover:text-primary transition-colors"
         whileHover={{ x: 5 }}
         transition={{ duration: 0.2 }}
       >
