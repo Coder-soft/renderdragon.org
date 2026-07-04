@@ -179,6 +179,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           </div>
         );
       case "music":
+      case "minecraft-music":
       case "sfx":
       case "mcsounds":
         return (
@@ -287,7 +288,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       </div>
 
       <motion.h3
-        className="text-xl font-geist-mono mb-2 group-hover:text-primary transition-colors"
+        className="text-lg font-geist-mono mb-2 group-hover:text-primary transition-colors"
         whileHover={{ x: 5 }}
         transition={{ duration: 0.2 }}
       >

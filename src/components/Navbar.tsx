@@ -50,7 +50,6 @@ const mainLinks: (NavLink | NavDropdown)[] = [
     links: [
       { name: 'Resources Hub', path: '/resources', icon: 'resources-hub' },
       { name: 'Utilities', path: '/utilities', icon: 'software' },
-      { name: 'Community Assets', path: '/showcase', icon: 'yt-videos', tag: 'NEW' },
       { name: 'Community', path: '/community', icon: 'yt-videos' },
     ]
   },

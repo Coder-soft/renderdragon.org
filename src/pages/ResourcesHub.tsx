@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { useResources } from '@/hooks/useResources';
+import { useMinecraftMusic, ensurePlaylistCached } from '@/hooks/useMinecraftMusic';
 import { Resource } from '@/types/resources';
 import { MusicMood } from '@/types/music';
 import ResourceFilters from '@/components/resources/ResourceFilters';
@@ -14,12 +15,14 @@ import FavoritesTab from '@/components/resources/FavoritesTab';
 import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
 import MusicPacksTab from '@/components/resources/MusicPacksTab';
 import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
+import MinecraftMusicFilter from '@/components/resources/MinecraftMusicFilter';
+import MinecraftChangelogPopup from '@/components/resources/MinecraftChangelogPopup';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter } from '@tabler/icons-react';
+import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter, IconPlayerPlay, IconAlbum } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 
 
@@ -38,6 +41,9 @@ const ResourcesHub = () => {
   const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
+  const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
+
+  const minecraftMusic = useMinecraftMusic();
 
 
   const {
@@ -72,8 +78,13 @@ const ResourcesHub = () => {
   const isMcSoundsView = selectedCategory === 'mcsounds';
   const isMcIconsView = selectedCategory === 'minecraft-icons';
   const isMusicView = selectedCategory === 'music';
+  const isMinecraftMusicView = isMusicView && musicView === 'minecraft';
 
   const [musicMoodsData, setMusicMoodsData] = useState<MusicMood[]>([]);
+
+  useEffect(() => {
+    ensurePlaylistCached();
+  }, []);
 
   useEffect(() => {
     if (isMusicView && musicMoodsData.length === 0) {
@@ -85,7 +96,7 @@ const ResourcesHub = () => {
   }, [isMusicView, musicMoodsData.length]);
 
   const moodFilteredResources = useMemo(() => {
-    if (!isMusicView || selectedMoods.length === 0) return filteredResources;
+    if (!isMusicView || isMinecraftMusicView || selectedMoods.length === 0) return filteredResources;
 
     const moodsMap = new Map(musicMoodsData.map(item => [item.filename.toLowerCase(), item.moods]));
 
@@ -141,6 +152,7 @@ const ResourcesHub = () => {
   useEffect(() => {
     if (selectedCategory !== 'music') {
       setSelectedMoods([]);
+      setMusicView('community');
     }
   }, [selectedCategory]);
 
@@ -157,6 +169,24 @@ const ResourcesHub = () => {
       top: 0,
       behavior: 'smooth'
     });
+  };
+
+  const handleSearchWrapped = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleSearch(e);
+    if (isMinecraftMusicView) {
+      minecraftMusic.setSearchQuery(e.target.value);
+    }
+  };
+
+  const handleClearSearchWrapped = () => {
+    handleClearSearch();
+    if (isMinecraftMusicView) {
+      minecraftMusic.setSearchQuery('');
+    }
+  };
+
+  const handleSearchSubmitWrapped = (e: React.FormEvent) => {
+    handleSearchSubmit(e);
   };
 
   const onDownload = (resource: Resource) => {
@@ -178,9 +208,9 @@ const ResourcesHub = () => {
         selectedCategory={selectedCategory}
         selectedSubcategory={selectedSubcategory}
         availableSubcategories={availableSubcategories}
-        onSearch={handleSearch}
-        onClearSearch={handleClearSearch}
-        onSearchSubmit={handleSearchSubmit}
+        onSearch={handleSearchWrapped}
+        onClearSearch={handleClearSearchWrapped}
+        onSearchSubmit={handleSearchSubmitWrapped}
         onCategoryChange={handleCategoryChange}
         onSubcategoryChange={handleSubcategoryChange}
         sortOrder={sortOrder}
@@ -197,7 +227,73 @@ const ResourcesHub = () => {
         </p>
       )}
 
-      {isMusicView && isMobile && (
+      {isMusicView && (
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <Button
+            variant={musicView === 'community' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setMusicView('community')}
+            className="pixel-corners"
+          >
+            <IconMusic className="h-4 w-4 mr-2" />
+            Community Music
+          </Button>
+          <Button
+            variant={musicView === 'minecraft' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setMusicView('minecraft')}
+            className="pixel-corners"
+          >
+            <IconPlayerPlay className="h-4 w-4 mr-2" />
+            Minecraft Music
+          </Button>
+        </div>
+      )}
+
+      {isMinecraftMusicView && (
+        <p className="text-xs text-center text-muted-foreground mb-6 -mt-2 opacity-50 hover:opacity-100 transition-opacity">
+          Powered by Minecraft Creator-Safe Playlist API
+        </p>
+      )}
+
+      {isMinecraftMusicView && isMobile && (
+        <div className="mb-4">
+          <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="w-full pixel-corners">
+                <IconAlbum className="h-4 w-4 mr-2" />
+                Filter by Album
+                {minecraftMusic.selectedAlbum && (
+                  <span className="ml-2 bg-cow-purple text-white text-xs px-1.5 py-0.5 rounded truncate max-w-[100px]">
+                    {minecraftMusic.selectedAlbum}
+                  </span>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[70vh] pixel-corners">
+              <div className="h-full py-2">
+                <h3 className="text-lg font-jetbrains-mono mb-4 flex items-center gap-2">
+                  <IconAlbum className="h-5 w-5 text-cow-purple" />
+                  Filter by Album
+                </h3>
+                <MinecraftMusicFilter
+                  albums={minecraftMusic.albums}
+                  albumCounts={minecraftMusic.albumCounts}
+                  selectedAlbum={minecraftMusic.selectedAlbum}
+                  onAlbumChange={(album) => {
+                    minecraftMusic.setSelectedAlbum(album);
+                    if (!album) {
+                      setMobileMoodFilterOpen(false);
+                    }
+                  }}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      )}
+
+      {isMusicView && !isMinecraftMusicView && isMobile && (
         <div className="mb-4">
           <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
             <SheetTrigger asChild>
@@ -233,18 +329,33 @@ const ResourcesHub = () => {
         </div>
       )}
 
-      <ResourcesList
-        resources={resources}
-        filteredResources={isMusicView ? moodFilteredResources : filteredResources}
-        isLoading={isLoading}
-        isSearching={isSearching}
-        selectedCategory={selectedCategory}
-        searchQuery={searchQuery}
-        onSelectResource={setSelectedResource}
-        onClearFilters={handleClearSearch}
-        hasCategoryResources={hasCategoryResources}
-        fontPreviewText={fontPreviewText}
-      />
+      {isMinecraftMusicView ? (
+        <ResourcesList
+          resources={minecraftMusic.resources}
+          filteredResources={minecraftMusic.resources}
+          isLoading={minecraftMusic.isLoading}
+          isSearching={false}
+          selectedCategory="minecraft-music"
+          searchQuery={minecraftMusic.searchQuery}
+          onSelectResource={setSelectedResource}
+          onClearFilters={() => minecraftMusic.setSearchQuery('')}
+          hasCategoryResources={minecraftMusic.resources.length > 0}
+          fontPreviewText={fontPreviewText}
+        />
+      ) : (
+        <ResourcesList
+          resources={resources}
+          filteredResources={isMusicView ? moodFilteredResources : filteredResources}
+          isLoading={isLoading}
+          isSearching={isSearching}
+          selectedCategory={selectedCategory}
+          searchQuery={searchQuery}
+          onSelectResource={setSelectedResource}
+          onClearFilters={handleClearSearch}
+          hasCategoryResources={hasCategoryResources}
+          fontPreviewText={fontPreviewText}
+        />
+      )}
     </>
   );
 
@@ -375,13 +486,25 @@ const ResourcesHub = () => {
                 >
                   {(isMcSoundsView || isMcIconsView || isMusicView) && !isMobile ? (
                     <div className="flex gap-6 max-w-7xl mx-auto">
-                      {isMusicView && (
+                      {isMusicView && !isMinecraftMusicView && (
                         <div className="w-64 flex-shrink-0">
                           <div className="sticky top-28 h-[calc(100vh-8rem)]">
                             <MusicMoodFilter
                               selectedMoods={selectedMoods}
                               onMoodChange={setSelectedMoods}
                               moodsData={musicMoodsData}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {isMinecraftMusicView && (
+                        <div className="w-64 flex-shrink-0">
+                          <div className="sticky top-28 h-[calc(100vh-8rem)]">
+                            <MinecraftMusicFilter
+                              albums={minecraftMusic.albums}
+                              albumCounts={minecraftMusic.albumCounts}
+                              selectedAlbum={minecraftMusic.selectedAlbum}
+                              onAlbumChange={minecraftMusic.setSelectedAlbum}
                             />
                           </div>
                         </div>
@@ -443,6 +566,8 @@ const ResourcesHub = () => {
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
       />
+
+      <MinecraftChangelogPopup />
 
 
 

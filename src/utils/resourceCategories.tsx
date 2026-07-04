@@ -11,6 +11,7 @@ import {
 export const getCategoryIcon = (category: string) => {
   switch (category) {
     case "music":
+    case "minecraft-music":
       return <IconMusic className="h-5 w-5" />;
     case "sfx":
       return <IconFileMusic className="h-5 w-5" />;
@@ -33,6 +34,7 @@ export const getCategoryIcon = (category: string) => {
 export const getCategoryColor = (category: string) => {
   switch (category) {
     case "music":
+    case "minecraft-music":
       return "bg-blue-500/10 text-blue-500";
     case "sfx":
       return "bg-yellow-500/10 text-yellow-500";

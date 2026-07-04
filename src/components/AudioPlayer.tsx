@@ -14,9 +14,10 @@ interface AudioPlayerProps {
   src: string;
   className?: string;
   isInView?: boolean;
+  allowPlayBeforeReady?: boolean;
 }
 
-const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
+const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = false }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -46,7 +47,11 @@ const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
     let isMounted = true;
     wavesurfer.current = ws;
 
-    setIsLoading(true);
+    if (allowPlayBeforeReady) {
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
     ws.load(src).catch((err) => {
       if (err.name === 'AbortError') return;
       console.error('WaveSurfer load error:', err);
@@ -114,10 +119,16 @@ const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
       <div className="flex flex-col space-y-4">
         {/* Waveform Container */}
         <div className="relative h-[60px] w-full bg-muted/20 rounded-lg overflow-hidden flex items-center justify-center">
-          {isLoading && (
+          {isLoading && !allowPlayBeforeReady && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/60 backdrop-blur-[1px]">
               <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
               <span className="ml-2 text-xs font-jetbrains-mono tracking-wider text-muted-foreground">LOADING WAVEFORM...</span>
+            </div>
+          )}
+          {isLoading && allowPlayBeforeReady && (
+            <div className="absolute top-1 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5">
+              <IconLoader2 className="h-3 w-3 animate-spin text-cow-purple" />
+              <span className="text-[10px] font-jetbrains-mono tracking-wider text-muted-foreground">Loading waveform...</span>
             </div>
           )}
           <div ref={containerRef} className="w-full" />
@@ -131,7 +142,7 @@ const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
               onClick={skipBackward}
-              disabled={!isReady}
+              disabled={!isReady && !allowPlayBeforeReady}
             >
               <IconPlayerSkipBack size={18} fill="currentColor" className="opacity-70" />
             </Button>
@@ -140,7 +151,7 @@ const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
               size="icon"
               className="h-12 w-12 rounded-full bg-cow-purple hover:bg-cow-purple-dark text-white shadow-md hover:scale-105 transition-all duration-200"
               onClick={togglePlay}
-              disabled={!isReady}
+              disabled={!isReady && !allowPlayBeforeReady}
             >
               {isPlaying ? (
                 <IconPlayerPause size={24} fill="currentColor" />
@@ -154,7 +165,7 @@ const AudioPlayer = ({ src, className, isInView = true }: AudioPlayerProps) => {
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
               onClick={skipForward}
-              disabled={!isReady}
+              disabled={!isReady && !allowPlayBeforeReady}
             >
               <IconPlayerSkipForward size={18} fill="currentColor" className="opacity-70" />
             </Button>
