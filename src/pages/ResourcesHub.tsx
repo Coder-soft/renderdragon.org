@@ -43,9 +43,6 @@ const ResourcesHub = () => {
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
   const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
 
-  const minecraftMusic = useMinecraftMusic(isMinecraftMusicView);
-
-
   const {
     resources,
     selectedResource,
@@ -79,6 +76,8 @@ const ResourcesHub = () => {
   const isMcIconsView = selectedCategory === 'minecraft-icons';
   const isMusicView = selectedCategory === 'music';
   const isMinecraftMusicView = isMusicView && musicView === 'minecraft';
+
+  const minecraftMusic = useMinecraftMusic(isMinecraftMusicView);
 
   const [musicMoodsData, setMusicMoodsData] = useState<MusicMood[]>([]);
 
