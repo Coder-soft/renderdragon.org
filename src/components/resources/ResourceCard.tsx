@@ -202,7 +202,6 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
             <AudioPlayer
               src={previewUrl}
               isInView={isInView}
-              allowPlayBeforeReady
               className="w-full shadow-none border-none bg-transparent p-0"
             />
           </div>
