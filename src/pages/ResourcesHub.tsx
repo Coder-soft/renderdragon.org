@@ -43,7 +43,7 @@ const ResourcesHub = () => {
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
   const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
 
-  const minecraftMusic = useMinecraftMusic();
+  const minecraftMusic = useMinecraftMusic(isMinecraftMusicView);
 
 
   const {
@@ -148,6 +148,13 @@ const ResourcesHub = () => {
       window.removeEventListener('showFavorites', handleShowFavorites);
     };
   }, []);
+
+  useEffect(() => {
+    if (isMinecraftMusicView) {
+      minecraftMusic.enablePreCache();
+      minecraftMusic.setSearchQuery(searchQuery);
+    }
+  }, [isMinecraftMusicView, minecraftMusic, searchQuery]);
 
   useEffect(() => {
     if (selectedCategory !== 'music') {
@@ -334,11 +341,11 @@ const ResourcesHub = () => {
           resources={minecraftMusic.resources}
           filteredResources={minecraftMusic.resources}
           isLoading={minecraftMusic.isLoading}
-          isSearching={false}
+          isSearching={!!minecraftMusic.searchQuery}
           selectedCategory="minecraft-music"
           searchQuery={minecraftMusic.searchQuery}
           onSelectResource={setSelectedResource}
-          onClearFilters={() => minecraftMusic.setSearchQuery('')}
+          onClearFilters={handleClearSearchWrapped}
           hasCategoryResources={minecraftMusic.resources.length > 0}
           fontPreviewText={fontPreviewText}
         />

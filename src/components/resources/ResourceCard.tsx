@@ -179,7 +179,6 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           </div>
         );
       case "music":
-      case "minecraft-music":
       case "sfx":
       case "mcsounds":
         return (
@@ -190,6 +189,20 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
             <AudioPlayer
               src={previewUrl}
               isInView={isInView}
+              className="w-full shadow-none border-none bg-transparent p-0"
+            />
+          </div>
+        );
+      case "minecraft-music":
+        return (
+          <div
+            onClick={handlePreviewClick}
+            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
+          >
+            <AudioPlayer
+              src={previewUrl}
+              isInView={isInView}
+              allowPlayBeforeReady
               className="w-full shadow-none border-none bg-transparent p-0"
             />
           </div>
