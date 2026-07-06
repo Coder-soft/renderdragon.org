@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext, AuthResult } from "@/providers/AuthContext";
+import { bindSupabase } from "@renderdragonorg/wisp/supabase";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -9,6 +10,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Bind Supabase auth state to Wisp analytics identity
+        const unsubscribeWisp = bindSupabase(supabase);
+
         // Set up auth state listener FIRST
         const {
             data: { subscription },
@@ -26,7 +30,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setLoading(false);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            subscription.unsubscribe();
+            unsubscribeWisp();
+        };
     }, []);
 
     // Keep profiles.avatar_url in sync with the latest auth metadata
