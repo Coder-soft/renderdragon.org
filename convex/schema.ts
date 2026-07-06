@@ -21,7 +21,8 @@ export default defineSchema({
     .index("by_machineId", ["machineId"])
     .index("by_userId", ["userId"])
     .index("by_firstSeenDate", ["firstSeenDate"])
-    .index("by_country", ["country"]),
+    .index("by_country", ["country"])
+    .searchIndex("search_machineId", { searchField: "machineId" }),
 
   sessions: defineTable({
     sessionId: v.string(),

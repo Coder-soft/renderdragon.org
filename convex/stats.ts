@@ -46,9 +46,7 @@ export const computeDailyStats = internalMutation({
 
     const sessionsToday = await ctx.db
       .query("sessions")
-      .filter((q) =>
-        q.and(q.gte(q.field("startedAt"), dayStart), q.lt(q.field("startedAt"), dayEnd))
-      )
+      .withIndex("by_startedAt", (q) => q.gte("startedAt", dayStart).lt("startedAt", dayEnd))
       .collect();
 
     const newMachines = await ctx.db
