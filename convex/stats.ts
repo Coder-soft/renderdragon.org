@@ -17,8 +17,9 @@ export const closeStaleSessions = internalMutation({
 
     const stale = await ctx.db
       .query("sessions")
-      .withIndex("by_open", (q) => q.eq("endedAt", undefined))
-      .filter((q) => q.lt(q.field("lastActivityAt"), cutoff))
+      .withIndex("by_open_lastActivityAt", (q) =>
+        q.eq("endedAt", undefined).lt("lastActivityAt", cutoff)
+      )
       .collect();
 
     for (const session of stale) {

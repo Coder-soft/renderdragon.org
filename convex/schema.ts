@@ -41,6 +41,7 @@ export default defineSchema({
     .index("by_sessionId", ["sessionId"])
     .index("by_machineId", ["machineId"])
     .index("by_open", ["endedAt"])
+    .index("by_open_lastActivityAt", ["endedAt", "lastActivityAt"])
     .index("by_startedAt", ["startedAt"])
     .index("by_durationMs", ["durationMs"])
     .index("by_eventCount", ["eventCount"])
