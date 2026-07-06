@@ -10,8 +10,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Bind Supabase auth state to Wisp analytics identity
-        const unsubscribeWisp = bindSupabase(supabase);
+        // Bind Supabase auth state to Wisp analytics identity (no-op if wisp not initialized)
+        let unsubscribeWisp = () => {};
+        try {
+            unsubscribeWisp = bindSupabase(supabase);
+        } catch {
+            // wisp not initialized — skip analytics identity binding
+        }
 
         // Set up auth state listener FIRST
         const {
