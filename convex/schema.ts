@@ -66,6 +66,7 @@ export default defineSchema({
     .index("by_session", ["sessionId"])
     .index("by_type_time", ["type", "timestamp"])
     .index("by_machine_time", ["machineId", "timestamp"])
+    .index("by_machine_type_time", ["machineId", "type", "timestamp"])
     .searchIndex("search_name", { searchField: "name", filterFields: ["type"] }),
 
   dailyStats: defineTable({

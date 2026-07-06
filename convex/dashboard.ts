@@ -237,8 +237,9 @@ export const getMachineStats = query({
 
     const errorNames = await ctx.db
       .query("events")
-      .withIndex("by_machine_time", (q) => q.eq("machineId", machineId))
-      .filter((q) => q.eq(q.field("type"), "error"))
+      .withIndex("by_machine_type_time", (q) =>
+        q.eq("machineId", machineId).eq("type", "error")
+      )
       .collect();
     const topErrors = Array.from(
       errorNames.reduce((map, e) => map.set(e.name, (map.get(e.name) ?? 0) + 1), new Map<string, number>())
@@ -249,8 +250,9 @@ export const getMachineStats = query({
 
     const pageviews = await ctx.db
       .query("events")
-      .withIndex("by_machine_time", (q) => q.eq("machineId", machineId))
-      .filter((q) => q.eq(q.field("type"), "pageview"))
+      .withIndex("by_machine_type_time", (q) =>
+        q.eq("machineId", machineId).eq("type", "pageview")
+      )
       .collect();
     const topPages = Array.from(
       pageviews.reduce((map, e) => map.set(e.url, (map.get(e.url) ?? 0) + 1), new Map<string, number>())
