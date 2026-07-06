@@ -16,7 +16,14 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     if (!isAuthorized(request)) {
-      return new Response("Unauthorized", { status: 401 });
+      return new Response("Unauthorized", {
+        status: 401,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, x-wisp-token",
+        },
+      });
     }
 
     const body = await request.json() as { events: unknown[] };
