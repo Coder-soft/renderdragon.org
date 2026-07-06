@@ -8,12 +8,7 @@ import '@fontsource/geist-sans';
 import '@fontsource/geist-mono';
 import '@fontsource/jetbrains-mono';
 
-import { PostHogProvider } from 'posthog-js/react'
 import wisp, { init } from "@renderdragonorg/wisp";
-
-const options = {
-  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-}
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL;
 const wispSecret = import.meta.env.VITE_WISP_SECRET;
@@ -50,8 +45,6 @@ if (import.meta.env.DEV) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={options}>
-      <App />
-    </PostHogProvider>
+    <App />
   </React.StrictMode>
 );

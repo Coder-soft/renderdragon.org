@@ -24,44 +24,31 @@ export function AdBlockDetector() {
 
     useEffect(() => {
         const checkAdBlock = async () => {
-            // Check cache first
             const dismissedAt = localStorage.getItem(ADBLOCK_CACHE_KEY);
             if (dismissedAt) {
                 const timePassed = Date.now() - parseInt(dismissedAt, 10);
                 if (timePassed < CACHE_DURATION) {
-                    
                     return;
                 }
             }
 
-            try {
-                const host = import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
-                const apiKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-                if (!apiKey) {
+            for (const url of ['https://www.googletagmanager.com/gtag/js', 'https://www.google-analytics.com/analytics.js']) {
+                try {
+                    const controller = new AbortController();
+                    const id = setTimeout(() => controller.abort(), 2000);
+                    await fetch(url, { mode: 'no-cors', signal: controller.signal });
+                    clearTimeout(id);
                     return;
+                } catch {
+                    continue;
                 }
-                // Try fetching the /decide endpoint which is critical for PostHog and often blocked
-                // We use string concatenation to ensure the URL is well-formed
-                const url = `${host}/decide?v=3&ip=1&_=`;
-
-
-
-
-                await fetch(url + Date.now(), {
-                    method: 'POST', // POST requests to tracking endpoints are more likely to be blocked
-                    mode: 'no-cors',
-                    body: JSON.stringify({ token: apiKey })
-                });
-
-            } catch (error) {
-                console.warn("PostHog request failed, likely blocked:", error);
-                setIsBlocked(true);
-                setIsOpen(true);
             }
+
+            setIsBlocked(true);
+            setIsOpen(true);
         };
 
-        // Small delay to ensure network stack is ready
-        const timer = setTimeout(checkAdBlock, 1000);
+        const timer = setTimeout(checkAdBlock, 1500);
         return () => clearTimeout(timer);
     }, []);
 
