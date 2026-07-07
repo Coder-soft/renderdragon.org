@@ -21,11 +21,6 @@ interface ResourceCardProps {
 
 const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [hoverToPlay] = useState(() => {
-    const stored = localStorage.getItem('hoverToPlay');
-    return stored === null ? false : stored === 'true';
-  });
   const { user } = useAuth();
 
   // Reset image loaded state when resource changes
@@ -207,7 +202,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           </div>
         );
       case "animations":
-        return isHovered && hoverToPlay ? (
+        return (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
@@ -227,13 +222,6 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
               </div>
             )}
           </div>
-        ) : (
-          <div className="relative aspect-video bg-muted/10 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center text-muted-foreground text-xs">
-            <div className="flex items-center gap-2">
-              <IconVideo className="h-5 w-5" />
-              <span>Hover to play</span>
-            </div>
-          </div>
         );
       default:
         return null;
@@ -244,8 +232,6 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
     <motion.div
       ref={cardRef}
       onClick={() => onClick(resource)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className={cn(
         "pixel-card group cursor-pointer hover:border-primary transition-all duration-300 h-full",
         isFavorite && "border-red-500/50",
