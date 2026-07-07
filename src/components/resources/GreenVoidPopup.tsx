@@ -13,11 +13,17 @@ const GreenVoidPopup = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const greenVoidDismissed = localStorage.getItem(GREEN_VOID_KEY);
-    const mcPlaylistDismissed = localStorage.getItem(MC_PLAYLIST_KEY);
-    if (!greenVoidDismissed && mcPlaylistDismissed) {
-      setOpen(true);
-    }
+    const check = () => {
+      const greenVoidDismissed = localStorage.getItem(GREEN_VOID_KEY);
+      const mcPlaylistDismissed = localStorage.getItem(MC_PLAYLIST_KEY);
+      if (!greenVoidDismissed && mcPlaylistDismissed) {
+        setOpen(true);
+      }
+    };
+
+    check();
+    window.addEventListener('mc-playlist-dismissed', check);
+    return () => window.removeEventListener('mc-playlist-dismissed', check);
   }, []);
 
   const dismiss = () => {
