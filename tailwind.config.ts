@@ -22,8 +22,9 @@ export default {
 			fontFamily: {
 				geist: ['Geist Sans', 'sans-serif'],
 				'geist-mono': ['Geist Mono', 'monospace'],
-				minecraftia: ['Minecraftia', 'monospace'],
-				'jetbrains-mono': ['JetBrains Mono', 'monospace'],
+			minecraftia: ['Minecraftia', 'monospace'],
+			minecraft: ['Minecraft', 'sans-serif'],
+			'jetbrains-mono': ['JetBrains Mono', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

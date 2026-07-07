@@ -17,6 +17,7 @@ import MusicPacksTab from '@/components/resources/MusicPacksTab';
 import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
 import MinecraftMusicFilter from '@/components/resources/MinecraftMusicFilter';
 import MinecraftChangelogPopup from '@/components/resources/MinecraftChangelogPopup';
+import GreenVoidPopup from '@/components/resources/GreenVoidPopup';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -572,8 +573,9 @@ const ResourcesHub = () => {
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
       />
-
       <MinecraftChangelogPopup />
+
+      <GreenVoidPopup />
 
 
 
