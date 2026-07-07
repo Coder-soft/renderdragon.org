@@ -21,6 +21,7 @@ const MinecraftChangelogPopup = () => {
   const dismiss = () => {
     localStorage.setItem(CHANGELOG_KEY, 'true');
     setOpen(false);
+    window.dispatchEvent(new CustomEvent('mc-playlist-dismissed'));
   };
 
   return (
