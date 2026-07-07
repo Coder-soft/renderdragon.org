@@ -17,7 +17,7 @@
 
 ## 🧱 What is Renderdragon?
 
-**Renderdragon** is your ultimate toolkit for creating **Minecraft YouTube content**. Whether you're crafting a cinematic masterpiece or just getting started with Let’s Plays, we’ve got you covered — **totally free** and **ad-free**.
+Renderdragon is a web platform offering free, ad-free tools, assets, music, and shaders for Minecraft content creators to level up their YouTube videos and thumbnails.
 
 ### 🔧 Included Tools:
 - 🎵 Royalty-Free **Music & SFX Library**
