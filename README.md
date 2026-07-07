@@ -4,13 +4,11 @@ Renderdragon is a web platform offering free, ad-free tools, assets, music, and 
 
 ## Tools
 
-- **AI Title Helper** – Generate video titles with AI
 - **YouTube Downloader** – Download videos and audio
 - **Copyright Checker** – Check if music is safe for Minecraft content
 - **Background Generator** – Create custom backgrounds
 - **Text Generator** – Generate pixel-style text overlays
 - **Player Renderer** – Render Minecraft player skins
-- **Profile Editor** – Edit your Minecraft profile
 
 ## Assets
 
