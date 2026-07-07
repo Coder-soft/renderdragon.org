@@ -8,11 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
-import { IconUser, IconMail, IconCalendar, IconLogout, IconVideo } from '@tabler/icons-react';
+import { IconUser, IconMail, IconCalendar, IconLogout } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import AccountPageSkeleton from '@/components/skeletons/AccountPageSkeleton';
@@ -25,10 +24,7 @@ const Account = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
-  const [hoverToPlay, setHoverToPlay] = useState(() => {
-    const stored = localStorage.getItem('hoverToPlay');
-    return stored === null ? false : stored === 'true';
-  });
+
   const avatarSrc: string | undefined =
     profile?.avatar_url ??
     ((user?.user_metadata as Record<string, unknown> | undefined)?.avatar_url as string | undefined) ??
@@ -234,23 +230,7 @@ const Account = () => {
                   <div className="space-y-4">
                     <h3 className="text-lg font-jetbrains-mono text-cow-purple">Preferences</h3>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <IconVideo className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <span className="text-sm font-medium">Hover to Play Videos</span>
-                          <p className="text-xs text-muted-foreground">Auto-play video previews when hovering over animation cards</p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={hoverToPlay}
-                        onCheckedChange={(checked) => {
-                          setHoverToPlay(checked);
-                          localStorage.setItem('hoverToPlay', String(checked));
-                          toast.success(checked ? 'Hover to play enabled' : 'Hover to play disabled');
-                        }}
-                      />
-                    </div>
+
                   </div>
 
                   <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6">
