@@ -49,11 +49,10 @@ export const useHeartedResources = () => {
   const toggleHeart = (resource: Resource | string): Promise<{ action: 'added' | 'removed' }> => {
     const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
     if (!resourceUrl) return Promise.resolve({ action: 'removed' });
-    const current = getLocalHeartedResources();
-    const isCurrentlyHearted = current.includes(resourceUrl);
+    const isCurrentlyHearted = heartedResources.includes(resourceUrl);
     const newHearted = isCurrentlyHearted
-      ? current.filter(id => id !== resourceUrl)
-      : [...current, resourceUrl];
+      ? heartedResources.filter(id => id !== resourceUrl)
+      : [...heartedResources, resourceUrl];
 
     setLocalHeartedResources(newHearted);
     setHeartedResources(newHearted);
@@ -64,7 +63,7 @@ export const useHeartedResources = () => {
   const isHearted = (resource: Resource | string) => {
     const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
     if (!resourceUrl) return false;
-    return getLocalHeartedResources().includes(resourceUrl);
+    return heartedResources.includes(resourceUrl);
   };
 
   if (user) {

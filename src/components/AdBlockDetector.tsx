@@ -14,7 +14,6 @@ const ADBLOCK_CACHE_KEY = 'adblock_warning_dismissed';
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
 export function AdBlockDetector() {
-    const [isBlocked, setIsBlocked] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
     const handleContinue = () => {
@@ -44,7 +43,6 @@ export function AdBlockDetector() {
                 }
             }
 
-            setIsBlocked(true);
             setIsOpen(true);
         };
 

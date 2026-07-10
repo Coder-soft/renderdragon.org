@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, lazy, Suspense, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -39,7 +40,8 @@ const LoadingSpinner = () => (
 const ResourcesHub = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get('tab') as 'resources' | 'favorites' | 'creator-packs' | 'music-packs') || 'resources';
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
   const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
@@ -137,7 +139,7 @@ const ResourcesHub = () => {
     };
 
     const handleShowFavorites = () => {
-      setActiveTab('favorites');
+      setSearchParams({ tab: 'favorites' });
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -147,7 +149,7 @@ const ResourcesHub = () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('showFavorites', handleShowFavorites);
     };
-  }, []);
+  }, [setSearchParams]);
 
   useEffect(() => {
     if (isMinecraftMusicView) {
@@ -162,14 +164,6 @@ const ResourcesHub = () => {
       setMusicView('community');
     }
   }, [selectedCategory]);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
-    if (tabParam === 'favorites') setActiveTab('favorites');
-    else if (tabParam === 'creator-packs') setActiveTab('creator-packs');
-    else if (tabParam === 'music-packs') setActiveTab('music-packs');
-  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -402,7 +396,7 @@ const ResourcesHub = () => {
               <Button
                 variant={activeTab === 'resources' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setActiveTab('resources')}
+                onClick={() => setSearchParams({})}
                 className="pixel-corners"
               >
                 <IconSearch className="h-4 w-4 mr-2" />
@@ -412,7 +406,7 @@ const ResourcesHub = () => {
                 <Button
                   variant={activeTab === 'favorites' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setActiveTab('favorites')}
+                  onClick={() => setSearchParams({ tab: 'favorites' })}
                   className="pixel-corners"
                 >
                   <IconHeart className="h-4 w-4 mr-2" />
@@ -426,7 +420,7 @@ const ResourcesHub = () => {
                 <Button
                   variant={activeTab === 'creator-packs' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setActiveTab('creator-packs')}
+                  onClick={() => setSearchParams({ tab: 'creator-packs' })}
                   className="pixel-corners"
                 >
                   <IconPackage className="h-4 w-4 mr-2" />
@@ -440,7 +434,7 @@ const ResourcesHub = () => {
                 <Button
                   variant={activeTab === 'music-packs' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setActiveTab('music-packs')}
+                  onClick={() => setSearchParams({ tab: 'music-packs' })}
                   className="pixel-corners"
                 >
                   <IconMusic className="h-4 w-4 mr-2" />

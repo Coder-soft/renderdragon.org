@@ -78,7 +78,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     if (isFont) {
       const fontName = `font-${a.id}`;
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video relative overflow-hidden group/font">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 relative overflow-hidden group/font">
           <style>{`
             @font-face {
               font-family: '${fontName}';
@@ -99,7 +99,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
     if (isJson) {
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-[#1e1e1e] p-6 aspect-video relative group/json">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-[#1e1e1e] p-6 relative group/json">
           <div className="absolute top-3 right-3 opacity-20 group-hover/json:opacity-40 transition-opacity">
             <IconCode size={40} className="text-cow-purple" />
           </div>
@@ -118,7 +118,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
 
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6">
         <IconFileText className="h-12 w-12 text-white/20 mb-4" />
         <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono">
           Document File
