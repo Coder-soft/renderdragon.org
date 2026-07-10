@@ -40,7 +40,7 @@ export const useUserFavorites = () => {
 
       return (data as unknown as UserFavorite[])?.filter(fav => fav.resource_url != null) || [];
     },
-    enabled: !!user?.id && isSchemaReady,
+    enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
