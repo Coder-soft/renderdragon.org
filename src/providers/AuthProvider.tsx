@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext, AuthResult } from "@/providers/AuthContext";
-import { bindSupabase } from "@renderdragonorg/wisp/supabase";
+import wisp from "@renderdragonorg/wisp";
+
+function tryIdentify(userId: string) {
+    try { wisp.identify(userId); } catch { /* wisp not initialized */ }
+}
+function tryReset() {
+    try { wisp.reset(); } catch { /* wisp not initialized */ }
+}
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -10,22 +17,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Bind Supabase auth state to Wisp analytics identity (no-op if wisp not initialized)
-        let unsubscribeWisp = () => {};
-        try {
-            unsubscribeWisp = bindSupabase(supabase);
-        } catch {
-            // wisp not initialized — skip analytics identity binding
-        }
-
         // Set up auth state listener FIRST
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
-            
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
+
+            if (event === "SIGNED_IN" && session?.user.id) {
+                tryIdentify(session.user.id);
+            } else if (event === "SIGNED_OUT") {
+                tryReset();
+            }
         });
 
         // THEN check for existing session
@@ -33,12 +37,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
+            if (session?.user.id) {
+                tryIdentify(session.user.id);
+            }
         });
 
-        return () => {
-            subscription.unsubscribe();
-            unsubscribeWisp();
-        };
+        return () => subscription.unsubscribe();
     }, []);
 
     // Keep profiles.avatar_url in sync with the latest auth metadata
