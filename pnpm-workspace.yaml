@@ -7,4 +7,4 @@ allowBuilds:
   protobufjs: true
   sharp: true
 minimumReleaseAgeExclude:
-  - '@renderdragonorg/wisp@0.1.1'
+  - '@renderdragonorg/wisp@0.1.1 || 0.2.0'
