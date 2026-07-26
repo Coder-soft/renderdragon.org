@@ -4,13 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthContext, AuthResult } from "@/providers/AuthContext";
 import wisp from "@renderdragonorg/wisp";
 
-function tryIdentify(userId: string) {
-    try { wisp.identify(userId); } catch { /* wisp not initialized */ }
+function tryIdentify(userId: string, retries = 3) {
+    try { wisp.identify(userId); }
+    catch {
+        if (retries > 0) setTimeout(() => tryIdentify(userId, retries - 1), 500);
+    }
 }
 function tryReset() {
     try { wisp.reset(); } catch { /* wisp not initialized */ }
 }
-function tryTrackIdentify(session: Session | null) {
+function tryTrackIdentify(session: Session | null, retries = 3) {
     const user = session?.user;
     if (!user?.id) return;
     try {
@@ -22,7 +25,9 @@ function tryTrackIdentify(session: Session | null) {
             name: meta.full_name as string | undefined,
             provider: primaryIdentity?.provider ?? user.app_metadata?.provider ?? "email",
         });
-    } catch { /* wisp not initialized */ }
+    } catch {
+        if (retries > 0) setTimeout(() => tryTrackIdentify(session, retries - 1), 500);
+    }
 }
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
