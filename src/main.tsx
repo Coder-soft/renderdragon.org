@@ -9,15 +9,12 @@ import '@fontsource/geist-mono';
 import '@fontsource/jetbrains-mono';
 
 import wisp, { init } from "@renderdragonorg/wisp";
-import { bindSupabase } from "@renderdragonorg/wisp/supabase";
-import { supabase } from "@/integrations/supabase/client";
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL;
 const wispSecret = import.meta.env.VITE_WISP_SECRET;
 
 if (convexUrl) {
   init({ convexUrl, wispSecret: wispSecret || undefined });
-  bindSupabase(supabase);
 }
 
 // expose for console debugging
