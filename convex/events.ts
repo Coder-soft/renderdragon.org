@@ -129,14 +129,20 @@ async function upsertSession(
   }
 }
 
-function extractUserInfo(events: Array<{ name: string; payload?: unknown }>): { email?: string; name?: string; provider?: string } | undefined {
-  const identifyEvent = events.find((e) => e.name === "session_identify");
-  if (!identifyEvent?.payload || typeof identifyEvent.payload !== "object") return undefined;
-  const p = identifyEvent.payload as Record<string, unknown>;
-  const email = typeof p.email === "string" ? p.email : undefined;
-  const name = typeof p.name === "string" ? p.name : undefined;
-  const provider = typeof p.provider === "string" ? p.provider : undefined;
-  return email || name || provider ? { email, name, provider } : undefined;
+function buildUserInfoMap(events: Array<{ machineId: string; name: string; payload?: unknown }>): Map<string, { email?: string; name?: string; provider?: string }> {
+  const map = new Map<string, { email?: string; name?: string; provider?: string }>();
+  for (const event of events) {
+    if (event.name !== "session_identify") continue;
+    if (!event.payload || typeof event.payload !== "object") continue;
+    const p = event.payload as Record<string, unknown>;
+    const email = typeof p.email === "string" ? p.email : undefined;
+    const name = typeof p.name === "string" ? p.name : undefined;
+    const provider = typeof p.provider === "string" ? p.provider : undefined;
+    if (email || name || provider) {
+      map.set(event.machineId, { email, name, provider });
+    }
+  }
+  return map;
 }
 
 export const recordBatch = mutation({
@@ -144,7 +150,7 @@ export const recordBatch = mutation({
   handler: async (ctx, { events }) => {
     // Process oldest-first so ordering-dependent bookkeeping (session creation, counters) is correct.
     const sorted = [...events].sort((a, b) => a.timestamp - b.timestamp);
-    const userInfo = extractUserInfo(sorted);
+    const userInfoMap = buildUserInfoMap(sorted);
 
     for (const event of sorted) {
       const isBookkeeping = event.name === "session_start" || event.name === "session_identify";
@@ -154,7 +160,7 @@ export const recordBatch = mutation({
         userId: event.userId,
         timestamp: event.timestamp,
         meta: isBookkeeping ? event.payload : undefined,
-        userInfo,
+        userInfo: userInfoMap.get(event.machineId),
       });
 
       await upsertSession(ctx, {
@@ -230,7 +236,7 @@ export const recordBatchWithGeo = internalMutation({
   },
   handler: async (ctx, { events, geo }) => {
     const sorted = [...events].sort((a, b) => a.timestamp - b.timestamp);
-    const userInfo = extractUserInfo(sorted);
+    const userInfoMap = buildUserInfoMap(sorted);
 
     for (const event of sorted) {
       const isBookkeeping = event.name === "session_start" || event.name === "session_identify";
@@ -241,7 +247,7 @@ export const recordBatchWithGeo = internalMutation({
         timestamp: event.timestamp,
         meta: isBookkeeping ? event.payload : undefined,
         geo,
-        userInfo,
+        userInfo: userInfoMap.get(event.machineId),
       });
 
       await upsertSession(ctx, {

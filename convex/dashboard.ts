@@ -211,9 +211,15 @@ export const getErrorDetails = query({
 });
 
 /** Fetch aggregated stats for a single machine. */
+function pii<T>(value: T, identity: unknown): T | null {
+  return identity ? (value ?? null) : null;
+}
+
 export const getMachineStats = query({
   args: { machineId: v.string() },
   handler: async (ctx, { machineId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+
     const machine = await ctx.db
       .query("machines")
       .withIndex("by_machineId", (q) => q.eq("machineId", machineId))
@@ -280,9 +286,9 @@ export const getMachineStats = query({
         region: machine.region ?? null,
         city: machine.city ?? null,
         screen: machine.screen ?? null,
-        userEmail: machine.userEmail ?? null,
-        userName: machine.userName ?? null,
-        authProvider: machine.authProvider ?? null,
+        userEmail: pii(machine.userEmail, identity),
+        userName: pii(machine.userName, identity),
+        authProvider: pii(machine.authProvider, identity),
       },
       stats: {
         totalSessions,
@@ -349,6 +355,7 @@ export const getTopPages = query({
 export const getPageVisitors = query({
   args: { url: v.string(), startDate: v.string(), endDate: v.string() },
   handler: async (ctx, { url, startDate, endDate }) => {
+    const identity = await ctx.auth.getUserIdentity();
     const dayStart = new Date(`${startDate}T00:00:00.000Z`).getTime();
     const dayEnd = new Date(`${endDate}T23:59:59.999Z`).getTime();
 
@@ -384,9 +391,9 @@ export const getPageVisitors = query({
           country: machine?.country ?? null,
           platform: machine?.platform ?? null,
           userAgent: machine?.userAgent ?? null,
-          userEmail: machine?.userEmail ?? null,
-          userName: machine?.userName ?? null,
-          authProvider: machine?.authProvider ?? null,
+          userEmail: pii(machine?.userEmail, identity),
+          userName: pii(machine?.userName, identity),
+          authProvider: pii(machine?.authProvider, identity),
         };
       })
     );
@@ -428,6 +435,7 @@ export const getPageViewsOverTime = query({
 export const searchMachines = query({
   args: { prefix: v.string() },
   handler: async (ctx, { prefix }) => {
+    const identity = await ctx.auth.getUserIdentity();
     if (!prefix || prefix.trim().length === 0) return [];
     const results = await ctx.db
       .query("machines")
@@ -439,9 +447,9 @@ export const searchMachines = query({
       country: m.country ?? null,
       platform: m.platform ?? null,
       lastSeenAt: m.lastSeenAt,
-      userEmail: m.userEmail ?? null,
-      userName: m.userName ?? null,
-      authProvider: m.authProvider ?? null,
+      userEmail: pii(m.userEmail, identity),
+      userName: pii(m.userName, identity),
+      authProvider: pii(m.authProvider, identity),
     }));
   },
 });
