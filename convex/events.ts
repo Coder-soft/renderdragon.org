@@ -28,6 +28,7 @@ async function upsertMachine(
     timestamp: number;
     meta?: Record<string, unknown>;
     geo?: { ip?: string; country?: string; region?: string; city?: string };
+    userInfo?: { email?: string; name?: string; provider?: string };
   }
 ) {
   const existing = await ctx.db
@@ -51,6 +52,9 @@ async function upsertMachine(
       country: args.geo?.country,
       region: args.geo?.region,
       city: args.geo?.city,
+      userEmail: args.userInfo?.email,
+      userName: args.userInfo?.name,
+      authProvider: args.userInfo?.provider,
     });
     return { isNewMachine: true };
   }
@@ -62,6 +66,9 @@ async function upsertMachine(
     platform: args.meta?.platform ?? existing.platform,
     referrer: args.meta?.referrer ?? existing.referrer,
     screen: args.meta?.screen ?? existing.screen,
+    userEmail: args.userInfo?.email ?? existing.userEmail,
+    userName: args.userInfo?.name ?? existing.userName,
+    authProvider: args.userInfo?.provider ?? existing.authProvider,
   });
   return { isNewMachine: false };
 }
@@ -122,20 +129,38 @@ async function upsertSession(
   }
 }
 
+function buildUserInfoMap(events: Array<{ machineId: string; name: string; payload?: unknown }>): Map<string, { email?: string; name?: string; provider?: string }> {
+  const map = new Map<string, { email?: string; name?: string; provider?: string }>();
+  for (const event of events) {
+    if (event.name !== "session_identify") continue;
+    if (!event.payload || typeof event.payload !== "object") continue;
+    const p = event.payload as Record<string, unknown>;
+    const email = typeof p.email === "string" ? p.email : undefined;
+    const name = typeof p.name === "string" ? p.name : undefined;
+    const provider = typeof p.provider === "string" ? p.provider : undefined;
+    if (email || name || provider) {
+      map.set(event.machineId, { email, name, provider });
+    }
+  }
+  return map;
+}
+
 export const recordBatch = mutation({
   args: { events: v.array(eventValidator) },
   handler: async (ctx, { events }) => {
     // Process oldest-first so ordering-dependent bookkeeping (session creation, counters) is correct.
     const sorted = [...events].sort((a, b) => a.timestamp - b.timestamp);
+    const userInfoMap = buildUserInfoMap(sorted);
 
     for (const event of sorted) {
-      const isBookkeeping = event.name === "session_start";
+      const isBookkeeping = event.name === "session_start" || event.name === "session_identify";
 
       await upsertMachine(ctx, {
         machineId: event.machineId,
         userId: event.userId,
         timestamp: event.timestamp,
         meta: isBookkeeping ? event.payload : undefined,
+        userInfo: userInfoMap.get(event.machineId),
       });
 
       await upsertSession(ctx, {
@@ -211,9 +236,10 @@ export const recordBatchWithGeo = internalMutation({
   },
   handler: async (ctx, { events, geo }) => {
     const sorted = [...events].sort((a, b) => a.timestamp - b.timestamp);
+    const userInfoMap = buildUserInfoMap(sorted);
 
     for (const event of sorted) {
-      const isBookkeeping = event.name === "session_start";
+      const isBookkeeping = event.name === "session_start" || event.name === "session_identify";
 
       await upsertMachine(ctx, {
         machineId: event.machineId,
@@ -221,6 +247,7 @@ export const recordBatchWithGeo = internalMutation({
         timestamp: event.timestamp,
         meta: isBookkeeping ? event.payload : undefined,
         geo,
+        userInfo: userInfoMap.get(event.machineId),
       });
 
       await upsertSession(ctx, {

@@ -2,44 +2,24 @@ import { useState, useEffect } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext, AuthResult } from "@/providers/AuthContext";
-import wisp from "@renderdragonorg/wisp";
-
-function tryIdentify(userId: string) {
-    try { wisp.identify(userId); } catch { /* wisp not initialized */ }
-}
-function tryReset() {
-    try { wisp.reset(); } catch { /* wisp not initialized */ }
-}
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Set up auth state listener FIRST
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
-
-            if (event === "SIGNED_IN" && session?.user.id) {
-                tryIdentify(session.user.id);
-            } else if (event === "SIGNED_OUT") {
-                tryReset();
-            }
         });
 
-        // THEN check for existing session
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
-            if (session?.user.id) {
-                tryIdentify(session.user.id);
-            }
         });
 
         return () => subscription.unsubscribe();

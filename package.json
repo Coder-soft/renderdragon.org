@@ -61,7 +61,7 @@
     "@radix-ui/react-use-layout-effect": "^1.1.1",
     "@radix-ui/react-use-previous": "^1.1.1",
     "@radix-ui/react-visually-hidden": "^1.2.4",
-    "@renderdragonorg/wisp": "^0.1.1",
+    "@renderdragonorg/wisp": "^0.2.0",
     "@sentry/react": "^10.38.0",
     "@supabase/supabase-js": "^2.95.3",
     "@tabler/icons-react": "^3.36.1",

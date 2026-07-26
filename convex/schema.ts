@@ -17,6 +17,9 @@ export default defineSchema({
     region: v.optional(v.string()),
     city: v.optional(v.string()),
     screen: v.optional(v.string()),
+    userEmail: v.optional(v.string()),
+    userName: v.optional(v.string()),
+    authProvider: v.optional(v.string()),
   })
     .index("by_machineId", ["machineId"])
     .index("by_userId", ["userId"])
