@@ -2,6 +2,29 @@ import { useState, useEffect } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContext, AuthResult } from "@/providers/AuthContext";
+import wisp from "@renderdragonorg/wisp";
+
+function tryIdentify(userId: string) {
+    try { wisp.identify(userId); } catch { /* wisp not initialized */ }
+}
+function tryReset() {
+    try { wisp.reset(); } catch { /* wisp not initialized */ }
+}
+function tryTrackIdentify(session: Session | null) {
+    const user = session?.user;
+    if (!user?.id) return;
+    try {
+        const meta = user.user_metadata as Record<string, unknown> || {};
+        const identities = (user.identities ?? []) as Array<{ provider?: string | null }>;
+        const primaryIdentity = identities.find((i) => i.provider === (user.app_metadata?.provider as string)) ?? identities[0];
+        wisp.track("session_identify", {
+            email: user.email,
+            name: meta.full_name as string | undefined,
+            provider: primaryIdentity?.provider ?? user.app_metadata?.provider ?? "email",
+        });
+    } catch { /* wisp not initialized */ }
+}
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
@@ -14,12 +37,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
+
+            if (event === "SIGNED_IN" && session?.user.id) {
+                tryIdentify(session.user.id);
+                tryTrackIdentify(session);
+            } else if (event === "SIGNED_OUT") {
+                tryReset();
+            }
         });
 
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
+            if (session?.user.id) {
+                tryIdentify(session.user.id);
+                tryTrackIdentify(session);
+            }
         });
 
         return () => subscription.unsubscribe();
