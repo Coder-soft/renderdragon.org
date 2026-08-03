@@ -123,19 +123,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (!isSafeUrl(avatarUrl)) return;
 
             try {
-                // Upsert to ensure row exists; set latest avatar_url
-                // NOTE: email is intentionally NOT written here — it is not granted
-                // to the client role (see get_my_profile RPC / handle_new_user trigger).
-                // .select('id') limits the RETURNING clause to a granted column —
-                // default return=representation needs SELECT on every column (incl. email).
-                const { error } = await supabase
+                // Row is created by the on_auth_user_created trigger at signup;
+                // this just refreshes the avatar. A plain UPDATE avoids PostgREST
+                // upsert's stricter privilege requirements (ON CONFLICT needs
+                // privileges column grants don't cover). INSERT is a fallback for
+                // accounts created before the trigger existed.
+                const { data: updated, error } = await supabase
                     .from('profiles')
-                    .upsert(
-                        { id: user.id, avatar_url: avatarUrl },
-                        { onConflict: 'id' }
-                    )
+                    .update({ avatar_url: avatarUrl })
+                    .eq('id', user.id)
                     .select('id');
-                if (error) console.warn('Avatar sync warning:', error.message);
+
+                if (error) {
+                    console.warn('Avatar sync warning:', error.message);
+                } else if (!updated || updated.length === 0) {
+                    const { error: insertError } = await supabase
+                        .from('profiles')
+                        .insert({ id: user.id, avatar_url: avatarUrl })
+                        .select('id');
+                    if (insertError) console.warn('Avatar sync warning:', insertError.message);
+                }
 
             } catch (e) {
                 console.warn('Avatar sync error:', e);
