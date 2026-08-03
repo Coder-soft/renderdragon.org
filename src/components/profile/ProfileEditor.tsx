@@ -238,6 +238,8 @@ const ProfileEditor: React.FC = () => {
         }
         setSaving(true);
         try {
+            // .select('id') limits the RETURNING clause to a granted column —
+            // default return=representation needs SELECT on every column (incl. email).
             const { error } = await supabase
                 .from('profiles')
                 .update({
@@ -246,7 +248,8 @@ const ProfileEditor: React.FC = () => {
                     theme_config: themeConfig as any,
                     username: username.trim().toLowerCase(),
                 })
-                .eq('id', user.id);
+                .eq('id', user.id)
+                .select('id');
 
             if (error) {
                 if (error.code === '23505' && error.message?.includes('profiles_username_key')) {

@@ -86,10 +86,13 @@ export const useProfile = () => {
         if (value !== undefined) payload[field] = value;
       }
 
+      // .select('id') limits the RETURNING clause to a granted column —
+      // default return=representation needs SELECT on every column (incl. email).
       const { error } = await supabase
         .from("profiles")
         .update(payload as any)
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select('id');
 
       if (error) throw error;
 
