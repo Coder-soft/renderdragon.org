@@ -52,7 +52,7 @@ const ProfilePage: React.FC = () => {
         if (!username) return;
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, display_name, avatar_url, username, bio, links, social_links, verified")
+          .select("id, display_name, avatar_url, username, bio, links, social_links, verified, theme_config")
           .eq("username", username)
           .maybeSingle();
 
