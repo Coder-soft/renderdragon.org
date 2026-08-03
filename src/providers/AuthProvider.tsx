@@ -124,10 +124,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             try {
                 // Upsert to ensure row exists; set latest avatar_url
+                // NOTE: email is intentionally NOT written here — it is not granted
+                // to the client role (see get_my_profile RPC / handle_new_user trigger).
                 const { error } = await supabase
                     .from('profiles')
                     .upsert(
-                        { id: user.id, email: user.email, avatar_url: avatarUrl },
+                        { id: user.id, avatar_url: avatarUrl },
                         { onConflict: 'id' }
                     );
                 if (error) console.warn('Avatar sync warning:', error.message);

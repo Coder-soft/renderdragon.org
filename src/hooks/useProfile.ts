@@ -26,13 +26,15 @@ export const useProfile = () => {
 
     setLoading(true);
     try {
-      const { data: rawData, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      // Own-profile reads go through the security-definer RPC so the client
+      // never needs (and no longer has) column access to email/first/last/etc.
+      const { data: rawData, error } = await supabase.rpc("get_my_profile");
 
       if (error) throw error;
+      if (!rawData) {
+        setProfile(null);
+        return;
+      }
 
       const data = rawData as any;
 
@@ -71,31 +73,28 @@ export const useProfile = () => {
 
     setLoading(true);
     try {
-      const { data: rawData, error } = await supabase
+      // Only columns the owner is actually allowed to change (RLS-granted).
+      // email/created_at/updated_at/role/etc. are never written from the client.
+      const allowedFields = [
+        "username", "display_name", "avatar_url", "bio", "links",
+        "social_links", "theme_config", "first_name", "last_name",
+      ] as const;
+
+      const payload: Record<string, unknown> = {};
+      for (const field of allowedFields) {
+        const value = (updates as Record<string, unknown>)[field];
+        if (value !== undefined) payload[field] = value;
+      }
+
+      const { error } = await supabase
         .from("profiles")
-        .update(updates)
-        .eq("id", user.id)
-        .select()
-        .single();
+        .update(payload as any)
+        .eq("id", user.id);
 
       if (error) throw error;
 
-      const data = rawData as any;
-
-      // Transform the data to match our interface, handling missing fields
-      const profileData: UserProfile = {
-        id: data.id,
-        email: data.email,
-        username: data.username || null,
-        display_name: data.display_name || null,
-        first_name: data.first_name || null,
-        last_name: data.last_name || null,
-        avatar_url: data.avatar_url || null,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-      };
-
-      setProfile(profileData);
+      // Refetch the full row via the RPC so the UI reflects server state
+      await fetchProfile();
       toast.success("Profile updated successfully");
       return { success: true };
     } catch (error) {

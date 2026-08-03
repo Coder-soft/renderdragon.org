@@ -198,7 +198,7 @@ const ProfileEditor: React.FC = () => {
 
             const { data, error } = await supabase
                 .from('profiles')
-                .select('bio, links, theme_config, updated_at, display_name, avatar_url, username')
+                .select('bio, links, theme_config, display_name, avatar_url, username')
                 .eq('id', user!.id)
                 .single();
 
@@ -245,7 +245,6 @@ const ProfileEditor: React.FC = () => {
                     links: links as any,
                     theme_config: themeConfig as any,
                     username: username.trim().toLowerCase(),
-                    updated_at: new Date().toISOString(),
                 })
                 .eq('id', user.id);
 
