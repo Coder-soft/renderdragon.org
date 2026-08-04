@@ -4,6 +4,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
+// SSRF guard: only YouTube-hosted thumbnails may be fetched.
+// The client only ever passes URLs from ytdl video info (i.ytimg.com / img.youtube.com).
+const ALLOWED_THUMBNAIL_HOSTS = new Set([
+  'i.ytimg.com',
+  'img.youtube.com',
+  'yt3.googleusercontent.com',
+  'yt3.ggpht.com',
+]);
+
+function isAllowedThumbnailUrl(rawUrl) {
+  let u;
+  try {
+    u = new URL(rawUrl);
+  } catch {
+    return false;
+  }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+  return ALLOWED_THUMBNAIL_HOSTS.has(u.hostname.toLowerCase());
+}
+
 export default async function handler(req) {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders });
@@ -21,7 +41,19 @@ export default async function handler(req) {
       });
     }
 
-    const response = await fetch(thumbnailUrl);
+    if (!isAllowedThumbnailUrl(thumbnailUrl)) {
+      return new Response(JSON.stringify({ error: 'URL not allowed' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // redirect: 'manual' — never follow redirects (they could point at internal hosts)
+    const response = await fetch(thumbnailUrl, { redirect: 'manual' });
+
+    if (response.status >= 300 && response.status < 400) {
+      throw new Error('Redirect not allowed');
+    }
 
     if (!response.ok) {
       throw new Error(`Failed to fetch thumbnail: ${response.statusText}`);
