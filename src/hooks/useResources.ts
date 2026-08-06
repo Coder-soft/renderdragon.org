@@ -8,6 +8,7 @@ import {
   MCICONS_BLACKLISTED_SUBCATEGORIES,
 } from "@/lib/api";
 import { getWaveform, cacheAudio, cacheImage } from "@/lib/cache";
+import { downloadFile, DownloadProgress } from "@/lib/download";
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
@@ -177,7 +178,11 @@ export const useResources = () => {
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter((r) => r.title.toLowerCase().includes(query));
+      result = result.filter((r) =>
+        [r.title, r.credit, r.subcategory, r.filetype].some(
+          (field) => field && field.toLowerCase().includes(query)
+        )
+      );
     }
 
     const getNumericId = (id: Resource["id"]) => {
@@ -218,7 +223,10 @@ export const useResources = () => {
   };
 
   const handleDownload = useCallback(
-    async (resource: Resource): Promise<boolean> => {
+    async (
+      resource: Resource,
+      onProgress?: (progress: DownloadProgress) => void
+    ): Promise<boolean> => {
       if (!resource) return false;
 
       const fileUrl = resolveDownloadUrl(resource);
@@ -226,25 +234,11 @@ export const useResources = () => {
 
       const filename = `${resource.title}.${resource.filetype || "file"}`;
 
-      try {
-        const res = await fetch(fileUrl);
-        if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
-        const blob = await res.blob();
-
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(a.href);
-
+      const success = await downloadFile(fileUrl, { filename, onProgress });
+      if (success) {
         incrementDownload(resource.id);
-        return true;
-      } catch (err) {
-        console.error("Download failed", err);
-        return false;
       }
+      return success;
     },
     [incrementDownload]
   );
