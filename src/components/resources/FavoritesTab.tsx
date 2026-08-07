@@ -77,6 +77,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
   const [isZipping, setIsZipping] = useState(false);
   const [zipProgress, setZipProgress] = useState<{ completed: number; total: number } | null>(null);
   const zipAbortControllersRef = useRef<Set<AbortController> | null>(null);
+  const zipCancelledRef = useRef(false);
 
   // Folder Dialog State
   const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
@@ -181,6 +182,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
   };
 
   const handleCancelZip = () => {
+    zipCancelledRef.current = true;
     if (zipAbortControllersRef.current) {
       zipAbortControllersRef.current.forEach(c => c.abort());
       zipAbortControllersRef.current.clear();
@@ -205,17 +207,17 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
 
     const abortControllers = new Set<AbortController>();
     zipAbortControllersRef.current = abortControllers;
+    zipCancelledRef.current = false;
     setIsZipping(true);
     setZipProgress({ completed: 0, total: folderResources.length });
     toast.info(`Preparing zip map for ${folder.name}...`);
 
     try {
       const zip = new JSZip();
-      let cancelled = false;
       let completed = 0;
 
       const worker = async (resource: Resource) => {
-        if (cancelled) return;
+        if (zipCancelledRef.current) return;
         const url = resource.download_url || getResourceUrl(resource);
         if (!url) return;
 
@@ -236,7 +238,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
           zip.file(`${filename}.${ext}`, blob);
         } catch (err) {
           if (err instanceof DOMException && err.name === 'AbortError') {
-            cancelled = true;
+            zipCancelledRef.current = true;
           } else {
             console.error(`Failed to fetch ${url}`, err);
           }
@@ -262,7 +264,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
 
       await mapWithConcurrency(folderResources, 3, worker);
 
-      if (cancelled) {
+      if (zipCancelledRef.current) {
         toast.info('Zip download cancelled.');
         return;
       }
@@ -274,6 +276,10 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
+      if (zipCancelledRef.current) {
+        toast.info('Zip download cancelled.');
+        return;
+      }
       saveAs(content, `${folder.name.replace(/[^a-z0-9]/gi, '_')}.zip`);
       toast.success('Download complete!');
     } catch (error) {

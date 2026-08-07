@@ -20,7 +20,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface ResourceDetailDialogProps {
   resource: Resource | null;
   onClose: () => void;
-  onDownload: (resource: Resource, onProgress?: (progress: DownloadProgress) => void) => void;
+  onDownload: (resource: Resource, onProgress?: (progress: DownloadProgress) => void) => Promise<void>;
   loadedFonts: string[];
   setLoadedFonts: (fonts: string[]) => void;
   filteredResources: Resource[]; // Add this prop
@@ -39,16 +39,24 @@ const ResourceDetailDialog = ({
   isFavoritesView = false // Added prop to indicate favorites view
 }: ResourceDetailDialogProps) => {
   const [copied, setCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);
   const isMobile = useIsMobile();
 
-  const handleDownloadClick = useCallback(() => {
+  const handleDownloadClick = useCallback(async () => {
+    if (!resource || isDownloading) return;
+    setIsDownloading(true);
     setDownloadProgress(null);
-    onDownload(resource!, setDownloadProgress);
-  }, [resource, onDownload]);
+    try {
+      await onDownload(resource, setDownloadProgress);
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [resource, onDownload, isDownloading]);
 
   useEffect(() => {
-    if (!resource) setDownloadProgress(null);
+    setDownloadProgress(null);
+    setIsDownloading(false);
   }, [resource]);
 
   const currentIndex = resource ? filteredResources.findIndex(r => r.id === resource.id) : -1;
@@ -138,7 +146,7 @@ const ResourceDetailDialog = ({
     <Dialog open={!!resource} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl pixel-corners border-2 border-cow-purple max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-jetbrains-mono">
+          <DialogTitle className="text-2xl font-minecraftia">
             {resource.title}
           </DialogTitle>
           <DialogDescription asChild className="flex items-center gap-2">
@@ -223,10 +231,10 @@ const ResourceDetailDialog = ({
             <Button
               onClick={handleDownloadClick}
               className="pixel-btn-primary flex items-center justify-center gap-2"
-              disabled={downloadProgress !== null}
+              disabled={isDownloading}
             >
               <IconDownload className="h-5 w-5" />
-              <span>{downloadProgress ? 'Downloading...' : 'Download Resource'}</span>
+              <span>{isDownloading ? 'Downloading...' : 'Download Resource'}</span>
             </Button>
 
             {!isFavoritesView && (

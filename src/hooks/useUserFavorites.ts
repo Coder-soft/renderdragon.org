@@ -1,8 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import {
+  readGuestFavorites,
+  writeGuestFavorites,
+  GuestFavorite,
+  GUEST_CHANGE_EVENT,
+} from '@/utils/guestFavorites';
 
 export const MAX_FOLDER_ITEMS = 40;
 
@@ -13,10 +19,28 @@ export interface UserFavorite {
 
 export const useUserFavorites = () => {
   const { user } = useAuth();
+  const isGuest = !user;
   const queryClient = useQueryClient();
   const [isSchemaReady, setIsSchemaReady] = useState(true);
 
-  const { data: favoritesData = [], isLoading } = useQuery({
+  // Guest (signed-out) favourites, held in localStorage.
+  const [guestFavorites, setGuestFavorites] = useState<GuestFavorite[]>(() => readGuestFavorites());
+
+  useEffect(() => {
+    if (!isGuest) return;
+    const reload = () => setGuestFavorites(readGuestFavorites());
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === null) reload();
+    };
+    window.addEventListener(GUEST_CHANGE_EVENT, reload);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener(GUEST_CHANGE_EVENT, reload);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [isGuest]);
+
+  const { data: userFavorites = [], isLoading } = useQuery({
     queryKey: ['userFavorites', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -43,6 +67,9 @@ export const useUserFavorites = () => {
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
+
+  // Favourites that are currently visible in the UI (guest local or backend).
+  const favoritesData = (isGuest ? guestFavorites : userFavorites) as UserFavorite[];
 
   const favorites = favoritesData.map(f => f.resource_url);
 
@@ -157,14 +184,39 @@ export const useUserFavorites = () => {
     }
   });
 
-  const toggleFavorite = (resourceUrl: string): Promise<{ action: 'added' | 'removed' }> => {
-    if (!user) {
-      toast.error('Please sign in to save favorites');
-      return Promise.resolve({ action: 'removed' });
+  // ---- Guest (local) operations ------------------------------------------
+  const upsertGuestFavorite = (resourceUrl: string, folderId: string | null = null): GuestFavorite[] => {
+    const next: GuestFavorite[] = [...guestFavorites];
+    const idx = next.findIndex(f => f.resource_url === resourceUrl);
+    if (idx >= 0) {
+      next[idx] = { resource_url: resourceUrl, folder_id: folderId };
+    } else {
+      next.push({ resource_url: resourceUrl, folder_id: folderId });
     }
+    writeGuestFavorites(next);
+    setGuestFavorites(next);
+    return next;
+  };
+
+  const toggleGuestFavorite = (resourceUrl: string): { action: 'added' | 'removed' } => {
+    const isCurrently = guestFavorites.some(f => f.resource_url === resourceUrl);
+    const next = isCurrently
+      ? guestFavorites.filter(f => f.resource_url !== resourceUrl)
+      : [...guestFavorites, { resource_url: resourceUrl, folder_id: null }];
+    writeGuestFavorites(next);
+    setGuestFavorites(next);
+    return { action: isCurrently ? 'removed' : 'added' };
+  };
+
+  const toggleFavorite = (resourceUrl: string): Promise<{ action: 'added' | 'removed' }> => {
     if (!resourceUrl) {
       toast.error('Unable to favorite this resource');
       return Promise.resolve({ action: 'removed' });
+    }
+    if (isGuest) {
+      const result = toggleGuestFavorite(resourceUrl);
+      toast.success(result.action === 'added' ? 'Added to favorites' : 'Removed from favorites');
+      return Promise.resolve(result);
     }
     if (!isSchemaReady) {
       toast.error('Favorites storage needs a database update');
@@ -174,17 +226,41 @@ export const useUserFavorites = () => {
   };
 
   const moveFavorite = (resourceUrl: string, folderId: string | null) => {
-    if (!user || !resourceUrl) return;
+    if (!resourceUrl) return;
+    if (isGuest) {
+      const next = guestFavorites.map(f =>
+        f.resource_url === resourceUrl ? { ...f, folder_id: folderId } : f
+      );
+      writeGuestFavorites(next);
+      setGuestFavorites(next);
+      toast.success('Favorite moved to folder');
+      return;
+    }
     moveFavoriteMutation.mutate({ resourceUrl, folderId });
   };
 
   const addFavoriteToFolder = (resourceUrl: string, folderId: string) => {
-    if (!user || !resourceUrl) return;
+    if (!resourceUrl) return;
+    if (isGuest) {
+      const count = getGuestFolderItemCount(folderId);
+      if (count >= MAX_FOLDER_ITEMS) {
+        toast.error(`This folder already has ${MAX_FOLDER_ITEMS} items. Please create another folder.`);
+        return;
+      }
+      upsertGuestFavorite(resourceUrl, folderId);
+      toast.success('Added to folder');
+      return;
+    }
     addFavoriteToFolderMutation.mutate({ resourceUrl, folderId });
   };
 
   const getFolderItemCount = (folderId: string | null): number => {
     return favoritesData.filter(f => f.folder_id === folderId).length;
+  };
+
+  // Used while computing guest folder limits before a write.
+  const getGuestFolderItemCount = (folderId: string): number => {
+    return guestFavorites.filter(f => f.folder_id === folderId).length;
   };
 
   const isFavorited = (resourceUrl: string) => favorites.includes(resourceUrl);

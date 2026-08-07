@@ -68,7 +68,7 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>{mode === 'create' ? 'Create New Folder' : 'Edit Folder'}</DialogTitle>
+                    <DialogTitle className="font-minecraftia text-2xl">{mode === 'create' ? 'Create New Folder' : 'Edit Folder'}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-6 pt-4">
                     <div className="space-y-2">
