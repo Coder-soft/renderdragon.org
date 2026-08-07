@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHeartedResources } from '@/hooks/useHeartedResources';
 import { useUserFavorites } from '@/hooks/useUserFavorites';
@@ -7,6 +7,8 @@ import { getResourceUrl, Resource } from '@/types/resources';
 import ResourceCard from './ResourceCard';
 import ResourceCardSkeleton from './ResourceCardSkeleton';
 import { IconHeart } from '@tabler/icons-react';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import FavoritesSidebar from './FavoritesSidebar';
 import { useFavoriteFolders, FavoriteFolder } from '@/hooks/useFavoriteFolders';
 import FolderDialog from './FolderDialog';
@@ -73,6 +75,9 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDragResource, setActiveDragResource] = useState<Resource | null>(null);
   const [isZipping, setIsZipping] = useState(false);
+  const [zipProgress, setZipProgress] = useState<{ completed: number; total: number } | null>(null);
+  const zipAbortControllersRef = useRef<Set<AbortController> | null>(null);
+  const zipCancelledRef = useRef(false);
 
   // Folder Dialog State
   const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
@@ -176,6 +181,14 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
     }
   };
 
+  const handleCancelZip = () => {
+    zipCancelledRef.current = true;
+    if (zipAbortControllersRef.current) {
+      zipAbortControllersRef.current.forEach(c => c.abort());
+      zipAbortControllersRef.current.clear();
+    }
+  };
+
   const handleDownloadFolder = async (folder: FavoriteFolder) => {
     if (isZipping) {
       toast.error('Already downloading a folder, please wait.');
@@ -192,22 +205,30 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
       return;
     }
 
+    const abortControllers = new Set<AbortController>();
+    zipAbortControllersRef.current = abortControllers;
+    zipCancelledRef.current = false;
     setIsZipping(true);
+    setZipProgress({ completed: 0, total: folderResources.length });
     toast.info(`Preparing zip map for ${folder.name}...`);
 
     try {
       const zip = new JSZip();
+      let completed = 0;
 
-      for (const resource of folderResources) {
+      const worker = async (resource: Resource) => {
+        if (zipCancelledRef.current) return;
         const url = resource.download_url || getResourceUrl(resource);
-        if (!url) continue;
+        if (!url) return;
+
+        const controller = new AbortController();
+        abortControllers.add(controller);
 
         try {
-          const response = await fetch(url);
+          const response = await fetch(url, { signal: controller.signal });
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const blob = await response.blob();
 
-          // Generate distinct filename
           const rawExt = resource.filetype || url.split('.').pop()?.split('?')[0] || 'file';
           const ext = /^[a-z0-9]+$/i.test(rawExt) ? rawExt : 'file';
           let filename = resource.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
@@ -216,8 +237,36 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
           }
           zip.file(`${filename}.${ext}`, blob);
         } catch (err) {
-          console.error(`Failed to fetch ${url}`, err);
+          if (err instanceof DOMException && err.name === 'AbortError') {
+            zipCancelledRef.current = true;
+          } else {
+            console.error(`Failed to fetch ${url}`, err);
+          }
+        } finally {
+          abortControllers.delete(controller);
+          completed += 1;
+          setZipProgress({ completed, total: folderResources.length });
         }
+      };
+
+      const mapWithConcurrency = async <T,>(items: T[], limit: number, fn: (item: T) => Promise<void>) => {
+        const queue = [...items];
+        const run = async () => {
+          while (queue.length > 0) {
+            const item = queue.shift();
+            if (item === undefined) break;
+            await fn(item);
+          }
+        };
+        const runners = Array.from({ length: Math.min(limit, queue.length) }, () => run());
+        await Promise.all(runners);
+      };
+
+      await mapWithConcurrency(folderResources, 3, worker);
+
+      if (zipCancelledRef.current) {
+        toast.info('Zip download cancelled.');
+        return;
       }
 
       const fileCount = Object.keys(zip.files).length;
@@ -227,6 +276,10 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
+      if (zipCancelledRef.current) {
+        toast.info('Zip download cancelled.');
+        return;
+      }
       saveAs(content, `${folder.name.replace(/[^a-z0-9]/gi, '_')}.zip`);
       toast.success('Download complete!');
     } catch (error) {
@@ -234,6 +287,8 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
       toast.error('Failed to create zip file.');
     } finally {
       setIsZipping(false);
+      setZipProgress(null);
+      zipAbortControllersRef.current = null;
     }
   };
 
@@ -276,6 +331,27 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
           </div>
 
           <div className="flex-1 min-w-0 z-0">
+            {zipProgress && (
+              <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-muted/10">
+                <div className="flex-1">
+                  <Progress
+                    value={(zipProgress.completed / zipProgress.total) * 100}
+                    className="h-2 pixel-corners"
+                  />
+                  <p className="text-xs mt-1 text-muted-foreground">
+                    Downloading {zipProgress.completed}/{zipProgress.total} files...
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCancelZip}
+                  className="pixel-corners shrink-0"
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
             {displayedResources.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

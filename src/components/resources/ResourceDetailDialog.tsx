@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Resource } from '@/types/resources';
 import {
   Dialog,
@@ -9,8 +9,10 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import ResourcePreview from './ResourcePreview';
 import { getCategoryIcon, getCategoryColor } from '@/utils/resourceCategories';
+import { DownloadProgress } from '@/lib/download';
 import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -18,7 +20,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface ResourceDetailDialogProps {
   resource: Resource | null;
   onClose: () => void;
-  onDownload: (resource: Resource) => void;
+  onDownload: (resource: Resource, onProgress?: (progress: DownloadProgress) => void) => Promise<void>;
   loadedFonts: string[];
   setLoadedFonts: (fonts: string[]) => void;
   filteredResources: Resource[]; // Add this prop
@@ -37,7 +39,30 @@ const ResourceDetailDialog = ({
   isFavoritesView = false // Added prop to indicate favorites view
 }: ResourceDetailDialogProps) => {
   const [copied, setCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);
+  const downloadIdRef = useRef(0);
   const isMobile = useIsMobile();
+
+  const handleDownloadClick = useCallback(async () => {
+    if (!resource || isDownloading) return;
+    const requestId = ++downloadIdRef.current;
+    setIsDownloading(true);
+    setDownloadProgress(null);
+    try {
+      await onDownload(resource, (progress) => {
+        if (downloadIdRef.current === requestId) setDownloadProgress(progress);
+      });
+    } finally {
+      if (downloadIdRef.current === requestId) setIsDownloading(false);
+    }
+  }, [resource, onDownload, isDownloading]);
+
+  useEffect(() => {
+    downloadIdRef.current += 1;
+    setDownloadProgress(null);
+    setIsDownloading(false);
+  }, [resource]);
 
   const currentIndex = resource ? filteredResources.findIndex(r => r.id === resource.id) : -1;
   const hasPrevious = !isFavoritesView && currentIndex > 0;
@@ -126,7 +151,7 @@ const ResourceDetailDialog = ({
     <Dialog open={!!resource} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl pixel-corners border-2 border-cow-purple max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-jetbrains-mono">
+          <DialogTitle className="text-2xl font-minecraftia">
             {resource.title}
           </DialogTitle>
           <DialogDescription asChild className="flex items-center gap-2">
@@ -194,8 +219,8 @@ const ResourceDetailDialog = ({
 
           <ResourcePreview resource={resource} />
 
-          {!isFavoritesView && (
-            <div className="flex items-center gap-2 justify-between">
+          <div className={`flex items-center gap-2 ${isFavoritesView ? 'justify-center' : 'justify-between'}`}>
+            {!isFavoritesView && (
               <Button
                 variant="outline"
                 className={`${!hasPrevious ? 'opacity-0 pointer-events-none' : 'opacity-70 hover:opacity-100'} transition-opacity`}
@@ -206,15 +231,18 @@ const ResourceDetailDialog = ({
                 <span className="hidden md:inline">Previous</span>
                 <span className="sr-only">Previous resource</span>
               </Button>
+            )}
 
-              <Button
-                onClick={() => onDownload(resource)}
-                className="pixel-btn-primary flex items-center justify-center gap-2"
-              >
-                <IconDownload className="h-5 w-5" />
-                <span>Download Resource</span>
-              </Button>
+            <Button
+              onClick={handleDownloadClick}
+              className="pixel-btn-primary flex items-center justify-center gap-2"
+              disabled={isDownloading}
+            >
+              <IconDownload className="h-5 w-5" />
+              <span>{isDownloading ? 'Downloading...' : 'Download Resource'}</span>
+            </Button>
 
+            {!isFavoritesView && (
               <Button
                 variant="outline"
                 className={`${!hasNext ? 'opacity-0 pointer-events-none' : 'opacity-70 hover:opacity-100'} transition-opacity`}
@@ -225,6 +253,24 @@ const ResourceDetailDialog = ({
                 <IconChevronRight className="h-4 w-4 md:ml-2" />
                 <span className="sr-only">Next resource</span>
               </Button>
+            )}
+          </div>
+
+          {downloadProgress && (
+            <div className="flex flex-col gap-1 mt-4 mb-2">
+              <Progress
+                value={
+                  downloadProgress.total
+                    ? Math.min(100, (downloadProgress.loaded / downloadProgress.total) * 100)
+                    : 100
+                }
+                className="h-2 pixel-corners"
+              />
+              <p className="text-xs text-muted-foreground text-center">
+                {downloadProgress.total
+                  ? `${Math.round((downloadProgress.loaded / downloadProgress.total) * 100)}% downloaded`
+                  : 'Downloading...'}
+              </p>
             </div>
           )}
 

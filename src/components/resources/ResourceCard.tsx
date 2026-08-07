@@ -9,8 +9,6 @@ import {
 import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
 import AudioPlayer from "@/components/AudioPlayer";
 import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 
@@ -21,7 +19,6 @@ interface ResourceCardProps {
 
 const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const { user } = useAuth();
 
   // Reset image loaded state when resource changes
   useEffect(() => {
@@ -118,10 +115,6 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (!user) {
-      toast.error("Sign in to save favorites");
-      return;
-    }
     toggleFavorite(String(resource.id));
   };
 

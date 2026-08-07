@@ -1,23 +1,52 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import {
+  readGuestFolders,
+  writeGuestFolders,
+  readGuestFavorites,
+  writeGuestFavorites,
+  GuestFolder,
+  genId,
+  GUEST_FOLDERS_KEY,
+  GUEST_CHANGE_EVENT,
+} from '@/utils/guestFavorites';
 
 export interface FavoriteFolder {
     id: string;
     user_id: string;
     name: string;
-    parent_id: string | null;
     color: string | null;
+    parent_id: string | null;
     created_at: string;
 }
 
 export const useFavoriteFolders = () => {
     const { user } = useAuth();
+    const isGuest = !user;
     const queryClient = useQueryClient();
 
+    // Guest (signed-out) folders, held in localStorage.
+    const [guestFolders, setGuestFolders] = useState<GuestFolder[]>(() => readGuestFolders());
+
+    useEffect(() => {
+        if (!isGuest) return;
+        const reload = () => setGuestFolders(readGuestFolders());
+        const handleStorage = (event: StorageEvent) => {
+            if (event.key === null || event.key === GUEST_FOLDERS_KEY) reload();
+        };
+        window.addEventListener(GUEST_CHANGE_EVENT, reload);
+        window.addEventListener('storage', handleStorage);
+        return () => {
+            window.removeEventListener(GUEST_CHANGE_EVENT, reload);
+            window.removeEventListener('storage', handleStorage);
+        };
+    }, [isGuest]);
+
     // Fetch all folders for the user
-    const { data: folders = [], isLoading } = useQuery({
+    const { data: userFolders = [], isLoading } = useQuery({
         queryKey: ['favoriteFolders', user?.id],
         queryFn: async () => {
             if (!user?.id) return [];
@@ -39,15 +68,56 @@ export const useFavoriteFolders = () => {
         enabled: !!user?.id,
     });
 
+    const folders = (isGuest ? guestFolders : userFolders) as FavoriteFolder[];
+
+    const sortFolders = (list: FavoriteFolder[]) =>
+        [...list].sort((a, b) => a.name.localeCompare(b.name));
+
+    const createGuestFolder = (name: string, parent_id: string | null, color: string | null): GuestFolder => {
+        const folder: GuestFolder = {
+            id: genId(),
+            user_id: '',
+            name,
+            parent_id,
+            color: color || null,
+            created_at: new Date().toISOString(),
+        };
+        const next = sortFolders([...guestFolders, folder]);
+        writeGuestFolders(next);
+        setGuestFolders(next);
+        toast.success('Folder created successfully');
+        return folder;
+    };
+
+    const updateGuestFolder = (id: string, updates: Partial<Pick<FavoriteFolder, 'name' | 'parent_id' | 'color'>>) => {
+        const next = sortFolders(guestFolders.map(f =>
+            f.id === id ? { ...f, ...updates } : f
+        ));
+        writeGuestFolders(next);
+        setGuestFolders(next);
+        toast.success('Folder updated successfully');
+    };
+
+    const deleteGuestFolder = (id: string) => {
+        const next = guestFolders.filter(f => f.id !== id);
+        writeGuestFolders(next);
+        setGuestFolders(next);
+        const favorites = readGuestFavorites();
+        if (favorites.some(f => f.folder_id === id)) {
+            writeGuestFavorites(
+                favorites.map(f => (f.folder_id === id ? { ...f, folder_id: null } : f))
+            );
+        }
+        toast.success('Folder deleted successfully');
+    };
+
     // Create a new folder
     const createFolderMutation = useMutation({
         mutationFn: async ({ name, parent_id, color }: { name: string; parent_id?: string | null; color?: string | null }) => {
-            if (!user) throw new Error('User not authenticated');
-
             const { data, error } = await supabase
                 .from('user_favorite_folders')
                 .insert({
-                    user_id: user.id,
+                    user_id: user!.id,
                     name,
                     parent_id: parent_id || null,
                     color: color || null,
@@ -71,13 +141,11 @@ export const useFavoriteFolders = () => {
     // Update a folder
     const updateFolderMutation = useMutation({
         mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<FavoriteFolder, 'name' | 'parent_id' | 'color'>> }) => {
-            if (!user) throw new Error('User not authenticated');
-
             const { data, error } = await supabase
                 .from('user_favorite_folders')
                 .update(updates)
                 .eq('id', id)
-                .eq('user_id', user.id)
+                .eq('user_id', user!.id)
                 .select()
                 .single();
 
@@ -97,13 +165,11 @@ export const useFavoriteFolders = () => {
     // Delete a folder
     const deleteFolderMutation = useMutation({
         mutationFn: async (id: string) => {
-            if (!user) throw new Error('User not authenticated');
-
             const { error } = await supabase
                 .from('user_favorite_folders')
                 .delete()
                 .eq('id', id)
-                .eq('user_id', user.id);
+                .eq('user_id', user!.id);
 
             if (error) throw error;
             return id;
@@ -123,11 +189,26 @@ export const useFavoriteFolders = () => {
     return {
         folders,
         isLoading,
-        createFolder: (name: string, parent_id?: string | null, color?: string | null) =>
-            createFolderMutation.mutateAsync({ name, parent_id, color }),
-        updateFolder: (id: string, updates: Partial<Pick<FavoriteFolder, 'name' | 'parent_id' | 'color'>>) =>
-            updateFolderMutation.mutateAsync({ id, updates }),
-        deleteFolder: (id: string) => deleteFolderMutation.mutateAsync(id),
+        createFolder: (name: string, parent_id?: string | null, color?: string | null) => {
+            if (isGuest) {
+                return Promise.resolve(createGuestFolder(name, parent_id || null, color || null));
+            }
+            return createFolderMutation.mutateAsync({ name, parent_id, color });
+        },
+        updateFolder: (id: string, updates: Partial<Pick<FavoriteFolder, 'name' | 'parent_id' | 'color'>>) => {
+            if (isGuest) {
+                updateGuestFolder(id, updates);
+                return Promise.resolve();
+            }
+            return updateFolderMutation.mutateAsync({ id, updates });
+        },
+        deleteFolder: (id: string) => {
+            if (isGuest) {
+                deleteGuestFolder(id);
+                return Promise.resolve(id);
+            }
+            return deleteFolderMutation.mutateAsync(id);
+        },
         isCreating: createFolderMutation.isPending,
         isUpdating: updateFolderMutation.isPending,
         isDeleting: deleteFolderMutation.isPending,

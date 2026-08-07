@@ -8,6 +8,7 @@ import { useResources } from '@/hooks/useResources';
 import { useMinecraftMusic, ensurePlaylistCached } from '@/hooks/useMinecraftMusic';
 import { Resource } from '@/types/resources';
 import { MusicMood } from '@/types/music';
+import { DownloadProgress } from '@/lib/download';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
@@ -196,11 +197,11 @@ const ResourcesHub = () => {
     handleSearchSubmit(e);
   };
 
-  const onDownload = (resource: Resource) => {
-    const success = handleDownload(resource);
+  const onDownload = async (resource: Resource, onProgress?: (progress: DownloadProgress) => void) => {
+    const success = await handleDownload(resource, onProgress);
     if (success) {
-      toast.info('Download starting...', {
-        description: 'Downloading resource...',
+      toast.success('Download complete!', {
+        description: 'Your download has started.',
         duration: 3000,
       });
     } else {
