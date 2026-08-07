@@ -6,8 +6,11 @@ import { toast } from 'sonner';
 import {
   readGuestFolders,
   writeGuestFolders,
+  readGuestFavorites,
+  writeGuestFavorites,
   GuestFolder,
   genId,
+  GUEST_FOLDERS_KEY,
   GUEST_CHANGE_EVENT,
 } from '@/utils/guestFavorites';
 
@@ -32,7 +35,7 @@ export const useFavoriteFolders = () => {
         if (!isGuest) return;
         const reload = () => setGuestFolders(readGuestFolders());
         const handleStorage = (event: StorageEvent) => {
-            if (event.key === null) reload();
+            if (event.key === null || event.key === GUEST_FOLDERS_KEY) reload();
         };
         window.addEventListener(GUEST_CHANGE_EVENT, reload);
         window.addEventListener('storage', handleStorage);
@@ -99,6 +102,12 @@ export const useFavoriteFolders = () => {
         const next = guestFolders.filter(f => f.id !== id);
         writeGuestFolders(next);
         setGuestFolders(next);
+        const favorites = readGuestFavorites();
+        if (favorites.some(f => f.folder_id === id)) {
+            writeGuestFavorites(
+                favorites.map(f => (f.folder_id === id ? { ...f, folder_id: null } : f))
+            );
+        }
         toast.success('Folder deleted successfully');
     };
 

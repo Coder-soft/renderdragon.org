@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Resource } from '@/types/resources';
 import {
   Dialog,
@@ -41,20 +41,25 @@ const ResourceDetailDialog = ({
   const [copied, setCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null);
+  const downloadIdRef = useRef(0);
   const isMobile = useIsMobile();
 
   const handleDownloadClick = useCallback(async () => {
     if (!resource || isDownloading) return;
+    const requestId = ++downloadIdRef.current;
     setIsDownloading(true);
     setDownloadProgress(null);
     try {
-      await onDownload(resource, setDownloadProgress);
+      await onDownload(resource, (progress) => {
+        if (downloadIdRef.current === requestId) setDownloadProgress(progress);
+      });
     } finally {
-      setIsDownloading(false);
+      if (downloadIdRef.current === requestId) setIsDownloading(false);
     }
   }, [resource, onDownload, isDownloading]);
 
   useEffect(() => {
+    downloadIdRef.current += 1;
     setDownloadProgress(null);
     setIsDownloading(false);
   }, [resource]);

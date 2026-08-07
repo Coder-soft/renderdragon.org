@@ -7,6 +7,7 @@ import {
   readGuestFavorites,
   writeGuestFavorites,
   GuestFavorite,
+  GUEST_FAVORITES_KEY,
   GUEST_CHANGE_EVENT,
 } from '@/utils/guestFavorites';
 
@@ -30,7 +31,7 @@ export const useUserFavorites = () => {
     if (!isGuest) return;
     const reload = () => setGuestFavorites(readGuestFavorites());
     const handleStorage = (event: StorageEvent) => {
-      if (event.key === null) reload();
+      if (event.key === null || event.key === GUEST_FAVORITES_KEY) reload();
     };
     window.addEventListener(GUEST_CHANGE_EVENT, reload);
     window.addEventListener('storage', handleStorage);
