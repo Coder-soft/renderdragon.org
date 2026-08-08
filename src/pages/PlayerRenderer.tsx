@@ -256,7 +256,7 @@ const PlayerRenderer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Mineatar Renders */}
                   <div className="pixel-card flex flex-col">
-                    <h1 className='text-center'>Body</h1>
+                    <h1 className='text-center font-minecraftia'>Body</h1>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.mineatar.full(playerData.id)}
@@ -285,7 +285,7 @@ const PlayerRenderer = () => {
                   </div>
 
                   <div className="pixel-card flex flex-col">
-                    <h1 className='text-center'>Head</h1>
+                    <h1 className='text-center font-minecraftia'>Head</h1>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.nmsr.face(playerData.id)}
@@ -315,7 +315,7 @@ const PlayerRenderer = () => {
 
                   {/* VZGE Render */}
                   <div className="pixel-card flex flex-col">
-                    <h1 className='text-center'>Bust (isometric)</h1>
+                    <h1 className='text-center font-minecraftia'>Bust (isometric)</h1>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.nmsr.bust(playerData.id)}
@@ -345,7 +345,7 @@ const PlayerRenderer = () => {
 
                   {/* NMSR Renders */}
                   <div className="pixel-card flex flex-col">
-                    <h2 className='text-center'>Full Render (isometric)</h2>
+                    <h2 className='text-center font-minecraftia'>Full Render (isometric)</h2>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.nmsr.fullbody(playerData.id)}

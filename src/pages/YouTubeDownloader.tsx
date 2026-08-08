@@ -282,7 +282,7 @@ const YouTubeDownloader: React.FC = () => {
 
             <Alert className="mb-8 pixel-corners">
               <IconInfoCircle className="h-4 w-4" />
-              <AlertTitle>Important Notice</AlertTitle>
+              <AlertTitle className="font-minecraftia">Important Notice</AlertTitle>
               <AlertDescription>
                 This tool is for educational purposes only. You are responsible for ensuring you have the right to download
                 and use any content.

@@ -195,14 +195,15 @@ const Utils = () => {
       </Helmet>
       <Navbar />
       
-      <main className="container mx-auto px-4 py-16 pt-24">
+      <main className="flex-grow cow-grid-bg">
+        <div className="container mx-auto px-4 py-16 pt-24">
         <motion.div 
           className="text-center mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-5xl font-pixel mb-4">
+           <h1 className="text-4xl md:text-5xl font-minecraftia mb-4">
             Useful <span className="text-cow-purple">Utilities</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -279,6 +280,7 @@ const Utils = () => {
             </TabsContent>
           ))}
         </Tabs>
+        </div>
       </main>
 
       <Footer />

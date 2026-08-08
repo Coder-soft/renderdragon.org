@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: Minecraftia;
+  src: url('https://raw.githubusercontent.com/Yxmura/resources_renderdragon/d41fc385c3c178527da0710ad4f6cd4f37a12eea/fonts/minecraftia.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Minecraft Seven';
+  src: url('https://raw.githubusercontent.com/Yxmura/resources_renderdragon/d41fc385c3c178527da0710ad4f6cd4f37a12eea/fonts/minecraft.ttf') format('truetype');
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 230 20% 98%;
@@ -167,6 +179,14 @@
 
 .font-pixel {
   font-family: 'Press Start 2P', cursive;
+}
+
+.font-minecraftia {
+  font-family: Minecraftia, monospace;
+}
+
+.font-mojangles {
+  font-family: 'Minecraft Seven', monospace;
 }
 
 .font-jetbrains-mono {

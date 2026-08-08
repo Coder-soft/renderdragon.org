@@ -13,8 +13,9 @@ const MinecraftNametagGenerator = () => {
     // The preview updates automatically through state
   };
 
-  const exportAsPNG = () => {
+  const exportAsPNG = async () => {
     if (nametagContainerRef.current) {
+      await document.fonts.load('28px "Minecraft Seven"', playerName);
       html2canvas(nametagContainerRef.current, {
         scale: 3,
         logging: false,
@@ -60,7 +61,7 @@ const MinecraftNametagGenerator = () => {
             <div className="flex items-center justify-center h-full">
               {playerName ? (
                 <span 
-                  className="font-pixel text-[28px] text-white leading-[1] whitespace-nowrap"
+                  className="font-mojangles text-[28px] text-white leading-[1] whitespace-nowrap"
                   style={{
                     textShadow: `
                       1px 0 0 #000000,
@@ -96,4 +97,4 @@ const MinecraftNametagGenerator = () => {
   );
 };
 
-export default MinecraftNametagGenerator; 
+export default MinecraftNametagGenerator;
