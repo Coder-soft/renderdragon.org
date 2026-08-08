@@ -17,6 +17,19 @@ interface FontOption {
     url: string;
 }
 
+interface RawFontOption {
+    id?: unknown;
+    title?: unknown;
+    filename?: unknown;
+    url?: unknown;
+}
+
+const isFontOption = (font: RawFontOption): font is FontOption =>
+    typeof font.id === 'number' &&
+    typeof font.title === 'string' &&
+    typeof font.url === 'string' &&
+    font.url.startsWith('https://');
+
 interface FontPickerProps {
     value: string;
     onFontChange: (fontFamily: string, fontUrl?: string) => void;
@@ -55,18 +68,15 @@ export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) =
                         const data = await res.json();
 
                         if (data && Array.isArray(data.files)) {
-                            const validated = data.files.filter((f: { name?: string; url?: string }) =>
-                                typeof f.id === 'number' &&
-                                typeof f.title === 'string' &&
-                                typeof f.url === 'string' &&
-                                f.url.startsWith('https://')
-                            );
+                            const validated = (data.files as RawFontOption[])
+                                .filter(isFontOption)
+                                .map((font) => ({ ...font, filename: typeof font.filename === 'string' ? font.filename : font.title }));
                             setExternalFonts(validated);
                         }
                         return; // Success, exit the loop and function
                     } catch (error: unknown) {
                         clearTimeout(timeoutId);
-                        if (error.name === 'AbortError') {
+                        if (error instanceof DOMException && error.name === 'AbortError') {
                             toast.error("Font library connection timed out");
                             break; // Stop retrying on timeout as requested (or could continue, but usually timeouts are systemic)
                         }

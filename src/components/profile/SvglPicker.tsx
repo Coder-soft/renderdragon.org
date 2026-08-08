@@ -30,6 +30,23 @@ interface SvglPickerProps {
     onChange: (url: string) => void;
 }
 
+type SvglApiIcon = Record<string, unknown> & {
+    id?: unknown;
+    title?: unknown;
+    category?: unknown;
+    route?: unknown;
+};
+
+const routeUrl = (route: unknown): string => {
+    if (typeof route === 'string') return route;
+    if (route && typeof route === 'object') {
+        const variants = route as { light?: unknown; dark?: unknown };
+        if (typeof variants.light === 'string') return variants.light;
+        if (typeof variants.dark === 'string') return variants.dark;
+    }
+    return '';
+};
+
 export function SvglPicker({ value, onChange }: SvglPickerProps) {
     const [open, setOpen] = useState(false);
     const [icons, setIcons] = useState<SvglIcon[]>([]);
@@ -48,20 +65,16 @@ export function SvglPicker({ value, onChange }: SvglPickerProps) {
                 if (!res.ok) throw new Error('Failed to fetch icons');
                 const data = await res.json();
                 if (active) {
-                    const formattedIcons: SvglIcon[] = data.map((item: Record<string, string>) => {
-                        const route = item.route;
-                        let url = '';
-
-                        if (typeof route === 'string') {
-                            url = route;
-                        } else if (typeof route === 'object' && route !== null) {
-                            // Prefer light variant or standard, fallback to dark
-                            url = route.light || route.dark || '';
-                        }
+                    const formattedIcons: SvglIcon[] = (Array.isArray(data) ? data : []).flatMap((rawItem: unknown) => {
+                        if (!rawItem || typeof rawItem !== 'object') return [];
+                        const item = rawItem as SvglApiIcon;
+                        const url = routeUrl(item.route);
+                        if (typeof item.id !== 'number' || typeof item.title !== 'string' || typeof item.category !== 'string' || !url) return [];
+                        let normalizedUrl = url;
 
                         // Ensure absolute URL if it is a relative path (though new API seems to return full URLs)
-                        if (url.startsWith('/')) {
-                            url = `https://svgl.app${url}`;
+                        if (normalizedUrl.startsWith('/')) {
+                            normalizedUrl = `https://svgl.app${normalizedUrl}`;
                         }
 
                         // CHANGE: Svgl.app does not support CORS for mask-image usage.
@@ -69,19 +82,23 @@ export function SvglPicker({ value, onChange }: SvglPickerProps) {
                         // Original: https://svgl.app/library/github_light.svg
                         // Target: https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/github_light.svg
 
-                        if (url.includes('svgl.app/library/')) {
-                            const filename = url.split('svgl.app/library/')[1];
-                            url = `https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/${filename}`;
-                        } else if (url.includes('/svg/')) {
+                        if (normalizedUrl.includes('svgl.app/library/')) {
+                            const filename = normalizedUrl.split('svgl.app/library/')[1];
+                            normalizedUrl = `https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/${filename}`;
+                        } else if (normalizedUrl.includes('/svg/')) {
                             // Old API format? Try to adapt or leave as is if not matching library pattern
                             // But usually the API returns /library/ path now.
-                            const part = url.split('/').pop();
-                            if (part) url = `https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/${part}`;
+                            const part = normalizedUrl.split('/').pop();
+                            if (part) normalizedUrl = `https://cdn.jsdelivr.net/gh/pheralb/svgl@main/static/library/${part}`;
                         }
 
                         return {
-                            ...item,
-                            fullUrl: url
+                            id: item.id,
+                            title: item.title,
+                            category: item.category,
+                            route: url,
+                            url,
+                            fullUrl: normalizedUrl,
                         };
                     });
                     setIcons(formattedIcons);

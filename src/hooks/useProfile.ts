@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
 
 interface UserProfile {
   id: string;
@@ -90,7 +91,7 @@ export const useProfile = () => {
       // default return=representation needs SELECT on every column (incl. email).
       const { error } = await supabase
         .from("profiles")
-        .update(payload as never)
+        .update<Database['public']['Tables']['profiles']['Update']>(payload)
         .eq("id", user.id)
         .select('id');
 

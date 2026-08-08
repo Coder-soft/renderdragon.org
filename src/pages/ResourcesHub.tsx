@@ -382,7 +382,7 @@ const ResourcesHub = () => {
       <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
-        <ResourceAnnouncementBanner />
+        <ResourceAnnouncementBanner onExplore={() => { handleCategoryChange('music'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

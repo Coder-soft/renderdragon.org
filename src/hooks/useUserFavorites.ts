@@ -163,7 +163,6 @@ export const useUserFavorites = () => {
 
       const { error } = await supabase
         .from('user_favorites')
-        // @ts-expect-error -- folder_id column exists in DB but generated types are stale
         .update({ folder_id: folderId })
         .eq('user_id', user.id)
         .eq('resource_url', resourceUrl);

@@ -123,7 +123,8 @@ export async function getShowcasesWithProfiles(search?: string): Promise<Showcas
     const { data } = await query;
 
     if (data) {
-      for (const row of (data as Array<Record<string, unknown>>)) {
+      type ProfileRow = { id: string; display_name?: string | null; avatar_url?: string | null; username?: string | null };
+      for (const row of (data as ProfileRow[])) {
         if (row.id) profilesMap[row.id] = row;
       }
     }

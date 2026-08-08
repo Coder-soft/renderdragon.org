@@ -367,7 +367,9 @@ const ShowcasePage: React.FC = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to create showcase. Please try again.",
+        description: error instanceof Error && error.message
+          ? error.message
+          : "Failed to create showcase. Please try again.",
       });
     } finally {
       setSubmitting(false);

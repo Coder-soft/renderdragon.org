@@ -22,6 +22,8 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<import('wavesurfer.js').default | null>(null);
@@ -31,6 +33,8 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
 
     let ws: import('wavesurfer.js').default | null = null;
     let isMounted = true;
+    setLoadError(false);
+    setIsReady(false);
     import('wavesurfer.js').then(({ default: WaveSurfer }) => {
       if (!isMounted || !containerRef.current) return;
       ws = WaveSurfer.create({
@@ -53,9 +57,13 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
     } else {
       setIsLoading(true);
     }
-    ws.load(src).catch((err) => {
+      ws.load(src).catch((err) => {
       if (err.name === 'AbortError') return;
       console.error('WaveSurfer load error:', err);
+        if (isMounted) {
+          setIsLoading(false);
+          setLoadError(true);
+        }
       });
 
       ws.on('ready', () => {
@@ -73,13 +81,20 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
       ws.on('play', () => isMounted && setIsPlaying(true));
       ws.on('pause', () => isMounted && setIsPlaying(false));
       ws.on('finish', () => isMounted && setIsPlaying(false));
+    }).catch((error: unknown) => {
+      if (!isMounted) return;
+      console.error('Failed to load WaveSurfer:', error);
+      setIsLoading(false);
+      setLoadError(true);
     });
 
     return () => {
       isMounted = false;
+      setIsReady(false);
+      if (wavesurfer.current === ws) wavesurfer.current = null;
       ws?.destroy();
     };
-  }, [src, allowPlayBeforeReady]);
+  }, [src, allowPlayBeforeReady, retryKey]);
 
   // Handle visibility
   useEffect(() => {
@@ -134,6 +149,12 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
             </div>
           )}
           <div ref={containerRef} className="w-full" />
+          {loadError && (
+            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-card/90 text-sm text-muted-foreground">
+              <span>Audio preview unavailable.</span>
+              <Button variant="outline" size="sm" onClick={() => setRetryKey((key) => key + 1)}>Retry</Button>
+            </div>
+          )}
         </div>
 
         {/* Controls and Info */}

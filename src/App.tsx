@@ -27,7 +27,7 @@ const GlobalComponents = () => {
   const hideDonateButton = location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/account');
   const routeName = location.pathname === '/' ? 'Minecraft Creator Tools & Resources' :
-    location.pathname.split('/').filter(Boolean).map((part) => part.replaceAll('-', ' ')).join(' / ');
+    location.pathname.split('/').filter(Boolean).map((part) => part.split('-').join(' ')).join(' / ');
 
   return (
     <>

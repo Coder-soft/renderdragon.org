@@ -24,6 +24,13 @@ import { Helmet } from "react-helmet-async";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+type Texture = { id: number | string; url: string; title: string; subcategory?: string };
+const isTexture = (value: unknown): value is Texture => {
+  if (!value || typeof value !== 'object') return false;
+  const texture = value as Record<string, unknown>;
+  return (typeof texture.id === 'number' || typeof texture.id === 'string') && typeof texture.url === 'string' && typeof texture.title === 'string' && texture.subcategory === 'textures';
+};
+
 const BackgroundGenerator = () => {
   const [color, setColor] = useState("#9b87f5");
   const [size, setSize] = useState("1920x1080");
@@ -34,7 +41,7 @@ const BackgroundGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [textures, setTextures] = useState<Array<Record<string, string>>>([]);
+  const [textures, setTextures] = useState<Texture[]>([]);
   const [visibleTexturesCount, setVisibleTexturesCount] = useState(40);
   const [selectedTexture, setSelectedTexture] = useState<string | null>(null);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
@@ -49,7 +56,7 @@ const BackgroundGenerator = () => {
         if (!response.ok) throw new Error('Failed to fetch textures');
         const data = await response.json();
         if (data && data.files) {
-          const filteredTextures = data.files.filter((f: { subcategory?: string }) => f.subcategory === 'textures');
+          const filteredTextures = Array.isArray(data.files) ? data.files.filter(isTexture) : [];
           setTextures(filteredTextures);
         }
       } catch (error) {

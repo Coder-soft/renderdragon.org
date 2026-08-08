@@ -37,15 +37,22 @@ export default function BlogEditor() {
 
     const loadBlog = useCallback(async (blogId: string) => {
         setLoading(true);
-        const { data, error } = await supabase.from("blogs").select("*").eq("id", blogId).single();
-        if (error) {
-            toast.error("Failed to load blog");
+        try {
+            const { data, error } = await supabase.from("blogs").select("*").eq("id", blogId).single();
+            if (error) {
+                toast.error("Failed to load blog");
+                console.error(error);
+                navigate("/admin");
+            } else if (data) {
+                setTitle(data.title); setSlug(data.slug); setContent(data.content || ""); setPublished(data.published || false);
+            }
+        } catch (error) {
             console.error(error);
+            toast.error("Failed to load blog");
             navigate("/admin");
-        } else if (data) {
-            setTitle(data.title); setSlug(data.slug); setContent(data.content || ""); setPublished(data.published || false);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, [navigate]);
 
     useEffect(() => { if (id) loadBlog(id); }, [id, loadBlog]);

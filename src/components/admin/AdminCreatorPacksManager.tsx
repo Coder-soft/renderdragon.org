@@ -24,9 +24,12 @@ const AdminCreatorPacksManager = () => {
 
     const loadPendingPacks = async () => {
         setIsLoading(true);
-        const packs = await fetchPendingPacks();
-        setPendingPacks(packs);
-        setIsLoading(false);
+        try {
+            const packs = await fetchPendingPacks();
+            setPendingPacks(packs);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     useEffect(() => {

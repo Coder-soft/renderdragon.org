@@ -10,7 +10,8 @@ interface SeoProps {
 }
 
 export default function Seo({ title, description, path, image = "/ogimg.png" }: SeoProps) {
-  const canonical = `${SITE_URL}${path === "/" ? "" : path}`;
+  const normalizedPath = path.replace(/\/+$/, "") || "/";
+  const canonical = `${SITE_URL}${normalizedPath === "/" ? "" : normalizedPath}`;
   const imageUrl = image.startsWith("http") ? image : `${SITE_URL}${image}`;
   return <Helmet>
     <title>{title}</title>

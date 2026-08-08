@@ -265,7 +265,7 @@ const ProfileEditor: React.FC = () => {
             toast.success('Profile published successfully!');
             setShowShare(true);
         } catch (error: unknown) {
-            toast.error(error?.message || 'Failed to save profile');
+            toast.error(error instanceof Error ? error.message : 'Failed to save profile');
             console.error(error);
         } finally {
             setSaving(false);
