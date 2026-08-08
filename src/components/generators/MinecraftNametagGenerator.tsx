@@ -13,8 +13,9 @@ const MinecraftNametagGenerator = () => {
     // The preview updates automatically through state
   };
 
-  const exportAsPNG = () => {
+  const exportAsPNG = async () => {
     if (nametagContainerRef.current) {
+      await document.fonts.load('28px "Minecraft Seven"', playerName);
       html2canvas(nametagContainerRef.current, {
         scale: 3,
         logging: false,

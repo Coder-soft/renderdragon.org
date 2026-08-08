@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Minecraftia';
-  src: url('https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/fonts/minecraftia.ttf') format('truetype');
+  font-family: Minecraftia;
+  src: url('https://raw.githubusercontent.com/Yxmura/resources_renderdragon/d41fc385c3c178527da0710ad4f6cd4f37a12eea/fonts/minecraftia.ttf') format('truetype');
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Minecraft Seven';
-  src: url('https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/fonts/minecraft.ttf') format('truetype');
+  src: url('https://raw.githubusercontent.com/Yxmura/resources_renderdragon/d41fc385c3c178527da0710ad4f6cd4f37a12eea/fonts/minecraft.ttf') format('truetype');
   font-display: swap;
 }
 
@@ -182,7 +182,7 @@
 }
 
 .font-minecraftia {
-  font-family: 'Minecraftia', monospace;
+  font-family: Minecraftia, monospace;
 }
 
 .font-mojangles {
