@@ -416,7 +416,7 @@ const Community = () => {
                             <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/30 transition-colors">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
-                                  <h2 className="text-2xl font-jetbrains-mono">
+                                  <h2 className="text-2xl font-minecraftia">
                                     {category.name}
                                   </h2>
                                   <Badge

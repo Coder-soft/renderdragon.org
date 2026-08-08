@@ -34,7 +34,7 @@ const isTexture = (value: unknown): value is Texture => {
 const BackgroundGenerator = () => {
   const [color, setColor] = useState("#9b87f5");
   const [size, setSize] = useState("1920x1080");
-  const [spacing, setSpacing] = useState([10]);
+  const [spacing, setSpacing] = useState([0]);
   const [opacity, setOpacity] = useState([100]);
   const [scale, setScale] = useState([100]);
   const [isTransparent, setIsTransparent] = useState(false);

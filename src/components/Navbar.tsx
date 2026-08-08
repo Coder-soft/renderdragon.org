@@ -195,13 +195,13 @@ const Navbar = () => {
         <div className="container mx-auto px-4 flex justify-between items-center relative z-10">
           <Link
             to="/"
-            className="flex items-center space-x-2 text-xl md:text-2xl font-bold tracking-wider"
+            className="inline-flex items-center gap-2 text-xl md:text-2xl font-bold tracking-wider"
           >
             <div className="flex items-center justify-center">
               <Logo size={isMobile ? "sm" : "md"} />
             </div>
             {!isMobile && (
-              <span className="hidden md:inline font-minecraftia">Render<span className="text-cow-purple">Dragon</span></span>
+              <span className="hidden md:inline font-minecraftia leading-none">Render<span className="text-cow-purple">Dragon</span></span>
             )}
             {isMobile && <span className="font-minecraftia">R<span className="text-cow-purple">D</span></span>}
           </Link>

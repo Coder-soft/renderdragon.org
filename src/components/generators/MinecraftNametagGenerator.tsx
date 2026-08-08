@@ -60,7 +60,7 @@ const MinecraftNametagGenerator = () => {
             <div className="flex items-center justify-center h-full">
               {playerName ? (
                 <span 
-                  className="font-pixel text-[28px] text-white leading-[1] whitespace-nowrap"
+                  className="font-mojangles text-[28px] text-white leading-[1] whitespace-nowrap"
                   style={{
                     textShadow: `
                       1px 0 0 #000000,
@@ -96,4 +96,4 @@ const MinecraftNametagGenerator = () => {
   );
 };
 
-export default MinecraftNametagGenerator; 
+export default MinecraftNametagGenerator;

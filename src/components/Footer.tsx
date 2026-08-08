@@ -66,12 +66,12 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <Link
               to="/"
-              className="flex items-center space-x-2 text-xl font-bold mb-4"
+              className="inline-flex items-center gap-2 text-xl font-bold mb-4"
             >
               <div className="flex items-center justify-center">
                 <Logo size="sm" />
               </div>
-              <span className="font-minecraftia">Renderdragon</span>
+              <span className="font-minecraftia leading-none">RenderDragon</span>
             </Link>
 
             <p className="text-white/70 mb-6 max-w-md">
