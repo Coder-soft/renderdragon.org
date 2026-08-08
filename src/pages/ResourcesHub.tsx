@@ -17,7 +17,6 @@ import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
 import MusicPacksTab from '@/components/resources/MusicPacksTab';
 import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
 import MinecraftMusicFilter from '@/components/resources/MinecraftMusicFilter';
-import ResourceAnnouncementBanner from '@/components/resources/ResourceAnnouncementBanner';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -382,7 +381,6 @@ const ResourcesHub = () => {
       <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
-        <ResourceAnnouncementBanner onExplore={() => { handleCategoryChange('music'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
