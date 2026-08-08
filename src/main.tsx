@@ -19,7 +19,7 @@ if (convexUrl) {
 
 // expose for console debugging
 if (import.meta.env.DEV) {
-  (window as any).__wisp = wisp;
+  (window as Window & { __wisp?: typeof wisp }).__wisp = wisp;
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

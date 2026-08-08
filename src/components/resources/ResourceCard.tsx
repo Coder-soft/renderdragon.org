@@ -54,20 +54,23 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       { threshold: 0.1 },
     );
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
+    const card = cardRef.current;
+    if (card) {
+      observer.observe(card);
     }
 
     return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
+      if (card) {
+        observer.unobserve(card);
       }
     };
   }, []);
 
   useEffect(() => {
+    let active = true;
+    setIsFontLoaded(false);
     if (resource.category !== "fonts" || !resource.download_url) {
-      return;
+      return () => { active = false; };
     }
 
     const fontUrl = resource.download_url;
@@ -75,13 +78,13 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
     const styleId = `font-preview-${resource.id}-${btoa(fontName + fontUrl).slice(0, 12)}`;
 
     if (document.fonts.check(`1em "${fontName}"`)) {
-      setIsFontLoaded(true);
+      if (active) setIsFontLoaded(true);
       return;
     }
 
     const maybeLoadFont = () => {
       if (document.fonts.check(`1em "${fontName}"`)) {
-        setIsFontLoaded(true);
+        if (active) setIsFontLoaded(true);
         return;
       }
 
@@ -94,9 +97,9 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       }
 
       document.fonts.load(`1em "${fontName}"`).then(() => {
-        setIsFontLoaded(true);
+        if (active) setIsFontLoaded(true);
       }).catch(() => {
-        setTimeout(() => setIsFontLoaded(true), 3000);
+        setTimeout(() => { if (active) setIsFontLoaded(true); }, 3000);
       });
     };
 
@@ -104,9 +107,10 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       maybeLoadFont();
     } else {
       const timer = setTimeout(maybeLoadFont, 2000);
-      return () => clearTimeout(timer);
+      return () => { active = false; clearTimeout(timer); };
     }
-  }, [resource.id, resource.download_url, isInView]);
+    return () => { active = false; };
+  }, [resource.id, resource.download_url, resource.category, resource.title, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();

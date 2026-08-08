@@ -22,9 +22,16 @@ type ProfileData = {
   bio: string | null;
   links: ProfileLink[] | null;
   theme_config: ProfileThemeConfig | null;
-  social_links: any | null;
+  social_links: Record<string, string> | null;
   verified: boolean | null;
 };
+
+type SelectedProfile = Omit<ProfileData, 'email' | 'social_links'> & {
+  social_links: unknown;
+};
+
+const isSocialLinks = (value: unknown): value is Record<string, string> =>
+  value === null || (typeof value === 'object' && Object.values(value).every((item) => typeof item === 'string'));
 
 const SocialIcon = ({ type, url }: { type: string, url: string }) => {
   const iconProps = { className: "w-6 h-6 hover:scale-110 transition-transform" };
@@ -58,7 +65,12 @@ const ProfilePage: React.FC = () => {
 
         if (error) throw error;
         if (active) {
-          setProfile(data as any); // Cast because of JSON types
+          const row = data as SelectedProfile | null;
+          if (row && typeof row.id === 'string' && isSocialLinks(row.social_links)) {
+            setProfile({ ...row, email: null, social_links: row.social_links });
+          } else {
+            setProfile(null);
+          }
         }
       } catch (err) {
         console.error(err);

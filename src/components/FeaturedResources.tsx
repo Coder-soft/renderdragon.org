@@ -7,6 +7,8 @@ import ResourceCard from "@/components/resources/ResourceCard";
 import ResourceCardSkeleton from "./resources/ResourceCardSkeleton";
 
 const FEATURED_CATEGORIES = ["music", "images", "sfx", "fonts"];
+type RawResource = Record<string, unknown>;
+const stringValue = (value: unknown): string | undefined => typeof value === "string" && value.trim() ? value : undefined;
 
 const FeaturedResources = () => {
   const [featuredResources, setFeaturedResources] = useState<Resource[]>([]);
@@ -32,18 +34,15 @@ const FeaturedResources = () => {
         const rawItems = await catRes.json();
         const resources: Resource[] = (Array.isArray(rawItems) ? rawItems : [])
           .slice(0, 4)
-          .map((item: any, idx: number) => ({
-            id: item.id ?? `${catKeys[0]}-${idx}`,
-            title: String(item?.title || "").trim() || `Resource ${idx + 1}`,
+          .map((item: RawResource, idx: number) => ({
+            id: typeof item.id === "number" || typeof item.id === "string" ? item.id : `${catKeys[0]}-${idx}`,
+            title: stringValue(item.title) || `Resource ${idx + 1}`,
             category: catKeys[0] as Resource["category"],
-            subcategory: item.subcategory || undefined,
-            credit: item.credit || undefined,
-            filetype: item.filetype || item.ext || undefined,
-            download_url: item.download_url || item.url || undefined,
-            preview_url: item.preview_url || undefined,
-            image_url: item.image_url || undefined,
-            software: item.software || undefined,
-            description: item.description || undefined,
+            subcategory: stringValue(item.subcategory), credit: stringValue(item.credit),
+            filetype: stringValue(item.filetype) || stringValue(item.ext),
+            download_url: stringValue(item.download_url) || stringValue(item.url),
+            preview_url: stringValue(item.preview_url), image_url: stringValue(item.image_url),
+            software: stringValue(item.software), description: stringValue(item.description),
           }));
 
         setFeaturedResources(resources);

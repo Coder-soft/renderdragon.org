@@ -34,8 +34,8 @@ const removeMarkdown = (markdown: string) => {
         .replace(/^#+\s+/gm, '') // headings
         .replace(/(\*\*|__)(.*?)\1/g, '$2') // bold
         .replace(/(\*|_)(.*?)\1/g, '$2') // italic
-        .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '') // images
-        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // links
+        .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // images
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links
         .replace(/^>\s+/gm, '') // blockquotes
         .replace(/`{1,3}.*?`{1,3}/gs, '') // code
         .replace(/---\n/g, '') // horizontal rules

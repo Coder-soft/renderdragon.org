@@ -1,6 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
-import videojs from 'video.js';
+import React, { useEffect, useRef, useState } from 'react';
 import 'video.js/dist/video-js.css';
 
 interface VideoPlayerProps {
@@ -10,6 +9,7 @@ interface VideoPlayerProps {
     controls?: boolean;
     className?: string;
 }
+type VideoPlayerInstance = ReturnType<typeof import('video.js').default>;
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
@@ -19,24 +19,30 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     className = ""
 }) => {
     const videoRef = useRef<HTMLDivElement>(null);
-    const playerRef = useRef<any>(null);
+    const playerRef = useRef<VideoPlayerInstance | null>(null);
+    const [loadError, setLoadError] = useState(false);
+    const [retryKey, setRetryKey] = useState(0);
 
     useEffect(() => {
-        // Make sure Video.js player is only initialized once
-        if (!playerRef.current) {
-            const videoElement = document.createElement("video-js");
+        let cancelled = false;
+        let activePlayer: VideoPlayerInstance | null = null;
+        const videoElement = document.createElement("video-js");
+        setLoadError(false);
 
-            videoElement.classList.add('vjs-big-play-centered');
-            videoElement.classList.add('vjs-custom-skin');
-            if (className) {
-                className.split(' ').forEach(cls => videoElement.classList.add(cls));
-            }
+        videoElement.classList.add('vjs-big-play-centered');
+        videoElement.classList.add('vjs-custom-skin');
+        if (className) {
+            className.split(' ').forEach(cls => videoElement.classList.add(cls));
+        }
 
-            if (videoRef.current) {
-                videoRef.current.appendChild(videoElement);
-            }
+        const initializePlayer = async () => {
+            if (!videoRef.current || cancelled) return;
+            videoRef.current.appendChild(videoElement);
 
-            const player = playerRef.current = videojs(videoElement, {
+            try {
+            const { default: videojs } = await import('video.js');
+            if (cancelled) return;
+            const player = videojs(videoElement, {
                 autoplay,
                 controls,
                 responsive: true,
@@ -46,35 +52,42 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             }, () => {
                 // Player is ready
             });
+            if (cancelled) {
+                player.dispose();
+                return;
+            }
+            activePlayer = player;
+            playerRef.current = player;
 
             player.on('error', () => {
                 const error = player.error();
                 console.warn('VideoJS Error:', error);
             });
-
-        } else {
-            // Update src if it changes
-            const player = playerRef.current;
-            player.src({ src });
-            if (poster) player.poster(poster);
-        }
-    }, [src, poster, autoplay, controls, className]);
-
-    // Dispose the player on unmount
-    useEffect(() => {
-        const player = playerRef.current;
-
-        return () => {
-            if (player && !player.isDisposed()) {
-                player.dispose();
-                playerRef.current = null;
+            } catch (error) {
+                if (!cancelled) {
+                    console.error('Failed to load Video.js:', error);
+                    setLoadError(true);
+                }
             }
         };
-    }, [playerRef]);
+        initializePlayer();
+
+        return () => {
+            cancelled = true;
+            if (activePlayer && !activePlayer.isDisposed()) {
+                activePlayer.dispose();
+            }
+            if (playerRef.current === activePlayer) {
+                playerRef.current = null;
+            }
+            videoElement.remove();
+        }
+    }, [src, poster, autoplay, controls, className, retryKey]);
 
     return (
         <div data-vjs-player className="rounded-md overflow-hidden">
             <div ref={videoRef} />
+            {loadError && <div className="flex items-center justify-center gap-2 p-4 text-sm text-muted-foreground"><span>Video preview unavailable.</span><button type="button" className="underline" onClick={() => setRetryKey((key) => key + 1)}>Retry</button></div>}
         </div>
     );
 };

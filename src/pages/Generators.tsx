@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { lazy, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Helmet } from 'react-helmet-async';
 import { IconMessage, IconBrandTwitter, IconTag } from '@tabler/icons-react';
 
-import TweetGenerator from '@/components/generators/TweetGenerator';
-import YouTubeCommentGenerator from '@/components/generators/YouTubeCommentGenerator';
-import MinecraftNametagGenerator from '@/components/generators/MinecraftNametagGenerator';
+const TweetGenerator = lazy(() => import('@/components/generators/TweetGenerator'));
+const YouTubeCommentGenerator = lazy(() => import('@/components/generators/YouTubeCommentGenerator'));
+const MinecraftNametagGenerator = lazy(() => import('@/components/generators/MinecraftNametagGenerator'));
 
 const Generators = () => {
   return (
@@ -38,6 +38,7 @@ const Generators = () => {
               Perfect for content creators and Minecraft players.
             </p>
 
+            <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading generator...</div>}>
             <Tabs defaultValue="tweet" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="tweet" className="flex items-center gap-2">
@@ -66,6 +67,7 @@ const Generators = () => {
                 <MinecraftNametagGenerator />
               </TabsContent>
             </Tabs>
+            </Suspense>
           </div>
         </div>
       </main>

@@ -22,16 +22,21 @@ const AdminCreatorPacksManager = () => {
     const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    useEffect(() => {
-        loadPendingPacks();
-    }, []);
-
     const loadPendingPacks = async () => {
         setIsLoading(true);
-        const packs = await fetchPendingPacks();
-        setPendingPacks(packs);
-        setIsLoading(false);
+        try {
+            const packs = await fetchPendingPacks();
+            setPendingPacks(packs);
+        } finally {
+            setIsLoading(false);
+        }
     };
+
+    useEffect(() => {
+        loadPendingPacks();
+        // The loader is local to this component and only runs on mount.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleApprove = async (id: string) => {
         const approvedPack = await reviewPack(id, 'approved');

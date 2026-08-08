@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import WaveSurfer from 'wavesurfer.js';
 import {
   IconPlayerPlay,
   IconPlayerPause,
@@ -23,14 +22,22 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const wavesurfer = useRef<WaveSurfer | null>(null);
+  const wavesurfer = useRef<import('wavesurfer.js').default | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const ws = WaveSurfer.create({
+    let ws: import('wavesurfer.js').default | null = null;
+    let isMounted = true;
+    setLoadError(false);
+    setIsReady(false);
+    import('wavesurfer.js').then(({ default: WaveSurfer }) => {
+      if (!isMounted || !containerRef.current) return;
+      ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: 'rgba(139, 92, 246, 0.2)', // Soft cow-purple
       progressColor: '#8b5cf6', // Solid cow-purple
@@ -42,42 +49,52 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
       barGap: 3,
       normalize: true,
       hideScrollbar: true,
-    });
-
-    let isMounted = true;
-    wavesurfer.current = ws;
+      });
+      wavesurfer.current = ws;
 
     if (allowPlayBeforeReady) {
       setIsLoading(false);
     } else {
       setIsLoading(true);
     }
-    ws.load(src).catch((err) => {
+      ws.load(src).catch((err) => {
       if (err.name === 'AbortError') return;
       console.error('WaveSurfer load error:', err);
-    });
+        if (isMounted) {
+          setIsLoading(false);
+          setLoadError(true);
+        }
+      });
 
-    ws.on('ready', () => {
+      ws.on('ready', () => {
       if (!isMounted) return;
       setDuration(ws.getDuration());
       setIsLoading(false);
       setIsReady(true);
-    });
+      });
 
-    ws.on('audioprocess', () => {
+      ws.on('audioprocess', () => {
       if (!isMounted) return;
       setCurrentTime(ws.getCurrentTime());
-    });
+      });
 
-    ws.on('play', () => isMounted && setIsPlaying(true));
-    ws.on('pause', () => isMounted && setIsPlaying(false));
-    ws.on('finish', () => isMounted && setIsPlaying(false));
+      ws.on('play', () => isMounted && setIsPlaying(true));
+      ws.on('pause', () => isMounted && setIsPlaying(false));
+      ws.on('finish', () => isMounted && setIsPlaying(false));
+    }).catch((error: unknown) => {
+      if (!isMounted) return;
+      console.error('Failed to load WaveSurfer:', error);
+      setIsLoading(false);
+      setLoadError(true);
+    });
 
     return () => {
       isMounted = false;
-      ws.destroy();
+      setIsReady(false);
+      if (wavesurfer.current === ws) wavesurfer.current = null;
+      ws?.destroy();
     };
-  }, [src]);
+  }, [src, allowPlayBeforeReady, retryKey]);
 
   // Handle visibility
   useEffect(() => {
@@ -132,6 +149,12 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
             </div>
           )}
           <div ref={containerRef} className="w-full" />
+          {loadError && (
+            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-card/90 text-sm text-muted-foreground">
+              <span>Audio preview unavailable.</span>
+              <Button variant="outline" size="sm" onClick={() => setRetryKey((key) => key + 1)}>Retry</Button>
+            </div>
+          )}
         </div>
 
         {/* Controls and Info */}
