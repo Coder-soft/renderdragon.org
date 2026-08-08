@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import WaveSurfer from 'wavesurfer.js';
 import {
   IconPlayerPlay,
   IconPlayerPause,
@@ -25,12 +24,16 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
   const [isReady, setIsReady] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const wavesurfer = useRef<WaveSurfer | null>(null);
+  const wavesurfer = useRef<import('wavesurfer.js').default | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const ws = WaveSurfer.create({
+    let ws: import('wavesurfer.js').default | null = null;
+    let isMounted = true;
+    import('wavesurfer.js').then(({ default: WaveSurfer }) => {
+      if (!isMounted || !containerRef.current) return;
+      ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: 'rgba(139, 92, 246, 0.2)', // Soft cow-purple
       progressColor: '#8b5cf6', // Solid cow-purple
@@ -42,10 +45,8 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
       barGap: 3,
       normalize: true,
       hideScrollbar: true,
-    });
-
-    let isMounted = true;
-    wavesurfer.current = ws;
+      });
+      wavesurfer.current = ws;
 
     if (allowPlayBeforeReady) {
       setIsLoading(false);
@@ -55,29 +56,30 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
     ws.load(src).catch((err) => {
       if (err.name === 'AbortError') return;
       console.error('WaveSurfer load error:', err);
-    });
+      });
 
-    ws.on('ready', () => {
+      ws.on('ready', () => {
       if (!isMounted) return;
       setDuration(ws.getDuration());
       setIsLoading(false);
       setIsReady(true);
-    });
+      });
 
-    ws.on('audioprocess', () => {
+      ws.on('audioprocess', () => {
       if (!isMounted) return;
       setCurrentTime(ws.getCurrentTime());
-    });
+      });
 
-    ws.on('play', () => isMounted && setIsPlaying(true));
-    ws.on('pause', () => isMounted && setIsPlaying(false));
-    ws.on('finish', () => isMounted && setIsPlaying(false));
+      ws.on('play', () => isMounted && setIsPlaying(true));
+      ws.on('pause', () => isMounted && setIsPlaying(false));
+      ws.on('finish', () => isMounted && setIsPlaying(false));
+    });
 
     return () => {
       isMounted = false;
-      ws.destroy();
+      ws?.destroy();
     };
-  }, [src]);
+  }, [src, allowPlayBeforeReady]);
 
   // Handle visibility
   useEffect(() => {

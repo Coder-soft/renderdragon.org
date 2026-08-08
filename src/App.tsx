@@ -14,6 +14,7 @@ import { IconLoader2 } from "@tabler/icons-react";
 import DonateButton from "@/components/DonateButton";
 import { AdBlockDetector } from "@/components/AdBlockDetector";
 import Navbar from "@/components/Navbar";
+import Seo from "@/components/Seo";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => { window.location.href = url; }, [url]);
@@ -25,9 +26,12 @@ const GlobalComponents = () => {
   const location = useLocation();
   const hideDonateButton = location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/account');
+  const routeName = location.pathname === '/' ? 'Minecraft Creator Tools & Resources' :
+    location.pathname.split('/').filter(Boolean).map((part) => part.replaceAll('-', ' ')).join(' / ');
 
   return (
     <>
+      <Seo title={`${routeName.replace(/\b\w/g, (letter) => letter.toUpperCase())} | RenderDragon`} description={`Explore ${routeName} on RenderDragon, free tools and resources for Minecraft content creators.`} path={location.pathname} />
       {!hideDonateButton && <DonateButton />}
       <AdBlockDetector />
     </>

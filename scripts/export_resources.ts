@@ -83,7 +83,7 @@ async function exportResources() {
       });
       return acc;
     },
-    {} as Record<string, any[]>,
+    {} as Record<string, Array<Record<string, unknown>>>,
   );
 
   const mcicons = await fetchMcicons();
@@ -112,7 +112,7 @@ async function exportResources() {
       file: `resources/${file}`,
     };
     allResources.push(
-      ...items.map((item: any) => ({
+      ...items.map((item: Record<string, unknown>) => ({
         ...item,
         category,
       })),

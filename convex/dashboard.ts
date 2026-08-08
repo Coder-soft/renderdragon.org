@@ -65,7 +65,7 @@ export const listEvents = query({
   },
   handler: async (ctx, args) => {
     if (args.search && args.search.trim().length > 0) {
-      let sq = ctx.db.query("events").withSearchIndex("search_name", (q) => {
+      const sq = ctx.db.query("events").withSearchIndex("search_name", (q) => {
         const base = q.search("name", args.search!);
         return args.type ? base.eq("type", args.type) : base;
       });

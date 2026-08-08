@@ -17,8 +17,7 @@ import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
 import MusicPacksTab from '@/components/resources/MusicPacksTab';
 import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
 import MinecraftMusicFilter from '@/components/resources/MinecraftMusicFilter';
-import MinecraftChangelogPopup from '@/components/resources/MinecraftChangelogPopup';
-import GreenVoidPopup from '@/components/resources/GreenVoidPopup';
+import ResourceAnnouncementBanner from '@/components/resources/ResourceAnnouncementBanner';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -107,7 +106,7 @@ const ResourcesHub = () => {
       if (!resourceMoods) return false;
       return selectedMoods.some(mood => resourceMoods.includes(mood));
     });
-  }, [filteredResources, isMusicView, selectedMoods, musicMoodsData]);
+  }, [filteredResources, isMusicView, isMinecraftMusicView, selectedMoods, musicMoodsData]);
 
   const mcsoundsResourceCount = useMemo(() => {
     if (!isMcSoundsView) return {};
@@ -383,6 +382,7 @@ const ResourcesHub = () => {
       <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
+        <ResourceAnnouncementBanner />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -574,9 +574,6 @@ const ResourcesHub = () => {
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
       />
-      <MinecraftChangelogPopup />
-
-      <GreenVoidPopup />
 
 
 

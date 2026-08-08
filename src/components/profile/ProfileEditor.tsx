@@ -171,6 +171,8 @@ const ProfileEditor: React.FC = () => {
         if (user) {
             loadProfile();
         }
+        // Profile loading is an initial fetch; save effects below own later updates.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     // Auto-save draft to local storage
@@ -219,11 +221,11 @@ const ProfileEditor: React.FC = () => {
                     toast.info("Restored your unsaved draft.");
                 } else {
                     setBio(data.bio || '');
-                    setLinks((data.links as any) || []);
-                    setThemeConfig((data.theme_config as any) || defaultThemeConfig);
+                    setLinks((data.links as unknown as ProfileLink[]) || []);
+                    setThemeConfig((data.theme_config as unknown as ProfileThemeConfig) || defaultThemeConfig);
                 }
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error('Failed to load profile settings');
             console.error(error);
         } finally {
@@ -244,8 +246,8 @@ const ProfileEditor: React.FC = () => {
                 .from('profiles')
                 .update({
                     bio,
-                    links: links as any,
-                    theme_config: themeConfig as any,
+                    links: links as unknown,
+                    theme_config: themeConfig as unknown,
                     username: username.trim().toLowerCase(),
                 })
                 .eq('id', user.id)
@@ -262,7 +264,7 @@ const ProfileEditor: React.FC = () => {
             localStorage.removeItem(`${DRAFT_KEY}_${user.id}`);
             toast.success('Profile published successfully!');
             setShowShare(true);
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error(error?.message || 'Failed to save profile');
             console.error(error);
         } finally {
@@ -531,7 +533,7 @@ const ProfileEditor: React.FC = () => {
                                     <Label>Avatar Position</Label>
                                     <Select
                                         value={themeConfig.avatarPosition || 'center'}
-                                        onValueChange={(val: any) => setThemeConfig({ ...themeConfig, avatarPosition: val })}
+                                        onValueChange={(val: string) => setThemeConfig({ ...themeConfig, avatarPosition: val as ProfileThemeConfig['avatarPosition'] })}
                                     >
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>
@@ -545,7 +547,7 @@ const ProfileEditor: React.FC = () => {
                                     <Label>Link Style</Label>
                                     <Select
                                         value={themeConfig.buttonStyle}
-                                        onValueChange={(val: any) => setThemeConfig({ ...themeConfig, buttonStyle: val })}
+                                        onValueChange={(val: string) => setThemeConfig({ ...themeConfig, buttonStyle: val as ProfileThemeConfig['buttonStyle'] })}
                                     >
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>
@@ -570,7 +572,7 @@ const ProfileEditor: React.FC = () => {
                                     <Label>Background Type</Label>
                                     <Select
                                         value={themeConfig.backgroundType}
-                                        onValueChange={(val: any) => setThemeConfig({ ...themeConfig, backgroundType: val })}
+                                        onValueChange={(val: string) => setThemeConfig({ ...themeConfig, backgroundType: val as ProfileThemeConfig['backgroundType'] })}
                                     >
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>

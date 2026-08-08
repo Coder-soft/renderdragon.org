@@ -34,7 +34,7 @@ const BackgroundGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [textures, setTextures] = useState<any[]>([]);
+  const [textures, setTextures] = useState<Array<Record<string, string>>>([]);
   const [visibleTexturesCount, setVisibleTexturesCount] = useState(40);
   const [selectedTexture, setSelectedTexture] = useState<string | null>(null);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
@@ -49,7 +49,7 @@ const BackgroundGenerator = () => {
         if (!response.ok) throw new Error('Failed to fetch textures');
         const data = await response.json();
         if (data && data.files) {
-          const filteredTextures = data.files.filter((f: any) => f.subcategory === 'textures');
+          const filteredTextures = data.files.filter((f: { subcategory?: string }) => f.subcategory === 'textures');
           setTextures(filteredTextures);
         }
       } catch (error) {
@@ -139,6 +139,8 @@ const BackgroundGenerator = () => {
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timer);
+    // Generation is intentionally debounced from these controls.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [color, size, spacing[0], opacity[0], scale[0], uploadedImage, selectedTexture, isTransparent]);
 
   const handleGenerate = () => {

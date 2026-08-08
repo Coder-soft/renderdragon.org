@@ -39,8 +39,8 @@ export interface NewApiAsset {
 
 export async function listShowcases(search?: string) {
   // Fetch only from New Assets API
-  let newApiShowcases: Showcase[] = [];
-  let newApiAssetsByShowcase = new Map<string, ShowcaseAsset[]>();
+  const newApiShowcases: Showcase[] = [];
+  const newApiAssetsByShowcase = new Map<string, ShowcaseAsset[]>();
 
   try {
     const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`);
@@ -48,7 +48,7 @@ export async function listShowcases(search?: string) {
       const assets: NewApiAsset[] = await response.json();
 
       assets.forEach((asset) => {
-        let description = asset.message;
+        const description = asset.message;
 
         // Apply filters
         if (search && !description.toLowerCase().includes(search.toLowerCase()) && !asset.filename.toLowerCase().includes(search.toLowerCase())) return;
@@ -123,7 +123,7 @@ export async function getShowcasesWithProfiles(search?: string): Promise<Showcas
     const { data } = await query;
 
     if (data) {
-      for (const row of (data as any[])) {
+      for (const row of (data as Array<Record<string, unknown>>)) {
         if (row.id) profilesMap[row.id] = row;
       }
     }

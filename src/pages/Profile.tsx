@@ -22,7 +22,7 @@ type ProfileData = {
   bio: string | null;
   links: ProfileLink[] | null;
   theme_config: ProfileThemeConfig | null;
-  social_links: any | null;
+  social_links: Record<string, string> | null;
   verified: boolean | null;
 };
 
@@ -58,7 +58,7 @@ const ProfilePage: React.FC = () => {
 
         if (error) throw error;
         if (active) {
-          setProfile(data as any); // Cast because of JSON types
+          setProfile(data as unknown as ProfileData); // Supabase JSON columns need runtime validation.
         }
       } catch (err) {
         console.error(err);

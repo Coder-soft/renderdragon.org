@@ -36,7 +36,7 @@ export const useProfile = () => {
         return;
       }
 
-      const data = rawData as any;
+      const data = rawData as Record<string, string | null>;
 
       // Transform the data to match our interface, handling missing fields
       const profileData: UserProfile = {
@@ -90,7 +90,7 @@ export const useProfile = () => {
       // default return=representation needs SELECT on every column (incl. email).
       const { error } = await supabase
         .from("profiles")
-        .update(payload as any)
+        .update(payload as never)
         .eq("id", user.id)
         .select('id');
 

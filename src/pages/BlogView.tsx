@@ -61,7 +61,7 @@ export default function BlogView() {
                 } else {
                     setError("Blog post not found");
                 }
-            } catch (e: any) {
+            } catch (e: unknown) {
                 console.error("Error fetching blog:", e);
                 setError("Failed to load blog post");
             } finally {

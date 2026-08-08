@@ -61,8 +61,6 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             'vendor-framer': ['framer-motion'],
             'vendor-icons': ['@tabler/icons-react'],
-            'vendor-video': ['video.js'],
-            'vendor-audio': ['wavesurfer.js'],
           },
         },
       },

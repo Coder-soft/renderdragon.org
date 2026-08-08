@@ -32,7 +32,7 @@ const FeaturedResources = () => {
         const rawItems = await catRes.json();
         const resources: Resource[] = (Array.isArray(rawItems) ? rawItems : [])
           .slice(0, 4)
-          .map((item: any, idx: number) => ({
+          .map((item: Record<string, unknown>, idx: number) => ({
             id: item.id ?? `${catKeys[0]}-${idx}`,
             title: String(item?.title || "").trim() || `Resource ${idx + 1}`,
             category: catKeys[0] as Resource["category"],

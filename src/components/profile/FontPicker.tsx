@@ -55,7 +55,7 @@ export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) =
                         const data = await res.json();
 
                         if (data && Array.isArray(data.files)) {
-                            const validated = data.files.filter((f: any) =>
+                            const validated = data.files.filter((f: { name?: string; url?: string }) =>
                                 typeof f.id === 'number' &&
                                 typeof f.title === 'string' &&
                                 typeof f.url === 'string' &&
@@ -64,7 +64,7 @@ export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) =
                             setExternalFonts(validated);
                         }
                         return; // Success, exit the loop and function
-                    } catch (error: any) {
+                    } catch (error: unknown) {
                         clearTimeout(timeoutId);
                         if (error.name === 'AbortError') {
                             toast.error("Font library connection timed out");

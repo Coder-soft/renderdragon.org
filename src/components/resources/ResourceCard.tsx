@@ -54,13 +54,14 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       { threshold: 0.1 },
     );
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
+    const card = cardRef.current;
+    if (card) {
+      observer.observe(card);
     }
 
     return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
+      if (card) {
+        observer.unobserve(card);
       }
     };
   }, []);
@@ -106,7 +107,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
       const timer = setTimeout(maybeLoadFont, 2000);
       return () => clearTimeout(timer);
     }
-  }, [resource.id, resource.download_url, isInView]);
+  }, [resource.id, resource.download_url, resource.category, resource.title, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();

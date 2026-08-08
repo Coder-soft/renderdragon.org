@@ -362,7 +362,7 @@ const ShowcasePage: React.FC = () => {
       setFilePreview(null);
       setOpen(false);
       await queryClient.invalidateQueries({ queryKey: ['showcases'] });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to create showcase:", error);
       toast({
         variant: "destructive",

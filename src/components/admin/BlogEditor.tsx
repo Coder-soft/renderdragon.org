@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,8 +17,8 @@ const slugify = (text: string) => {
         .toLowerCase()
         .trim()
         .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-');
+        .replace(/[^\w-]+/g, '')
+        .replace(/--+/g, '-');
 };
 
 export default function BlogEditor() {
@@ -27,6 +27,29 @@ export default function BlogEditor() {
     const { user, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+
+    // Hooks must stay above authorization returns so their order is stable.
+    const [title, setTitle] = useState("");
+    const [slug, setSlug] = useState("");
+    const [content, setContent] = useState("");
+    const [published, setPublished] = useState(false);
+    const [preview, setPreview] = useState(false);
+
+    const loadBlog = useCallback(async (blogId: string) => {
+        setLoading(true);
+        const { data, error } = await supabase.from("blogs").select("*").eq("id", blogId).single();
+        if (error) {
+            toast.error("Failed to load blog");
+            console.error(error);
+            navigate("/admin");
+        } else if (data) {
+            setTitle(data.title); setSlug(data.slug); setContent(data.content || ""); setPublished(data.published || false);
+        }
+        setLoading(false);
+    }, [navigate]);
+
+    useEffect(() => { if (id) loadBlog(id); }, [id, loadBlog]);
+    useEffect(() => { if (!id && title) setSlug(slugify(title)); }, [title, id]);
 
     // Admin Authorization Check
     const authorizedEmails = ['yamura@duck.com', 'theckie@protonmail.com', 'vovoplaygame3@gmail.com'];
@@ -38,45 +61,6 @@ export default function BlogEditor() {
         return <Navigate to="/" replace />;
     }
 
-    const [title, setTitle] = useState("");
-    const [slug, setSlug] = useState("");
-    const [content, setContent] = useState("");
-    const [published, setPublished] = useState(false);
-    const [preview, setPreview] = useState(false);
-
-    useEffect(() => {
-        if (id) {
-            loadBlog(id);
-        }
-    }, [id]);
-
-    // Auto-generate slug from title if creating new
-    useEffect(() => {
-        if (!id && title) {
-            setSlug(slugify(title));
-        }
-    }, [title, id]);
-
-    const loadBlog = async (blogId: string) => {
-        setLoading(true);
-        const { data, error } = await supabase
-            .from("blogs")
-            .select("*")
-            .eq("id", blogId)
-            .single();
-
-        if (error) {
-            toast.error("Failed to load blog");
-            console.error(error);
-            navigate("/admin");
-        } else if (data) {
-            setTitle(data.title);
-            setSlug(data.slug);
-            setContent(data.content || "");
-            setPublished(data.published || false);
-        }
-        setLoading(false);
-    };
 
     const handleSave = async () => {
         if (!title || !slug || !user) {
@@ -112,9 +96,9 @@ export default function BlogEditor() {
                 toast.success("Blog created successfully");
                 navigate("/admin"); // Redirect or clear form
             }
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Error saving blog:", e);
-            toast.error(`Error saving: ${e.message}`);
+            toast.error(`Error saving: ${e instanceof Error ? e.message : "Unknown error"}`);
         } finally {
             setSaving(false);
         }

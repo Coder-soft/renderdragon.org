@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "node -e \"const fs=require('fs'),p=require('path');fs.mkdirSync('dist',{recursive:true});const src='changelog.md',dst=p.join('public','changelog.md');if(fs.existsSync(src)){fs.mkdirSync('public',{recursive:true});fs.copyFileSync(src,dst);}\"",
+    "prebuild": "node scripts/generate_sitemap.mjs && node -e \"const fs=require('fs'),p=require('path');fs.mkdirSync('dist',{recursive:true});const src='changelog.md',dst=p.join('public','changelog.md');if(fs.existsSync(src)){fs.mkdirSync('public',{recursive:true});fs.copyFileSync(src,dst);}\"",
     "dev": "concurrently \"pnpm run dev:vite\" \"pnpm run dev:server\"",
     "dev:vite": "vite",
     "dev:server": "node server.js",

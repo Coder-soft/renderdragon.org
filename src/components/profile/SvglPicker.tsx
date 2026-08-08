@@ -48,7 +48,7 @@ export function SvglPicker({ value, onChange }: SvglPickerProps) {
                 if (!res.ok) throw new Error('Failed to fetch icons');
                 const data = await res.json();
                 if (active) {
-                    const formattedIcons: SvglIcon[] = data.map((item: any) => {
+                    const formattedIcons: SvglIcon[] = data.map((item: Record<string, string>) => {
                         const route = item.route;
                         let url = '';
 

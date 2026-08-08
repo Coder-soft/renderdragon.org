@@ -1,6 +1,5 @@
 
 import React, { useEffect, useRef } from 'react';
-import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 
 interface VideoPlayerProps {
@@ -19,9 +18,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     className = ""
 }) => {
     const videoRef = useRef<HTMLDivElement>(null);
-    const playerRef = useRef<any>(null);
+    const playerRef = useRef<import('video.js').VideoJsPlayer | null>(null);
 
     useEffect(() => {
+        const initializePlayer = async () => {
         // Make sure Video.js player is only initialized once
         if (!playerRef.current) {
             const videoElement = document.createElement("video-js");
@@ -36,6 +36,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 videoRef.current.appendChild(videoElement);
             }
 
+            const { default: videojs } = await import('video.js');
+            if (!videoRef.current) return;
             const player = playerRef.current = videojs(videoElement, {
                 autoplay,
                 controls,
@@ -58,6 +60,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             player.src({ src });
             if (poster) player.poster(poster);
         }
+        };
+        initializePlayer();
     }, [src, poster, autoplay, controls, className]);
 
     // Dispose the player on unmount
