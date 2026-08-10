@@ -18,6 +18,8 @@ import {
   IconUpload,
   IconTrash,
   IconPhoto,
+  IconSearch,
+  IconX,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
@@ -29,6 +31,60 @@ const isTexture = (value: unknown): value is Texture => {
   if (!value || typeof value !== 'object') return false;
   const texture = value as Record<string, unknown>;
   return (typeof texture.id === 'number' || typeof texture.id === 'string') && typeof texture.url === 'string' && typeof texture.title === 'string' && texture.subcategory === 'textures';
+};
+
+const normalizeSearchText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+const editDistance = (left: string, right: string) => {
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+    let diagonal = previous[0];
+    previous[0] = leftIndex;
+
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+      const above = previous[rightIndex];
+      previous[rightIndex] = left[leftIndex - 1] === right[rightIndex - 1]
+        ? diagonal
+        : Math.min(diagonal, previous[rightIndex - 1], above) + 1;
+      diagonal = above;
+    }
+  }
+
+  return previous[right.length];
+};
+
+const fuzzyTextureScore = (texture: Texture, query: string) => {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return 0;
+
+  const title = normalizeSearchText(texture.title);
+  const words = title.split(" ").filter(Boolean);
+  if (title === normalizedQuery) return 0;
+  if (title.startsWith(normalizedQuery)) return 1;
+  if (title.includes(normalizedQuery)) return 2;
+
+  const queryWords = normalizedQuery.split(" ").filter(Boolean);
+  const wordScore = queryWords.reduce((total, queryWord) => {
+    const bestWordScore = words.reduce((best, word) => {
+      if (word.startsWith(queryWord)) return Math.min(best, 3);
+      if (word.includes(queryWord)) return Math.min(best, 4);
+      if (queryWord.length >= 3 && editDistance(word, queryWord) <= 2) return Math.min(best, 5);
+      return best;
+    }, Infinity);
+
+    return total + bestWordScore;
+  }, 0);
+
+  if (wordScore !== Infinity && wordScore <= queryWords.length * 5) return 10 + wordScore;
+
+  let queryIndex = 0;
+  for (const character of title) {
+    if (character === normalizedQuery[queryIndex]) queryIndex += 1;
+    if (queryIndex === normalizedQuery.length) return 20 + title.length - normalizedQuery.length;
+  }
+
+  return Infinity;
 };
 
 const BackgroundGenerator = () => {
@@ -43,10 +99,23 @@ const BackgroundGenerator = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [textures, setTextures] = useState<Texture[]>([]);
   const [visibleTexturesCount, setVisibleTexturesCount] = useState(40);
+  const [textureSearch, setTextureSearch] = useState("");
   const [selectedTexture, setSelectedTexture] = useState<string | null>(null);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const filteredTextures = textureSearch.trim()
+    ? textures
+      .map((texture) => ({ texture, score: fuzzyTextureScore(texture, textureSearch) }))
+      .filter(({ score }) => score !== Infinity)
+      .sort((left, right) => left.score - right.score || left.texture.title.localeCompare(right.texture.title))
+      .map(({ texture }) => texture)
+    : textures;
+
+  useEffect(() => {
+    setVisibleTexturesCount(40);
+  }, [textureSearch]);
 
   useEffect(() => {
     const fetchTextures = async () => {
@@ -268,6 +337,27 @@ const BackgroundGenerator = () => {
                       </TabsList>
 
                       <TabsContent value="library" className="mt-0">
+                        <div className="relative mb-2">
+                          <IconSearch className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                          <Input
+                            type="search"
+                            value={textureSearch}
+                            onChange={(event) => setTextureSearch(event.target.value)}
+                            placeholder="Search textures..."
+                            aria-label="Search textures"
+                            className="h-8 pl-8 pr-8 text-xs pixel-corners"
+                          />
+                          {textureSearch && (
+                            <button
+                              type="button"
+                              onClick={() => setTextureSearch("")}
+                              aria-label="Clear texture search"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              <IconX className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </div>
                         <div className="border border-primary/20 rounded-sm bg-black/10 overflow-hidden">
                           <ScrollArea className="h-48 p-2">
                             {isLoadingTextures ? (
@@ -277,7 +367,7 @@ const BackgroundGenerator = () => {
                               </div>
                             ) : (
                               <div className="grid grid-cols-4 gap-2">
-                                {textures.slice(0, visibleTexturesCount).map((texture) => (
+                                {filteredTextures.slice(0, visibleTexturesCount).map((texture) => (
                                   <button
                                     key={texture.id}
                                     onClick={() => {
@@ -301,7 +391,12 @@ const BackgroundGenerator = () => {
                                 ))}
                               </div>
                             )}
-                            {textures.length > visibleTexturesCount && (
+                            {!isLoadingTextures && !filteredTextures.length && (
+                              <div className="py-8 text-center text-xs text-muted-foreground">
+                                {textureSearch ? `No textures match "${textureSearch}"` : "No textures available"}
+                              </div>
+                            )}
+                            {filteredTextures.length > visibleTexturesCount && (
                               <div className="mt-4 flex justify-center pb-2">
                                 <Button
                                   variant="outline"
@@ -309,7 +404,7 @@ const BackgroundGenerator = () => {
                                   onClick={() => setVisibleTexturesCount(prev => prev + 40)}
                                   className="text-xs pixel-corners h-8"
                                 >
-                                  Load More ({textures.length - visibleTexturesCount} remaining)
+                                  Load More ({filteredTextures.length - visibleTexturesCount} remaining)
                                 </Button>
                               </div>
                             )}
@@ -464,6 +559,15 @@ const BackgroundGenerator = () => {
                         </SelectItem>
                         <SelectItem value="3840x2160">
                           3840x2160 (16:9)
+                        </SelectItem>
+                        <SelectItem value="4096x2160">
+                          4096x2160 (DCI 4K)
+                        </SelectItem>
+                        <SelectItem value="5120x2880">
+                          5120x2880 (5K)
+                        </SelectItem>
+                        <SelectItem value="7680x4320">
+                          7680x4320 (8K)
                         </SelectItem>
                         <SelectItem value="1080x1080">
                           1080x1080 (1:1)

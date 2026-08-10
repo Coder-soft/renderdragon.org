@@ -206,12 +206,12 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
     <form onSubmit={handleSubmit} className="space-y-5">
       {!autoStart && (
         <div className="grid grid-cols-2 gap-2 rounded-lg border border-border bg-muted/30 p-1">
-          <button type="button" onClick={() => setSourceTab('file')} className={cn('flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm transition-colors', sourceTab === 'file' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
-            <IconFileMusic className="h-4 w-4" /> Audio file
-          </button>
-          <button type="button" onClick={() => setSourceTab('spotify')} className={cn('flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm transition-colors', sourceTab === 'spotify' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
-            <IconLink className="h-4 w-4" /> Spotify URL
-          </button>
+           <button type="button" onClick={() => setSourceTab('file')} className={cn('flex items-center justify-center gap-1 whitespace-nowrap rounded-md px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'file' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
+             <IconFileMusic className="h-4 w-4 shrink-0" /> Audio file
+           </button>
+           <button type="button" onClick={() => setSourceTab('spotify')} className={cn('flex items-center justify-center gap-1 whitespace-nowrap rounded-md px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'spotify' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
+             <IconLink className="h-4 w-4 shrink-0" /> Spotify URL
+           </button>
         </div>
       )}
 

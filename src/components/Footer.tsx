@@ -109,15 +109,6 @@ const Footer = () => {
                 <img className="w-6 h-6" src="/assets/youtube_icon.png" alt="YouTube" loading="lazy" />
               </a>
 
-              <a
-                href="https://github.com/Yxmura/renderdragon"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
-                aria-label="GitHub"
-              >
-                <img className="w-6 h-6" src="/assets/github_icon.png" alt="GitHub" loading="lazy" />
-              </a>
             </div>
           </div>
 

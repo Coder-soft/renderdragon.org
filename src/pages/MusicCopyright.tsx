@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import LooneyCheckForm from '@/components/LooneyCheckForm';
 import LooneyHistorySection from '@/components/LooneyHistorySection';
 import LooneyRunningCheckDialog from '@/components/LooneyRunningCheckDialog';
-import { IconFileMusic, IconShieldCheck, IconSparkles } from '@tabler/icons-react';
+import { IconFileMusic } from '@tabler/icons-react';
 import { Helmet } from 'react-helmet-async';
 import { LooneyHistoryRecord } from '@/types/looney';
 
@@ -22,11 +22,11 @@ const MusicCopyright = () => {
     <Navbar />
     <main className="flex-grow cow-grid-bg bg-background px-4 pb-20 pt-28">
       <div className="container mx-auto max-w-6xl">
-        <div className="mx-auto max-w-3xl text-center"><h1 className="font-minecraftia text-3xl font-bold leading-relaxed md:text-5xl"><span className="text-cow-purple">Looney</span> checks</h1><p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">Research music licensing signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself.</p></div>
+         <div className="mx-auto max-w-3xl text-center"><h1 className="font-minecraftia text-2xl font-bold leading-relaxed sm:text-3xl md:text-5xl"><span className="text-cow-purple">Looney</span> Checks</h1><p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">Research music licensing signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself.</p></div>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
           <section className="min-w-0 overflow-hidden rounded-xl border-2 border-foreground/10 bg-card shadow-sm">
-            <div className="border-b border-border p-5 sm:p-7"><div className="flex items-start gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cow-purple text-white"><IconShieldCheck className="h-5 w-5" /></div><div><h2 className="font-geist text-base font-semibold leading-relaxed">Start a check</h2><p className="mt-1 text-sm text-muted-foreground">Choose the source you want Looney to inspect.</p></div></div></div>
+            <div className="border-b border-border p-5 sm:p-7"><div className="flex items-start gap-3"><img src="/assets/image%20copy.png" alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" /><div><h2 className="font-geist text-base font-semibold leading-relaxed">Start a check</h2><p className="mt-1 text-sm text-muted-foreground">Choose the source you want Looney to inspect.</p></div></div></div>
             <div className="p-5 sm:p-7"><LooneyCheckForm onJobChange={setActiveJobId} onResult={(_, __, ___, jobId) => jobId && navigate(`/gappa/check/${encodeURIComponent(jobId)}`)} onExistingJob={setExistingJob} onLimitReached={() => setLimitMessage(true)} /></div>
           </section>
           <aside className="min-w-0 rounded-xl border-2 border-foreground/10 bg-card p-5 shadow-sm sm:p-7"><p className="font-jetbrains-mono text-xs font-semibold uppercase tracking-[0.18em] text-cow-purple">Workflow</p><h2 className="mt-3 font-minecraftia text-base leading-relaxed">Three clean steps</h2><ol className="mt-7 space-y-6 text-sm text-muted-foreground"><li className="flex gap-4"><span className="font-jetbrains-mono text-cow-purple">01</span><span><strong className="text-foreground">Choose a source.</strong><br />Use a Spotify URL, site music file, or your own upload.</span></li><li className="flex gap-4"><span className="font-jetbrains-mono text-cow-purple">02</span><span><strong className="text-foreground">Let Looney research.</strong><br />The check gathers identification and licensing signals.</span></li><li className="flex gap-4"><span className="font-jetbrains-mono text-cow-purple">03</span><span><strong className="text-foreground">Read before publishing.</strong><br />Caveats stay visible beside the result, not hidden below it.</span></li></ol><div className="mt-8 flex gap-3 border-t border-border pt-5 text-xs leading-5 text-muted-foreground"><IconFileMusic className="h-4 w-4 shrink-0 text-cow-purple" />Results are guidance, not a replacement for permission from the rights holder.</div></aside>

@@ -136,11 +136,11 @@ export default function BlogView() {
                             </div>
                         </header>
 
-                        <div className="prose prose-invert max-w-none font-geist leading-loose 
-                [&>p]:mb-6 [&>p]:leading-7 
-                [&>h1]:hidden
-                [&>h2]:mt-10 [&>h2]:mb-4 [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:font-jetbrains-mono
-                [&>h3]:mt-8 [&>h3]:mb-3 [&>h3]:text-xl [&>h3]:font-medium [&>h3]:font-jetbrains-mono
+                         <div className="prose prose-invert max-w-none font-geist leading-relaxed
+                 [&>p]:my-3 [&>p]:leading-7 [&>p:first-child]:mt-0
+                 [&>h1]:hidden
+                 [&>h2]:mt-8 [&>h2]:mb-3 [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:font-jetbrains-mono
+                 [&>h3]:mt-6 [&>h3]:mb-2 [&>h3]:text-xl [&>h3]:font-medium [&>h3]:font-jetbrains-mono
                 [&>ul]:my-6 [&>ol]:my-6 [&_li]:mb-2
                 [&_a]:text-cow-purple [&_a]:underline hover:[&_a]:text-cow-purple/80
                 [&_pre]:bg-muted/50 [&_pre]:p-4 [&_pre]:rounded-md [&_pre]:pixel-corners

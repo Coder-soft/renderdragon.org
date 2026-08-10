@@ -71,37 +71,26 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
   useEffect(() => {
     let active = true;
     setIsFontLoaded(false);
-    if (resource.category !== "fonts" || !resource.download_url) {
+    if (resource.category !== "fonts") {
       return () => { active = false; };
     }
 
-    const fontUrl = resource.download_url;
-    const fontName = resource.title;
-    const styleId = `font-preview-${resource.id}-${btoa(fontName + fontUrl).slice(0, 12)}`;
-
-    if (document.fonts.check(`1em "${fontName}"`)) {
-      if (active) setIsFontLoaded(true);
-      return;
+    const fontUrl = getPreviewUrl(resource);
+    if (!fontUrl) {
+      return () => { active = false; };
     }
 
+    const fontName = resource.title;
+
     const maybeLoadFont = () => {
-      if (document.fonts.check(`1em "${fontName}"`)) {
+      const fontFace = new FontFace(fontName, `url("${fontUrl}")`);
+      fontFace.load().then((loadedFont) => {
+        document.fonts.add(loadedFont);
         if (active) setIsFontLoaded(true);
-        return;
-      }
-
-      if (!document.getElementById(styleId)) {
-        const style = document.createElement('style');
-        style.id = styleId;
-        const escapedName = fontName.replace(/["'\\]/g, '');
-        style.textContent = `@font-face { font-family: "${escapedName}"; src: url("${fontUrl}"); font-display: swap; }`;
-        document.head.appendChild(style);
-      }
-
-      document.fonts.load(`1em "${fontName}"`).then(() => {
-        if (active) setIsFontLoaded(true);
-      }).catch(() => {
-        setTimeout(() => { if (active) setIsFontLoaded(true); }, 3000);
+      }).catch((error) => {
+        if (active) {
+          console.error(`Failed to load font "${fontName}":`, error);
+        }
       });
     };
 
@@ -112,7 +101,7 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
       return () => { active = false; clearTimeout(timer); };
     }
     return () => { active = false; };
-  }, [resource.id, resource.download_url, resource.category, resource.title, isInView]);
+  }, [resource, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();
