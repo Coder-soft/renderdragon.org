@@ -219,7 +219,7 @@ const Contact = () => {
                 {teamMembers.map((member, index) => (
                   <div
                     key={index}
-                    className={`bg-card hover:bg-accent/20 border border-border hover:border-cow-purple transition-all duration-300 pixel-corners p-4 flex flex-col items-center text-center
+                    className={`bg-card border border-border hover:border-cow-purple transition-all duration-300 pixel-corners p-4 flex flex-col items-center text-center
                       ${activeCard === index ? "scale-105 shadow-lg shadow-cow-purple/20" : ""}`}
                     onMouseEnter={() => setActiveCard(index)}
                     onMouseLeave={() => setActiveCard(null)}

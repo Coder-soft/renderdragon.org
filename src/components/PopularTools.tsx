@@ -1,9 +1,19 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import { motion } from 'framer-motion'
-import { IconArrowRight, IconDownload, IconMusic, IconRobot, IconPhoto, IconUser } from '@tabler/icons-react'
+import { IconArrowRight, IconBrandYoutube, IconDownload, IconMusic, IconPhoto, IconUser } from '@tabler/icons-react'
 
-const tools = [
+type Tool = {
+  id: number;
+  title: string;
+  description: string;
+  icon: typeof IconMusic;
+  path: string;
+  hoverIcon?: typeof IconBrandYoutube;
+  hoverImage?: string;
+};
+
+const tools: Tool[] = [
   {
     id: 1,
     title: 'Looney Checks',
@@ -16,6 +26,7 @@ const tools = [
     title: 'YouTube Tools',
     description: 'Grab thumbnails, peek at analytics, and download videos for reference.',
     icon: IconDownload,
+    hoverIcon: IconBrandYoutube,
     path: '/youtube-downloader',
   },
   {
@@ -30,6 +41,7 @@ const tools = [
     title: 'Player Renderer',
     description: 'Render a 3D model of any Minecraft player skin. Pose it. Screenshot it.',
     icon: IconUser,
+    hoverImage: '/assets/codersoft.png',
     path: '/player-renderer',
   },
 ]
@@ -76,13 +88,17 @@ const PopularTools = () => {
         >
           {tools.map((tool) => (
             <motion.div key={tool.id} variants={itemVariants}>
-              <Link
-                to={tool.path}
-                className="group block h-full pixel-card bg-card hover:bg-cow-purple/5 border-2 border-border hover:border-cow-purple p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-cow-purple/20"
-              >
-                <div className="flex items-start justify-between mb-5">
-                  <div className="w-12 h-12 bg-cow-purple/15 border-2 border-cow-purple pixel-corners flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
-                    <tool.icon className="w-6 h-6 text-cow-purple" stroke={2.5} />
+                <Link
+                  to={tool.path}
+                  className={`group relative block h-full pixel-card bg-card hover:bg-cow-purple/5 border-2 border-border hover:border-cow-purple p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-cow-purple/20 ${tool.id === 3 ? 'overflow-hidden' : ''}`}
+                >
+                  {tool.id === 3 && <div className="tool-planks-hover pointer-events-none absolute inset-0 origin-center scale-110 -rotate-1 opacity-0 transition-all duration-200 group-hover:scale-100 group-hover:rotate-0 group-hover:opacity-30" />}
+                  {tool.id === 1 && <div className="pointer-events-none absolute right-5 top-5 w-32 translate-y-1 rounded-md border border-emerald-400/50 bg-[#0b1d19]/95 p-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100"><div className="font-jetbrains-mono text-[9px] uppercase tracking-widest text-emerald-300">Check complete</div><div className="mt-1 text-xs font-semibold text-white">No match found</div></div>}
+                  <div className="flex items-start justify-between mb-5">
+                  <div className="relative w-12 h-12 bg-cow-purple/15 border-2 border-cow-purple pixel-corners flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
+                    <tool.icon className="h-6 w-6 text-cow-purple transition-opacity duration-150 group-hover:opacity-0" stroke={2.5} />
+                    {'hoverIcon' in tool && tool.hoverIcon && <tool.hoverIcon className="absolute h-6 w-6 text-red-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" stroke={2.5} />}
+                    {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" className="absolute h-7 w-7 rounded-sm object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}
                   </div>
                   <IconArrowRight className="w-5 h-5 text-cow-purple opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>

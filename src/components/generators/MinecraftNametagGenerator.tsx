@@ -7,7 +7,14 @@ import html2canvas from 'html2canvas';
 
 const MinecraftNametagGenerator = () => {
   const [playerName, setPlayerName] = useState('');
+  const [fontChoice, setFontChoice] = useState<'mojangles' | 'minecraft-five' | 'minecraftia'>('mojangles');
   const nametagContainerRef = useRef<HTMLDivElement>(null);
+
+  const fontConfig = {
+    mojangles: { label: 'Mojangles', family: 'Minecraft Seven', className: 'font-mojangles' },
+    'minecraft-five': { label: 'Minecraft Five Bold', family: 'Minecraft Five Bold', className: 'font-minecraft-five' },
+    minecraftia: { label: 'Minecraftia', family: 'Minecraftia', className: 'font-minecraftia' },
+  } as const;
 
   const renderNametag = () => {
     // The preview updates automatically through state
@@ -15,7 +22,7 @@ const MinecraftNametagGenerator = () => {
 
   const exportAsPNG = async () => {
     if (nametagContainerRef.current) {
-      await document.fonts.load('28px "Minecraft Seven"', playerName);
+      await document.fonts.load(`28px "${fontConfig[fontChoice].family}"`, playerName);
       html2canvas(nametagContainerRef.current, {
         scale: 3,
         logging: false,
@@ -48,6 +55,12 @@ const MinecraftNametagGenerator = () => {
               className="pixel-corners"
             />
           </div>
+          <div>
+            <Label htmlFor="nametag-font">Font</Label>
+            <select id="nametag-font" value={fontChoice} onChange={(event) => setFontChoice(event.target.value as keyof typeof fontConfig)} className="pixel-input mt-2 w-full">
+              {Object.entries(fontConfig).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -61,7 +74,7 @@ const MinecraftNametagGenerator = () => {
             <div className="flex items-center justify-center h-full">
               {playerName ? (
                 <span 
-                  className="font-mojangles text-[28px] text-white leading-[1] whitespace-nowrap"
+                  className={`${fontConfig[fontChoice].className} text-[28px] text-white leading-[1] whitespace-nowrap`}
                   style={{
                     textShadow: `
                       1px 0 0 #000000,
