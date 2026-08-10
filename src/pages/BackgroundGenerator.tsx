@@ -27,6 +27,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Texture = { id: number | string; url: string; title: string; subcategory?: string };
+type PatternImage = { id: string; url: string; title: string; source: "library" | "upload" };
+type PatternType = "grid" | "staggered" | "diagonal" | "scattered" | "random";
+
 const isTexture = (value: unknown): value is Texture => {
   if (!value || typeof value !== 'object') return false;
   const texture = value as Record<string, unknown>;
@@ -87,6 +90,14 @@ const fuzzyTextureScore = (texture: Texture, query: string) => {
   return Infinity;
 };
 
+const createRandom = (seed: number) => {
+  let value = seed >>> 0;
+  return () => {
+    value = (value * 1664525 + 1013904223) >>> 0;
+    return value / 4294967296;
+  };
+};
+
 const BackgroundGenerator = () => {
   const [color, setColor] = useState("#9b87f5");
   const [size, setSize] = useState("1920x1080");
@@ -96,14 +107,24 @@ const BackgroundGenerator = () => {
   const [isTransparent, setIsTransparent] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<PatternImage[]>([]);
   const [textures, setTextures] = useState<Texture[]>([]);
   const [visibleTexturesCount, setVisibleTexturesCount] = useState(40);
   const [textureSearch, setTextureSearch] = useState("");
-  const [selectedTexture, setSelectedTexture] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<PatternImage[]>([]);
+  const [patternType, setPatternType] = useState<PatternType>("random");
+  const [randomSeed, setRandomSeed] = useState(() => Date.now());
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const uploadIdRef = useRef(0);
+  const generationIdRef = useRef(0);
+
+  const invalidateGeneration = () => {
+    generationIdRef.current += 1;
+    setGeneratedImage(null);
+    setIsGenerating(false);
+  };
 
   const filteredTextures = textureSearch.trim()
     ? textures
@@ -140,127 +161,207 @@ const BackgroundGenerator = () => {
   }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files ?? []);
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
 
-    // Check if file is an image
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
-      return;
+    if (imageFiles.length !== files.length) {
+      toast.error("Only image files can be added");
     }
+    if (!imageFiles.length) return;
+    invalidateGeneration();
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setUploadedImage(e.target?.result as string);
-      // Clear any previously generated image
-      setGeneratedImage(null);
-    };
-    reader.readAsDataURL(file);
+    const newImages = imageFiles.map((file) => {
+      const id = `upload-${uploadIdRef.current++}`;
+      return new Promise<PatternImage>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+          id,
+          url: reader.result as string,
+          title: file.name,
+          source: "upload",
+        });
+        reader.onerror = () => reject(new Error(`Could not read ${file.name}`));
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(newImages)
+      .then((images) => {
+        setUploadedImages((current) => [...current, ...images]);
+        setSelectedImages((current) => [...current, ...images]);
+      })
+      .catch(() => toast.error("One or more images could not be read"));
+
+    event.target.value = "";
   };
 
-  const clearUploadedImage = () => {
-    setUploadedImage(null);
-    setGeneratedImage(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+  const toggleImageSelection = (image: PatternImage) => {
+    invalidateGeneration();
+    setSelectedImages((current) => {
+      const isSelected = current.some((selected) => selected.id === image.id);
+      return isSelected
+        ? current.filter((selected) => selected.id !== image.id)
+        : [...current, image];
+    });
+  };
+
+  const removeUploadedImage = (id: string) => {
+    invalidateGeneration();
+    setUploadedImages((current) => current.filter((image) => image.id !== id));
+    setSelectedImages((current) => current.filter((image) => image.id !== id));
+  };
+
+  const clearAllUploads = () => {
+    invalidateGeneration();
+    const uploadIds = new Set(uploadedImages.map((image) => image.id));
+    setUploadedImages([]);
+    setSelectedImages((current) => current.filter((image) => !uploadIds.has(image.id)));
   };
 
   const generatePattern = (
     ctx: CanvasRenderingContext2D,
-    img: HTMLImageElement,
+    images: Array<PatternImage & { image: HTMLImageElement }>,
     canvasWidth: number,
     canvasHeight: number,
     imgSpacing: number,
     imgOpacity: number,
     imgScale: number,
+    type: PatternType,
+    seed: number,
   ) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Set background color
     if (!isTransparent) {
       ctx.fillStyle = color;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    // Calculate image size while maintaining aspect ratio
-    const aspectRatio = img.width / img.height;
-    const patternHeight = 100 * (imgScale / 100); // Base pattern size scaled
-    const patternWidth = patternHeight * aspectRatio;
-
-    // Calculate spacing
+    const random = createRandom(seed);
     const spacingPixels = imgSpacing;
+    const baseHeight = Math.max(12, 100 * (imgScale / 100));
+    const sizes = images.map((source) => {
+      const aspectRatio = source.image.width / source.image.height || 1;
+      return { width: baseHeight * aspectRatio, height: baseHeight };
+    });
 
-    // Set opacity
-    ctx.globalAlpha = imgOpacity / 100;
+    const drawTile = (sourceIndex: number, x: number, y: number, width: number, height: number, rotation = 0) => {
+      const source = images[sourceIndex % images.length];
+      ctx.save();
+      ctx.globalAlpha = imgOpacity / 100;
+      ctx.translate(x + width / 2, y + height / 2);
+      ctx.rotate(rotation);
+      ctx.drawImage(source.image, -width / 2, -height / 2, width, height);
+      ctx.restore();
+    };
 
-    // Draw pattern
-    for (let y = 0; y < canvasHeight; y += patternHeight + spacingPixels) {
-      for (let x = 0; x < canvasWidth; x += patternWidth + spacingPixels) {
-        ctx.drawImage(img, x, y, patternWidth, patternHeight);
+    if (type === "random") {
+      const step = Math.max(12, baseHeight + spacingPixels);
+      for (let y = -baseHeight; y < canvasHeight + baseHeight; y += step) {
+        for (let x = -baseHeight; x < canvasWidth + baseHeight; x += step) {
+          const sourceIndex = Math.floor(random() * images.length);
+          const { width, height } = sizes[sourceIndex];
+          const tileScale = 0.7 + random() * 0.7;
+          drawTile(
+            sourceIndex,
+            x + (random() - 0.5) * step,
+            y + (random() - 0.5) * step,
+            width * tileScale,
+            height * tileScale,
+            (random() - 0.5) * 0.45,
+          );
+        }
       }
+      return;
     }
 
-    // Reset opacity
-    ctx.globalAlpha = 1;
+    const maxWidth = Math.max(...sizes.map(({ width }) => width));
+    const horizontalStep = Math.max(12, maxWidth + spacingPixels);
+    const verticalStep = Math.max(12, baseHeight + spacingPixels);
+    let tileIndex = 0;
+
+    if (type === "scattered") {
+      for (let y = -baseHeight; y < canvasHeight + baseHeight; y += verticalStep) {
+        for (let x = -maxWidth; x < canvasWidth + maxWidth; x += horizontalStep) {
+          const sourceIndex = Math.floor(random() * images.length);
+          const { width, height } = sizes[sourceIndex];
+          const tileScale = 0.8 + random() * 0.4;
+          drawTile(
+            sourceIndex,
+            x + (random() - 0.5) * horizontalStep * 0.65,
+            y + (random() - 0.5) * verticalStep * 0.65,
+            width * tileScale,
+            height * tileScale,
+            (random() - 0.5) * 0.25,
+          );
+        }
+      }
+      return;
+    }
+
+    for (let row = 0, y = -baseHeight; y < canvasHeight + baseHeight; row += 1, y += verticalStep) {
+      const rowOffset = type === "staggered"
+        ? (row % 2) * horizontalStep / 2
+        : type === "diagonal"
+          ? row * horizontalStep * 0.35
+          : 0;
+
+      for (let x = -maxWidth + rowOffset; x < canvasWidth + maxWidth; x += horizontalStep) {
+        const sourceIndex = tileIndex % images.length;
+        const { width, height } = sizes[sourceIndex];
+        drawTile(sourceIndex, x, y, width, height);
+        tileIndex += 1;
+      }
+    }
   };
 
-  // Debounced generation effect
+  const handleGenerate = async () => {
+    if (!selectedImages.length) return;
+
+    const generationId = ++generationIdRef.current;
+    setIsGenerating(true);
+    const [width, height] = size.split("x").map((dim) => parseInt(dim, 10));
+
+    try {
+      const loadedImages = await Promise.all(selectedImages.map((source) => new Promise<PatternImage & { image: HTMLImageElement }>((resolve, reject) => {
+        const image = new Image();
+        image.crossOrigin = "Anonymous";
+        image.onload = () => resolve({ ...source, image });
+        image.onerror = () => reject(new Error(`Failed to load ${source.title}`));
+        image.src = source.url;
+      })));
+
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      generatePattern(ctx, loadedImages, width, height, spacing[0], opacity[0], scale[0], patternType, randomSeed);
+      if (generationId === generationIdRef.current) {
+        setGeneratedImage(canvas.toDataURL("image/png"));
+      }
+    } catch (error) {
+      console.error("Failed to load image for generation", error);
+      toast.error("One or more selected images could not be loaded");
+    } finally {
+      if (generationId === generationIdRef.current) {
+        setIsGenerating(false);
+      }
+    }
+  };
+
   useEffect(() => {
-    const sourceImage = selectedTexture || uploadedImage;
-    if (!sourceImage) return;
+    if (!selectedImages.length) return;
 
     const timer = setTimeout(() => {
       handleGenerate();
-    }, 500); // 500ms debounce
+    }, 500);
 
     return () => clearTimeout(timer);
     // Generation is intentionally debounced from these controls.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, size, spacing[0], opacity[0], scale[0], uploadedImage, selectedTexture, isTransparent]);
-
-  const handleGenerate = () => {
-    const sourceImage = selectedTexture || uploadedImage;
-    if (!sourceImage) return;
-
-    setIsGenerating(true);
-
-    // Create dimensions from size string
-    const [width, height] = size.split("x").map((dim) => parseInt(dim, 10));
-
-    // Create an image element from uploaded image
-    const img = new Image();
-    img.crossOrigin = "Anonymous"; // Enable CORS for canvas
-    img.onload = () => {
-      // Get canvas
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      // Set canvas dimensions
-      canvas.width = width;
-      canvas.height = height;
-
-      // Get context
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Generate pattern
-      generatePattern(ctx, img, width, height, spacing[0], opacity[0], scale[0]);
-
-      // Convert canvas to data URL
-      const dataUrl = canvas.toDataURL("image/png");
-      setGeneratedImage(dataUrl);
-      setIsGenerating(false);
-    };
-
-    img.onerror = () => {
-      setIsGenerating(false);
-      // Only toast on error if it's not just a transition state
-      console.error("Failed to load image for generation");
-    };
-
-    img.src = sourceImage;
-  };
+  }, [color, size, spacing[0], opacity[0], scale[0], selectedImages, patternType, isTransparent, randomSeed]);
 
   const handleDownload = () => {
     if (!generatedImage) return;
@@ -329,7 +430,7 @@ const BackgroundGenerator = () => {
               <div className="md:col-span-1 space-y-6 pixel-card">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Select Texture</label>
+                    <label className="text-sm font-medium">Select images</label>
                     <Tabs defaultValue="library" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 pixel-corners h-9 mb-2">
                         <TabsTrigger value="library" className="text-xs">Library</TabsTrigger>
@@ -367,28 +468,34 @@ const BackgroundGenerator = () => {
                               </div>
                             ) : (
                               <div className="grid grid-cols-4 gap-2">
-                                {filteredTextures.slice(0, visibleTexturesCount).map((texture) => (
-                                  <button
-                                    key={texture.id}
-                                    onClick={() => {
-                                      setSelectedTexture(texture.url);
-                                      setUploadedImage(null);
-                                      setGeneratedImage(null);
-                                    }}
-                                    className={`relative aspect-square border-2 rounded-sm overflow-hidden p-1 transition-all ${selectedTexture === texture.url
-                                      ? "border-cow-purple bg-cow-purple/20"
-                                      : "border-transparent hover:border-cow-purple/50 bg-white/5"
-                                      }`}
-                                    title={texture.title}
-                                  >
+                                 {filteredTextures.slice(0, visibleTexturesCount).map((texture) => (
+                                   <button
+                                     type="button"
+                                     key={texture.id}
+                                     aria-pressed={selectedImages.some((image) => image.id === `library-${texture.id}`)}
+                                     onClick={() => toggleImageSelection({
+                                       id: `library-${texture.id}`,
+                                       url: texture.url,
+                                       title: texture.title,
+                                       source: "library",
+                                     })}
+                                     className={`relative aspect-square border-2 rounded-sm overflow-hidden p-1 transition-all ${selectedImages.some((image) => image.id === `library-${texture.id}`)
+                                       ? "border-cow-purple bg-cow-purple/20"
+                                       : "border-transparent hover:border-cow-purple/50 bg-white/5"
+                                       }`}
+                                     title={texture.title}
+                                   >
                                     <img
                                       src={texture.url}
                                       alt={texture.title}
                                       loading="lazy"
-                                      className="w-full h-full object-contain pixelated"
-                                    />
-                                  </button>
-                                ))}
+                                       className="w-full h-full object-contain pixelated"
+                                     />
+                                     {selectedImages.some((image) => image.id === `library-${texture.id}`) && (
+                                       <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-cow-purple text-[10px] font-bold text-white">✓</span>
+                                     )}
+                                   </button>
+                                 ))}
                               </div>
                             )}
                             {!isLoadingTextures && !filteredTextures.length && (
@@ -418,6 +525,7 @@ const BackgroundGenerator = () => {
                             <input
                               type="file"
                               accept="image/*"
+                              multiple
                               onChange={handleImageUpload}
                               ref={fileInputRef}
                               className="hidden"
@@ -425,36 +533,94 @@ const BackgroundGenerator = () => {
                             <Button
                               onClick={() => {
                                 fileInputRef.current?.click();
-                                setSelectedTexture(null);
                               }}
                               className="pixel-btn-primary flex-grow flex items-center justify-center space-x-2"
                             >
                               <IconUpload className="h-5 w-5" />
-                              <span>Select Image</span>
+                              <span>Add Images</span>
                             </Button>
-                            {uploadedImage && (
+                            {uploadedImages.length > 0 && (
                               <Button
                                 variant="outline"
                                 size="icon"
-                                onClick={clearUploadedImage}
+                                onClick={clearAllUploads}
                                 className="pixel-corners"
+                                title="Remove uploaded images"
                               >
                                 <IconTrash className="h-5 w-5" />
                               </Button>
                             )}
                           </div>
-                          {uploadedImage && (
-                            <div className="mt-2 relative border border-primary/20 rounded-sm overflow-hidden h-24 bg-black/10">
-                              <img
-                                src={uploadedImage}
-                                alt="Uploaded"
-                                className="h-full w-full object-contain"
-                              />
+                          {uploadedImages.length > 0 && (
+                            <div className="grid grid-cols-4 gap-2">
+                              {uploadedImages.map((image) => (
+                                <div key={image.id} className={`group relative aspect-square overflow-hidden rounded-sm border-2 bg-black/10 ${selectedImages.some((selected) => selected.id === image.id) ? "border-cow-purple" : "border-transparent"}`}>
+                                  <button type="button" aria-pressed={selectedImages.some((selected) => selected.id === image.id)} onClick={() => toggleImageSelection(image)} className="h-full w-full p-1" title={`${selectedImages.some((selected) => selected.id === image.id) ? "Deselect" : "Select"} ${image.title}`}>
+                                    <img src={image.url} alt={image.title} className="h-full w-full object-contain" />
+                                  </button>
+                                  <button type="button" onClick={() => removeUploadedImage(image.id)} aria-label={`Remove ${image.title}`} className="absolute right-1 top-1 opacity-0 rounded-full bg-black/70 p-0.5 text-white transition-opacity group-hover:opacity-100 focus:opacity-100">
+                                    <IconX className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
                       </TabsContent>
                     </Tabs>
+
+                    <div className="rounded-sm border border-primary/20 bg-black/10 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide">Selected images</p>
+                          <p className="mt-1 text-xs text-muted-foreground">Choose from uploads and the library.</p>
+                        </div>
+                        <span className="shrink-0 rounded-full bg-cow-purple/20 px-2 py-1 text-xs font-semibold text-cow-purple">
+                          {selectedImages.length}
+                        </span>
+                      </div>
+                      {selectedImages.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {selectedImages.map((image) => (
+                            <button key={image.id} type="button" aria-label={`Remove ${image.title} from selection`} onClick={() => toggleImageSelection(image)} title={`Remove ${image.title}`} className="group relative h-9 w-9 overflow-hidden rounded-sm border border-cow-purple/60 bg-background">
+                              <img src={image.url} alt="" className="h-full w-full object-contain" />
+                              <span className="absolute inset-0 hidden items-center justify-center bg-black/60 text-xs text-white group-hover:flex">×</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <label className="text-sm font-medium">Pattern style</label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            invalidateGeneration();
+                            setRandomSeed((seed) => seed + 1);
+                          }}
+                          className="h-7 gap-1.5 px-2 text-xs pixel-corners"
+                        >
+                          <IconRefresh className="h-3.5 w-3.5" />
+                          Randomize
+                        </Button>
+                      </div>
+                      <Select value={patternType} onValueChange={(value: PatternType) => setPatternType(value)}>
+                        <SelectTrigger className="pixel-corners">
+                          <SelectValue placeholder="Choose a pattern" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="random">Randomized mix</SelectItem>
+                          <SelectItem value="grid">Classic grid</SelectItem>
+                          <SelectItem value="staggered">Staggered tiles</SelectItem>
+                          <SelectItem value="diagonal">Diagonal rows</SelectItem>
+                          <SelectItem value="scattered">Scattered collage</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -601,7 +767,7 @@ const BackgroundGenerator = () => {
                         </div>
                       )}
                     </div>
-                  ) : (uploadedImage || selectedTexture) ? (
+                  ) : selectedImages.length > 0 ? (
                     <div className="text-center px-4 animate-pulse">
                       <IconRefresh className="h-12 w-12 mx-auto mb-4 animate-spin text-muted-foreground" />
                       <p className="text-muted-foreground">
@@ -612,7 +778,7 @@ const BackgroundGenerator = () => {
                     <div className="text-center px-4">
                       <IconPhoto className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-muted-foreground">
-                        Select a texture or upload an image to start
+                        Select one or more images to start
                       </p>
                     </div>
                   )}
@@ -643,7 +809,7 @@ const BackgroundGenerator = () => {
                   </div>
                   <h3 className="font-jetbrains-mono mb-2">Upload</h3>
                   <p className="text-sm text-muted-foreground">
-                    Upload your image and adjust settings
+                    Upload images and adjust settings
                   </p>
                 </div>
 
