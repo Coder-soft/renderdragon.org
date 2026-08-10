@@ -173,7 +173,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link to="/gappa" className="text-white/70 hover:text-white transition-colors">
-                  Music Copyright Checker
+                  Looney Checks
                 </Link>
               </li>
               <li>

@@ -6,8 +6,8 @@ import { IconArrowRight, IconDownload, IconMusic, IconRobot, IconPhoto, IconUser
 const tools = [
   {
     id: 1,
-    title: 'Copyright Checker',
-    description: 'Check if a song is safe to use before it gets your video copyright-striked.',
+    title: 'Looney Checks',
+    description: 'Research a track before it gets your video copyright-striked.',
     icon: IconMusic,
     path: '/music-copyright',
   },
@@ -41,7 +41,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } }
 }
 
 const PopularTools = () => {

@@ -38,10 +38,11 @@ export const migrateJsonResourcesToSupabase = async () => {
       jsonData = await legacyResponse.json();
     }
 
+    const sourceData = jsonData || {};
     const normalizedData: Record<string, JsonResource[]> = Array.isArray(
-      jsonData,
+      sourceData,
     )
-      ? jsonData.reduce(
+      ? sourceData.reduce(
           (acc, resource) => {
             const resourceId = (resource as Resource).id;
             if (typeof resourceId !== "number") return acc;
@@ -60,7 +61,7 @@ export const migrateJsonResourcesToSupabase = async () => {
           },
           {} as Record<string, JsonResource[]>,
         )
-      : (jsonData as JsonResourcesData);
+      : (sourceData as JsonResourcesData);
 
     console.log("Fetched JSON data:", normalizedData);
 

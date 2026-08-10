@@ -16,7 +16,7 @@ interface PlaylistResponse {
   files: PlaylistFile[];
 }
 
-let globalCachePromise: Promise<void> | null = null;
+let globalCachePromise: Promise<PlaylistResponse | null> | null = null;
 let albumMapPromise: Promise<Map<string, string>> | null = null;
 
 const fetchAlbumMap = async (): Promise<Map<string, string>> => {

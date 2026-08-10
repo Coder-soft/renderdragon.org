@@ -5,6 +5,7 @@ import {
   IconVideo,
   IconCheck,
   IconHeart,
+  IconSearch,
 } from "@tabler/icons-react";
 import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
@@ -15,9 +16,10 @@ import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 interface ResourceCardProps {
   resource: Resource;
   onClick: (resource: Resource) => void;
+  onCheckCopyright?: (resource: Resource) => void;
 }
 
-const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
+const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   // Reset image loaded state when resource changes
@@ -122,6 +124,12 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
     toggleFavorite(String(resource.id));
   };
 
+  const handleCopyrightClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onCheckCopyright?.(resource);
+  };
+
   const renderPreview = () => {
     const previewUrl = getPreviewUrl(resource);
 
@@ -183,6 +191,19 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
               isInView={isInView}
               className="w-full shadow-none border-none bg-transparent p-0"
             />
+            {resource.category === "music" && onCheckCopyright && (
+              <button
+                type="button"
+                onClick={handleCopyrightClick}
+                aria-label={`Check ${resource.title} for copyright`}
+                className="group/check absolute right-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-md border border-cow-purple/60 bg-background/90 px-2 py-1.5 text-cow-purple shadow-lg backdrop-blur-sm transition-colors hover:bg-cow-purple hover:text-white"
+              >
+                <IconSearch className="h-4 w-4" />
+                <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all group-hover/check:max-w-32 group-hover/check:opacity-100">
+                  Check for copyright
+                </span>
+              </button>
+            )}
           </div>
         );
       case "minecraft-music":

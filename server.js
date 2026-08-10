@@ -7,6 +7,7 @@ import downloadHandler from './api/download.js';
 import downloadThumbnailHandler from './api/downloadThumbnail.js';
 import generateTitlesHandler from './api/generateTitles.js';
 import deleteAccountHandler from './api/deleteAccount.js';
+import looneyCheckHandler from './api/looney-check.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
 
@@ -15,8 +16,13 @@ const port = 3000;
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:8080',
   'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:8080',
+  'http://127.0.0.1:3000',
   'https://renderdragon.org',
+  'https://www.renderdragon.org',
   'https://assets-api-worker.powernplant101-c6b.workers.dev'
 ];
 
@@ -75,6 +81,7 @@ app.all('/api/download', createAdapter(downloadHandler));
 app.all('/api/downloadThumbnail', createAdapter(downloadThumbnailHandler));
 app.all('/api/generateTitles', createAdapter(generateTitlesHandler));
 app.all('/api/deleteAccount', createAdapter(deleteAccountHandler));
+app.all('/api/looney-check', createAdapter(looneyCheckHandler));
 // UploadThing route
 app.use(
   '/api/uploadthing',
