@@ -130,6 +130,7 @@ const BackgroundGenerator = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingProgress, setRecordingProgress] = useState(0);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
+  const [previewWidth, previewHeight] = size.split("x").map((dimension) => parseInt(dimension, 10));
   const spacingValue = spacing[0];
   const opacityValue = opacity[0];
   const scaleValue = scale[0];
@@ -318,17 +319,20 @@ const BackgroundGenerator = () => {
     }
     let tileIndex = 0;
 
-    const drawJitteredTile = (sourceIndex: number, x: number, y: number, width: number, height: number) => {
-      const positionJitter = (random() - 0.5) * Math.min(horizontalStep, verticalStep) * 0.12;
-      const tileScale = 0.9 + random() * 0.2;
-      const tileRotation = (random() < 0.5 ? -1 : 1) * (0.02 + random() * 0.06);
+    const drawStructuredTile = (sourceIndex: number, x: number, y: number) => {
+      const { width, height } = sizes[sourceIndex];
+      const rotationRadians = (rotationDegrees * Math.PI) / 180;
+      const rotatedWidth = Math.abs(width * Math.cos(rotationRadians)) + Math.abs(height * Math.sin(rotationRadians));
+      const rotatedHeight = Math.abs(width * Math.sin(rotationRadians)) + Math.abs(height * Math.cos(rotationRadians));
+      const fit = Math.min(1, maxWidth / rotatedWidth, baseHeight / rotatedHeight);
+      const drawWidth = width * fit;
+      const drawHeight = height * fit;
       drawTile(
         sourceIndex,
-        x + positionJitter,
-        y + positionJitter,
-        width * tileScale,
-        height * tileScale,
-        tileRotation,
+        x + (maxWidth - drawWidth) / 2,
+        y + (baseHeight - drawHeight) / 2,
+        drawWidth,
+        drawHeight,
       );
     };
 
@@ -349,9 +353,8 @@ const BackgroundGenerator = () => {
       for (let row = 0, y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; row += 1, y += verticalStep) {
         const rowOffset = (row % 2) * horizontalStep * 0.25;
         for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
-          const sourceIndex = tileIndex % images.length;
-          const { width, height } = sizes[sourceIndex];
-           drawJitteredTile(sourceIndex, x, y, width, height);
+           const sourceIndex = randomOrder[tileIndex % randomOrder.length];
+           drawStructuredTile(sourceIndex, x, y);
           tileIndex += 1;
         }
       }
@@ -367,9 +370,8 @@ const BackgroundGenerator = () => {
           : 0;
 
       for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
-        const sourceIndex = tileIndex % images.length;
-        const { width, height } = sizes[sourceIndex];
-        drawJitteredTile(sourceIndex, x, y, width, height);
+        const sourceIndex = randomOrder[tileIndex % randomOrder.length];
+        drawStructuredTile(sourceIndex, x, y);
         tileIndex += 1;
       }
     }
@@ -673,8 +675,8 @@ const BackgroundGenerator = () => {
                </TabsList>
              </Tabs>
 
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="md:col-span-1 space-y-6 pixel-card">
+              <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
+               <div className="pixel-card relative flex flex-col space-y-6 border-l-4 border-l-cow-purple/70 shadow-2xl shadow-cow-purple/10 md:sticky md:top-24 md:col-span-1 md:max-h-[calc(100vh-7rem)] md:overflow-y-auto md:overscroll-contain md:custom-scrollbar">
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Select images</label>
@@ -1055,12 +1057,15 @@ const BackgroundGenerator = () => {
                 </div>
               </div>
 
-              <div className="md:col-span-2 pixel-card flex flex-col">
+               <div className="pixel-card flex h-fit flex-col self-start md:col-span-2">
                 <div className="mb-4 text-center">
                   <h3 className="text-lg font-jetbrains-mono">Preview</h3>
                 </div>
 
-                 <div className="flex-grow flex items-center justify-center bg-black/20 rounded-md overflow-hidden relative min-h-[300px]">
+                 <div
+                   className="relative flex w-full items-center justify-center overflow-hidden rounded-md bg-black/20"
+                   style={{ aspectRatio: `${previewWidth} / ${previewHeight}` }}
+                 >
                     {outputMode === "video" && videoUrl ? (
                      <video
                        src={videoUrl}

@@ -206,11 +206,11 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {!autoStart && (
-        <div className="grid grid-cols-2 gap-2 rounded-lg border border-border bg-muted/30 p-1">
-           <button type="button" onClick={() => setSourceTab('file')} className={cn('flex items-center justify-center gap-1 whitespace-nowrap rounded-md px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'file' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
+         <div className="pixel-corners grid grid-cols-2 gap-2 border border-border bg-muted/30 p-1">
+            <button type="button" onClick={() => setSourceTab('file')} className={cn('pixel-corners flex items-center justify-center gap-1 whitespace-nowrap px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'file' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
              <IconFileMusic className="h-4 w-4 shrink-0" /> Audio file
            </button>
-           <button type="button" onClick={() => setSourceTab('spotify')} className={cn('flex items-center justify-center gap-1 whitespace-nowrap rounded-md px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'spotify' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
+            <button type="button" onClick={() => setSourceTab('spotify')} className={cn('pixel-corners flex items-center justify-center gap-1 whitespace-nowrap px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'spotify' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
              <IconLink className="h-4 w-4 shrink-0" /> Spotify URL
            </button>
         </div>
@@ -231,7 +231,7 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
             aria-label="Choose an audio file to check"
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleDrop}
-            className="cursor-pointer rounded-lg border-2 border-dashed border-cow-purple/50 bg-cow-purple/5 p-8 text-center transition-colors hover:border-cow-purple hover:bg-cow-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple"
+            className="pixel-corners cursor-pointer border-2 border-dashed border-cow-purple/50 bg-cow-purple/5 p-8 text-center transition-colors hover:border-cow-purple hover:bg-cow-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple"
           >
             <IconUpload className="mx-auto h-8 w-8 text-cow-purple" />
             <p className="mt-3 font-jetbrains-mono text-sm font-semibold">{file ? file.name : 'Drop an audio file here or browse'}</p>
@@ -261,7 +261,7 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
       )}
 
       {autoStart && isLoading && (
-        <div className="rounded-lg border border-cow-purple/40 bg-cow-purple/5 p-8 text-center">
+         <div className="pixel-corners border border-cow-purple/40 bg-cow-purple/5 p-8 text-center">
           <IconLoader2 className="mx-auto h-10 w-10 animate-spin text-cow-purple" />
           <p className="mt-4 font-minecraftia text-sm font-semibold">{progressMessage || 'Looney is researching this track...'}</p>
           {initialResource && <p className="mt-2 truncate text-xs text-muted-foreground">{initialResource.title}</p>}

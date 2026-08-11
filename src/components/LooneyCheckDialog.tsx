@@ -27,7 +27,7 @@ const LooneyCheckDialog = ({ resource, onClose }: LooneyCheckDialogProps) => {
         </DialogDescription>
       </DialogHeader>
       <LooneyCheckForm initialResource={resource} autoStart onResult={(_, __, ___, jobId) => { onClose(); if (jobId) navigate(`/gappa/check/${encodeURIComponent(jobId)}`); }} onExistingJob={setExistingJob} onLimitReached={() => setLimitReached(true)} onCheckStart={() => setLimitReached(false)} />
-      {limitReached && <p className="rounded-md border border-amber-500/40 bg-amber-500/5 p-3 text-sm text-amber-700 dark:text-amber-300">Two checks are already running. Wait for one to finish before starting another.</p>}
+       {limitReached && <p className="pixel-corners border border-amber-500/40 bg-amber-500/5 p-3 text-sm text-amber-700 dark:text-amber-300">Two checks are already running. Wait for one to finish before starting another.</p>}
     </DialogContent>
   </Dialog><LooneyRunningCheckDialog record={existingJob} onClose={() => setExistingJob(null)} /></>;
 };
