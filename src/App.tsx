@@ -16,11 +16,6 @@ import { AdBlockDetector } from "@/components/AdBlockDetector";
 import Navbar from "@/components/Navbar";
 import Seo from "@/components/Seo";
 
-const ExternalRedirect = ({ url }: { url: string }) => {
-  useEffect(() => { window.location.href = url; }, [url]);
-  return null;
-};
-
 // Global components wrapper to use hooks like useLocation
 const GlobalComponents = () => {
   const location = useLocation();
@@ -44,6 +39,7 @@ const ResourcesHub = lazy(() => import("@/pages/ResourcesHub"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const BackgroundGenerator = lazy(() => import("@/pages/BackgroundGenerator"));
 const MusicCopyright = lazy(() => import("@/pages/MusicCopyright"));
+const LooneyResultPage = lazy(() => import("@/pages/LooneyResultPage"));
 const Guides = lazy(() => import("@/pages/Guides"));
 const GuideView = lazy(() => import("@/pages/GuideView"));
 const Community = lazy(() => import("@/pages/Community"));
@@ -123,12 +119,13 @@ const App = () => {
                     />
                     <Route
                       path="/music-copyright"
-                      element={<ExternalRedirect url="https://github.com/Renderdragonorg/Osmium" />}
+                      element={<Navigate to="/gappa" replace />}
                     />
                     <Route
                       path="/gappa"
-                      element={<ExternalRedirect url="https://github.com/Renderdragonorg/Osmium" />}
+                      element={<MusicCopyright />}
                     />
+                    <Route path="/gappa/check/:jobId" element={<LooneyResultPage />} />
                     <Route path="/guides" element={<Guides />} />
                     <Route path="/guides/:slug" element={<GuideView />} />
                     <Route path="/community" element={<Community />} />

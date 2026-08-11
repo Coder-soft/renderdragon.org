@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, lazy, Suspense, useMemo } from 'react';
+import { useRef, useEffect, useState, useCallback, lazy, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -17,6 +17,7 @@ import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
 import MusicPacksTab from '@/components/resources/MusicPacksTab';
 import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
 import MinecraftMusicFilter from '@/components/resources/MinecraftMusicFilter';
+import LooneyCheckDialog from '@/components/LooneyCheckDialog';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -42,6 +43,7 @@ const ResourcesHub = () => {
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
   const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
+  const [copyrightResource, setCopyrightResource] = useState<Resource | null>(null);
 
   const {
     resources,
@@ -207,6 +209,10 @@ const ResourcesHub = () => {
     }
   };
 
+  const onCheckCopyright = useCallback((resource: Resource) => {
+    setCopyrightResource(resource);
+  }, []);
+
   const renderContent = () => (
     <>
       <ResourceFilters
@@ -223,8 +229,6 @@ const ResourcesHub = () => {
         onSortOrderChange={handleSortOrderChange}
         isMobile={isMobile}
         inputRef={inputRef}
-        fontPreviewText={fontPreviewText}
-        onFontPreviewTextChange={setFontPreviewText}
       />
 
       {(selectedCategory === 'minecraft-icons' || selectedCategory === 'mcsounds') && (
@@ -336,7 +340,7 @@ const ResourcesHub = () => {
       )}
 
       {isMinecraftMusicView ? (
-        <ResourcesList
+          <ResourcesList
           resources={minecraftMusic.resources}
           filteredResources={minecraftMusic.resources}
           isLoading={minecraftMusic.isLoading}
@@ -346,10 +350,10 @@ const ResourcesHub = () => {
           onSelectResource={setSelectedResource}
           onClearFilters={handleClearSearchWrapped}
           hasCategoryResources={minecraftMusic.resources.length > 0}
-          fontPreviewText={fontPreviewText}
-        />
+            onCheckCopyright={onCheckCopyright}
+          />
       ) : (
-        <ResourcesList
+          <ResourcesList
           resources={resources}
           filteredResources={isMusicView ? moodFilteredResources : filteredResources}
           isLoading={isLoading}
@@ -359,8 +363,8 @@ const ResourcesHub = () => {
           onSelectResource={setSelectedResource}
           onClearFilters={handleClearSearch}
           hasCategoryResources={hasCategoryResources}
-          fontPreviewText={fontPreviewText}
-        />
+            onCheckCopyright={onCheckCopyright}
+          />
       )}
     </>
   );
@@ -571,6 +575,11 @@ const ResourcesHub = () => {
       <AuthDialog
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
+      />
+
+      <LooneyCheckDialog
+        resource={copyrightResource}
+        onClose={() => setCopyrightResource(null)}
       />
 
 

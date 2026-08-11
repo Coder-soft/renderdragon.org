@@ -25,7 +25,7 @@ class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (
-        <div className="w-full h-screen flex flex-col items-center justify-center bg-background text-white">
+        <div className="font-geist w-full h-screen flex flex-col items-center justify-center bg-background text-white">
           <h1 className="text-2xl font-bold mb-4">Something went wrong.</h1>
           <p className="mb-4">We're sorry for the inconvenience. Please try refreshing the page.</p>
           <button

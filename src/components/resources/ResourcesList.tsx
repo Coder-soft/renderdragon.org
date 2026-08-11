@@ -26,7 +26,7 @@ interface ResourcesListProps {
   onClearFilters: () => void;
   hasCategoryResources: boolean;
   filteredResources: Resource[];
-  fontPreviewText?: string;
+  onCheckCopyright?: (resource: Resource) => void;
 }
 
 const ResourcesList = ({
@@ -39,7 +39,7 @@ const ResourcesList = ({
   onClearFilters,
   hasCategoryResources,
   filteredResources,
-  fontPreviewText,
+  onCheckCopyright,
 }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 12;
@@ -180,11 +180,11 @@ const ResourcesList = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: (index % itemsPerPage) * 0.05, duration: 0.3 }}
           >
-            <ResourceCard
-              resource={resource}
-              onClick={onSelectResource}
-              fontPreviewText={fontPreviewText}
-            />
+              <ResourceCard
+                resource={resource}
+                onClick={onSelectResource}
+                onCheckCopyright={onCheckCopyright}
+              />
           </motion.div>
         ))}
 

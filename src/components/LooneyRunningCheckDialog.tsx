@@ -1,0 +1,21 @@
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { IconActivity, IconArrowUpRight } from '@tabler/icons-react';
+import { Link } from 'react-router-dom';
+import { LooneyHistoryRecord } from '@/types/looney';
+
+interface LooneyRunningCheckDialogProps {
+  record: LooneyHistoryRecord | null;
+  onClose: () => void;
+}
+
+const LooneyRunningCheckDialog = ({ record, onClose }: LooneyRunningCheckDialogProps) => <Dialog open={!!record} onOpenChange={(open) => !open && onClose()}>
+  <DialogContent className="w-[calc(100%-2rem)] max-w-md pixel-corners border-2 border-cow-purple">
+    <DialogHeader>
+      <DialogTitle className="flex items-center gap-3 font-minecraftia text-base leading-relaxed"><IconActivity className="h-5 w-5 text-cow-purple" /> Check already running</DialogTitle>
+      <DialogDescription className="break-words pt-2">This source already has an active Looney check. Starting another one would duplicate the work.</DialogDescription>
+    </DialogHeader>
+    {record && <div className="min-w-0 space-y-4"><div className="pixel-corners border border-cow-purple/30 bg-cow-purple/5 p-4"><p className="break-words font-semibold">{record.sourceLabel}</p><p className="mt-2 break-words text-sm text-muted-foreground">{record.progress || 'Looney is researching this source.'}</p></div><Link to={`/gappa/check/${encodeURIComponent(record.jobId)}`} onClick={onClose} className="pixel-corners inline-flex w-full items-center justify-center gap-2 bg-cow-purple px-4 py-3 text-sm font-semibold text-white hover:bg-cow-purple-dark">Open running check <IconArrowUpRight className="h-4 w-4" /></Link></div>}
+  </DialogContent>
+</Dialog>;
+
+export default LooneyRunningCheckDialog;

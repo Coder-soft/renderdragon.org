@@ -416,7 +416,7 @@ const Community = () => {
                             <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/30 transition-colors">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
-                                  <h2 className="text-2xl font-minecraftia">
+                                   <h2 className="font-geist text-2xl">
                                     {category.name}
                                   </h2>
                                   <Badge
@@ -473,7 +473,7 @@ const Community = () => {
                                     </div>
 
                                     <div className="p-3">
-                                      <h3 className="font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+                                       <h3 className="font-geist font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
                                         {video.title}
                                       </h3>
 

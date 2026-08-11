@@ -149,7 +149,7 @@ const Contact = () => {
 
             <div className="bg-card pixel-corners border-2 border-primary/50 p-8 mb-12">
               <div className="mb-8">
-                <h2 className="text-2xl font-minecraftia mb-4">Get In Touch</h2>
+                 <h2 className="text-2xl font-geist mb-4">Get In Touch</h2>
                 <p className="text-muted-foreground mb-6">
                   Have questions, feedback, or just want to say hello? We'd love
                   to hear from you!
@@ -201,7 +201,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <h2 className="text-2xl font-minecraftia mb-4">Support Hours</h2>
+                 <h2 className="text-2xl font-geist mb-4">Support Hours</h2>
                 <p className="text-muted-foreground">
                   Well, we do what we can! We're all volunteers, not benefiting
                   from the project, but if you join our Discord, we'll really
@@ -219,7 +219,7 @@ const Contact = () => {
                 {teamMembers.map((member, index) => (
                   <div
                     key={index}
-                    className={`bg-card hover:bg-accent/20 border border-border hover:border-cow-purple transition-all duration-300 pixel-corners p-4 flex flex-col items-center text-center
+                    className={`bg-card border border-border hover:border-cow-purple transition-all duration-300 pixel-corners p-4 flex flex-col items-center text-center
                       ${activeCard === index ? "scale-105 shadow-lg shadow-cow-purple/20" : ""}`}
                     onMouseEnter={() => setActiveCard(index)}
                     onMouseLeave={() => setActiveCard(null)}
@@ -232,7 +232,7 @@ const Contact = () => {
                         loading="lazy"
                       />
                     </div>
-                    <h3 className="text-lg font-medium">{member.name}</h3>
+                     <h3 className="text-lg font-geist font-medium">{member.name}</h3>
                     <p className="text-sm text-cow-purple font-semibold mb-2">
                       {member.role}
                     </p>

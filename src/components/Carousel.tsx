@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import type { JSX } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform, MotionValue } from 'framer-motion';
 // replace icons with your own if needed
-import { IconCircle, IconCode, IconFileText, IconLayers, IconLayout } from '@tabler/icons-react';
+import { IconCircle, IconCode, IconFileText, IconLayout } from '@tabler/icons-react';
 import './Carousel.css';
 
 export interface CarouselItem {
@@ -40,7 +40,7 @@ export interface CarouselItem {
     title: 'Components',
     description: 'Reusable components for your projects.',
     id: 3,
-    icon: <IconLayers className="carousel-icon" />
+    icon: <IconLayout className="carousel-icon" />
   },
   {
     title: 'Backgrounds',

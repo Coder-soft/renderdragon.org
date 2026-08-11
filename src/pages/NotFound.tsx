@@ -48,7 +48,7 @@ const NotFound = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <main className="flex-grow pt-32 pb-20 cow-grid-bg flex items-center justify-center relative overflow-hidden">
+        <main className="font-geist flex-grow pt-32 pb-20 cow-grid-bg flex items-center justify-center relative overflow-hidden">
         <motion.div
           className="absolute w-8 h-8 bg-cow-purple/20 rounded-sm"
           animate={{
@@ -102,8 +102,8 @@ const NotFound = () => {
             className="text-cow-purple mb-4 relative"
             variants={itemVariants}
           >
-            <motion.div
-              className="text-9xl drop-shadow-lg font-minecraftia"
+             <motion.div
+               className="text-9xl drop-shadow-lg font-geist"
               animate={{
                 textShadow: [
                   "0 0 8px rgba(147, 51, 234, 0.7)",
