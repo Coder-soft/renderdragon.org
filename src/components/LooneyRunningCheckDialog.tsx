@@ -14,7 +14,7 @@ const LooneyRunningCheckDialog = ({ record, onClose }: LooneyRunningCheckDialogP
       <DialogTitle className="flex items-center gap-3 font-minecraftia text-base leading-relaxed"><IconActivity className="h-5 w-5 text-cow-purple" /> Check already running</DialogTitle>
       <DialogDescription className="break-words pt-2">This source already has an active Looney check. Starting another one would duplicate the work.</DialogDescription>
     </DialogHeader>
-    {record && <div className="min-w-0 space-y-4"><div className="rounded-lg border border-cow-purple/30 bg-cow-purple/5 p-4"><p className="break-words font-semibold">{record.sourceLabel}</p><p className="mt-2 break-words text-sm text-muted-foreground">{record.progress || 'Looney is researching this source.'}</p></div><Link to={`/gappa/check/${encodeURIComponent(record.jobId)}`} onClick={onClose} className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-cow-purple px-4 py-3 text-sm font-semibold text-white hover:bg-cow-purple-dark">Open running check <IconArrowUpRight className="h-4 w-4" /></Link></div>}
+    {record && <div className="min-w-0 space-y-4"><div className="pixel-corners border border-cow-purple/30 bg-cow-purple/5 p-4"><p className="break-words font-semibold">{record.sourceLabel}</p><p className="mt-2 break-words text-sm text-muted-foreground">{record.progress || 'Looney is researching this source.'}</p></div><Link to={`/gappa/check/${encodeURIComponent(record.jobId)}`} onClick={onClose} className="pixel-corners inline-flex w-full items-center justify-center gap-2 bg-cow-purple px-4 py-3 text-sm font-semibold text-white hover:bg-cow-purple-dark">Open running check <IconArrowUpRight className="h-4 w-4" /></Link></div>}
   </DialogContent>
 </Dialog>;
 
