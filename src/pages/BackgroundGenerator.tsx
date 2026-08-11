@@ -130,6 +130,7 @@ const BackgroundGenerator = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingProgress, setRecordingProgress] = useState(0);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
+  const [previewWidth, previewHeight] = size.split("x").map((dimension) => parseInt(dimension, 10));
   const spacingValue = spacing[0];
   const opacityValue = opacity[0];
   const scaleValue = scale[0];
@@ -674,7 +675,7 @@ const BackgroundGenerator = () => {
                </TabsList>
              </Tabs>
 
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
               <div className="md:col-span-1 space-y-6 pixel-card">
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -1056,12 +1057,15 @@ const BackgroundGenerator = () => {
                 </div>
               </div>
 
-              <div className="md:col-span-2 pixel-card flex flex-col">
+               <div className="pixel-card flex h-fit flex-col self-start md:col-span-2">
                 <div className="mb-4 text-center">
                   <h3 className="text-lg font-jetbrains-mono">Preview</h3>
                 </div>
 
-                 <div className="flex-grow flex items-center justify-center bg-black/20 rounded-md overflow-hidden relative min-h-[300px]">
+                 <div
+                   className="relative flex w-full items-center justify-center overflow-hidden rounded-md bg-black/20"
+                   style={{ aspectRatio: `${previewWidth} / ${previewHeight}` }}
+                 >
                     {outputMode === "video" && videoUrl ? (
                      <video
                        src={videoUrl}
