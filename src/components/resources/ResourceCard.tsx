@@ -5,7 +5,6 @@ import {
   IconVideo,
   IconCheck,
   IconHeart,
-  IconSearch,
 } from "@tabler/icons-react";
 import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
@@ -185,9 +184,9 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
                 type="button"
                 onClick={handleCopyrightClick}
                 aria-label={`Check ${resource.title} for copyright`}
-                className="group/check absolute right-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-md border border-cow-purple/60 bg-background/90 px-2 py-1.5 text-cow-purple shadow-lg backdrop-blur-sm transition-colors hover:bg-cow-purple hover:text-white"
+                className="group/check absolute right-2 top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-md border border-white bg-white p-1.5 text-black shadow-lg backdrop-blur-sm transition-all hover:w-auto hover:bg-white/90 hover:text-black"
               >
-                <IconSearch className="h-4 w-4" />
+                <img src="/assets/image%20copy.png" alt="" aria-hidden="true" className="h-6 w-6 shrink-0 object-contain" />
                 <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all group-hover/check:max-w-32 group-hover/check:opacity-100">
                   Check for copyright
                 </span>

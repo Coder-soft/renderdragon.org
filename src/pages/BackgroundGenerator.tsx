@@ -20,6 +20,9 @@ import {
   IconPhoto,
   IconSearch,
   IconX,
+  IconPlayerPlay,
+  IconPlayerStop,
+  IconRotateClockwise,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
@@ -29,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 type Texture = { id: number | string; url: string; title: string; subcategory?: string };
 type PatternImage = { id: string; url: string; title: string; source: "library" | "upload" };
 type PatternType = "grid" | "staggered" | "diagonal" | "scattered" | "random";
+type OutputMode = "image" | "gif";
 
 const isTexture = (value: unknown): value is Texture => {
   if (!value || typeof value !== 'object') return false;
@@ -104,7 +108,7 @@ const BackgroundGenerator = () => {
   const [spacing, setSpacing] = useState([0]);
   const [opacity, setOpacity] = useState([100]);
   const [scale, setScale] = useState([100]);
-  const [isTransparent, setIsTransparent] = useState(false);
+  const [isTransparent, setIsTransparent] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [uploadedImages, setUploadedImages] = useState<PatternImage[]>([]);
@@ -112,17 +116,30 @@ const BackgroundGenerator = () => {
   const [visibleTexturesCount, setVisibleTexturesCount] = useState(40);
   const [textureSearch, setTextureSearch] = useState("");
   const [selectedImages, setSelectedImages] = useState<PatternImage[]>([]);
-  const [patternType, setPatternType] = useState<PatternType>("random");
+  const [patternType, setPatternType] = useState<PatternType>("grid");
   const [randomSeed, setRandomSeed] = useState(() => Date.now());
+  const [outputMode, setOutputMode] = useState<OutputMode>("image");
+  const [rotation, setRotation] = useState([0]);
+  const [animationDuration, setAnimationDuration] = useState([4]);
+  const [animationFps, setAnimationFps] = useState([12]);
+  const [animationDistance, setAnimationDistance] = useState([160]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingProgress, setRecordingProgress] = useState(0);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const uploadIdRef = useRef(0);
   const generationIdRef = useRef(0);
+  const recordingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const invalidateGeneration = () => {
     generationIdRef.current += 1;
     setGeneratedImage(null);
+    setVideoUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return null;
+    });
     setIsGenerating(false);
   };
 
@@ -228,6 +245,8 @@ const BackgroundGenerator = () => {
     imgScale: number,
     type: PatternType,
     seed: number,
+    rotationDegrees: number,
+    horizontalOffset = 0,
   ) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -243,75 +262,73 @@ const BackgroundGenerator = () => {
       const aspectRatio = source.image.width / source.image.height || 1;
       return { width: baseHeight * aspectRatio, height: baseHeight };
     });
+    // Keep the tile grid bounds stable between frames so seeded patterns do not reshuffle.
+    const motionPadding = 400;
+    ctx.save();
+    ctx.translate(horizontalOffset, 0);
 
-    const drawTile = (sourceIndex: number, x: number, y: number, width: number, height: number, rotation = 0) => {
+    const drawTile = (sourceIndex: number, x: number, y: number, width: number, height: number, tileRotation = 0) => {
       const source = images[sourceIndex % images.length];
       ctx.save();
       ctx.globalAlpha = imgOpacity / 100;
       ctx.translate(x + width / 2, y + height / 2);
-      ctx.rotate(rotation);
+      ctx.rotate((rotationDegrees * Math.PI) / 180 + tileRotation);
       ctx.drawImage(source.image, -width / 2, -height / 2, width, height);
       ctx.restore();
     };
 
-    if (type === "random") {
-      const step = Math.max(12, baseHeight + spacingPixels);
-      for (let y = -baseHeight; y < canvasHeight + baseHeight; y += step) {
-        for (let x = -baseHeight; x < canvasWidth + baseHeight; x += step) {
-          const sourceIndex = Math.floor(random() * images.length);
-          const { width, height } = sizes[sourceIndex];
-          const tileScale = 0.7 + random() * 0.7;
-          drawTile(
-            sourceIndex,
-            x + (random() - 0.5) * step,
-            y + (random() - 0.5) * step,
-            width * tileScale,
-            height * tileScale,
-            (random() - 0.5) * 0.45,
-          );
-        }
-      }
-      return;
-    }
-
     const maxWidth = Math.max(...sizes.map(({ width }) => width));
     const horizontalStep = Math.max(12, maxWidth + spacingPixels);
     const verticalStep = Math.max(12, baseHeight + spacingPixels);
+    const randomOrder = images.map((_, index) => index);
+    for (let index = randomOrder.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(random() * (index + 1));
+      [randomOrder[index], randomOrder[swapIndex]] = [randomOrder[swapIndex], randomOrder[index]];
+    }
     let tileIndex = 0;
 
-    if (type === "scattered") {
-      for (let y = -baseHeight; y < canvasHeight + baseHeight; y += verticalStep) {
-        for (let x = -maxWidth; x < canvasWidth + maxWidth; x += horizontalStep) {
-          const sourceIndex = Math.floor(random() * images.length);
+    if (type === "random") {
+      for (let y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; y += verticalStep) {
+        for (let x = -maxWidth - motionPadding; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
+          const sourceIndex = randomOrder[tileIndex % randomOrder.length];
           const { width, height } = sizes[sourceIndex];
-          const tileScale = 0.8 + random() * 0.4;
-          drawTile(
-            sourceIndex,
-            x + (random() - 0.5) * horizontalStep * 0.65,
-            y + (random() - 0.5) * verticalStep * 0.65,
-            width * tileScale,
-            height * tileScale,
-            (random() - 0.5) * 0.25,
-          );
+          drawTile(sourceIndex, x, y, width, height);
+          tileIndex += 1;
         }
       }
+      ctx.restore();
       return;
     }
 
-    for (let row = 0, y = -baseHeight; y < canvasHeight + baseHeight; row += 1, y += verticalStep) {
+    if (type === "scattered") {
+      for (let row = 0, y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; row += 1, y += verticalStep) {
+        const rowOffset = (row % 2) * horizontalStep * 0.25;
+        for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
+          const sourceIndex = tileIndex % images.length;
+          const { width, height } = sizes[sourceIndex];
+          drawTile(sourceIndex, x, y, width, height);
+          tileIndex += 1;
+        }
+      }
+      ctx.restore();
+      return;
+    }
+
+    for (let row = 0, y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; row += 1, y += verticalStep) {
       const rowOffset = type === "staggered"
         ? (row % 2) * horizontalStep / 2
         : type === "diagonal"
-          ? row * horizontalStep * 0.35
+          ? (row * horizontalStep * 0.35) % horizontalStep
           : 0;
 
-      for (let x = -maxWidth + rowOffset; x < canvasWidth + maxWidth; x += horizontalStep) {
+      for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
         const sourceIndex = tileIndex % images.length;
         const { width, height } = sizes[sourceIndex];
         drawTile(sourceIndex, x, y, width, height);
         tileIndex += 1;
       }
     }
+    ctx.restore();
   };
 
   const handleGenerate = async () => {
@@ -337,7 +354,7 @@ const BackgroundGenerator = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      generatePattern(ctx, loadedImages, width, height, spacing[0], opacity[0], scale[0], patternType, randomSeed);
+      generatePattern(ctx, loadedImages, width, height, spacing[0], opacity[0], scale[0], patternType, randomSeed, rotation[0]);
       if (generationId === generationIdRef.current) {
         setGeneratedImage(canvas.toDataURL("image/png"));
       }
@@ -361,7 +378,105 @@ const BackgroundGenerator = () => {
     return () => clearTimeout(timer);
     // Generation is intentionally debounced from these controls.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, size, spacing[0], opacity[0], scale[0], selectedImages, patternType, isTransparent, randomSeed]);
+  }, [color, size, spacing[0], opacity[0], scale[0], selectedImages, patternType, isTransparent, randomSeed, rotation[0]]);
+
+  const loadSelectedImages = () => Promise.all(selectedImages.map((source) => new Promise<PatternImage & { image: HTMLImageElement }>((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = "Anonymous";
+    image.onload = () => resolve({ ...source, image });
+    image.onerror = () => reject(new Error(`Failed to load ${source.title}`));
+    image.src = source.url;
+  })));
+
+  const handleCreateVideo = async () => {
+    if (!selectedImages.length || isRecording) return;
+    const canvas = canvasRef.current;
+    if (!canvas || !canvas.captureStream || typeof MediaRecorder === "undefined") {
+      toast.error("Animated video export is not supported in this browser");
+      return;
+    }
+
+    setIsRecording(true);
+    setRecordingProgress(0);
+    try {
+      const loadedImages = await loadSelectedImages();
+      const [width, height] = size.split("x").map((dim) => parseInt(dim, 10));
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas is unavailable");
+
+      const patternCanvas = document.createElement("canvas");
+      patternCanvas.width = width + animationDistance[0];
+      patternCanvas.height = height;
+      const patternContext = patternCanvas.getContext("2d");
+      if (!patternContext) throw new Error("Pattern canvas is unavailable");
+      generatePattern(
+        patternContext,
+        loadedImages,
+        patternCanvas.width,
+        height,
+        spacing[0],
+        opacity[0],
+        scale[0],
+        patternType,
+        randomSeed,
+        rotation[0],
+      );
+
+      const stream = canvas.captureStream(animationFps[0]);
+      const videoTrack = stream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack;
+      const supportsManualFrameCapture = Boolean(videoTrack && typeof videoTrack.requestFrame === "function");
+      const mimeType = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"]
+        .find((candidate) => MediaRecorder.isTypeSupported(candidate));
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      const chunks: Blob[] = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data.size) chunks.push(event.data);
+      };
+
+      const recordingPromise = new Promise<Blob>((resolve) => {
+        recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType || "video/webm" }));
+      });
+      const durationMs = animationDuration[0] * 1000;
+      const frameInterval = 1000 / animationFps[0];
+      const totalFrames = Math.max(1, Math.round(animationDuration[0] * animationFps[0]));
+      let frameIndex = 0;
+      recorder.start();
+      const startedAt = performance.now();
+
+      const renderFrame = () => {
+        const progress = totalFrames === 1 ? 1 : frameIndex / (totalFrames - 1);
+        const sourceX = animationDistance[0] * progress;
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(patternCanvas, sourceX, 0, width, height, 0, 0, width, height);
+        if (supportsManualFrameCapture) videoTrack.requestFrame();
+        setRecordingProgress(progress * 100);
+        frameIndex += 1;
+        if (frameIndex < totalFrames) {
+          const nextFrameAt = startedAt + frameIndex * frameInterval;
+          recordingTimerRef.current = setTimeout(renderFrame, Math.max(0, nextFrameAt - performance.now()));
+        } else {
+          recordingTimerRef.current = setTimeout(() => {
+            recorder.stop();
+            stream.getTracks().forEach((track) => track.stop());
+          }, Math.max(0, durationMs - (performance.now() - startedAt)));
+        }
+      };
+      renderFrame();
+      const blob = await recordingPromise;
+      setVideoUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return URL.createObjectURL(blob);
+      });
+      toast.success("Animated background is ready to download");
+    } catch (error) {
+      console.error("Failed to create animated background", error);
+      toast.error("Could not create the animated background");
+    } finally {
+      setIsRecording(false);
+    }
+  };
 
   const handleDownload = () => {
     if (!generatedImage) return;
@@ -377,6 +492,21 @@ const BackgroundGenerator = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  const handleVideoDownload = () => {
+    if (!videoUrl) return;
+    const link = document.createElement("a");
+    link.href = videoUrl;
+    link.download = `minecraft-animated-background-${size}.webm`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  useEffect(() => () => {
+    if (recordingTimerRef.current) clearTimeout(recordingTimerRef.current);
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
+  }, [videoUrl]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -421,12 +551,31 @@ const BackgroundGenerator = () => {
               <span className="text-cow-purple">Background</span> Generator
             </h1>
 
-            <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
-              Generate custom Minecraft-themed backgrounds for your content.
-              Perfect for thumbnails, stream overlays, and channel art.
-            </p>
+             <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
+               Generate custom Minecraft-themed backgrounds for your content.
+               Perfect for thumbnails, stream overlays, and channel art.
+             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+             <Tabs
+               value={outputMode}
+               onValueChange={(value) => {
+                 setOutputMode(value as OutputMode);
+               }}
+               className="mb-8"
+             >
+               <TabsList className="mx-auto grid h-14 w-full max-w-md grid-cols-2 pixel-corners bg-black/20 p-1">
+                 <TabsTrigger value="image" className="gap-2 pixel-corners text-sm">
+                   <IconPhoto className="h-4 w-4" />
+                   Image
+                 </TabsTrigger>
+                 <TabsTrigger value="gif" className="gap-2 pixel-corners text-sm">
+                   <IconPlayerPlay className="h-4 w-4" />
+                   GIF / Video
+                 </TabsTrigger>
+               </TabsList>
+             </Tabs>
+
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-1 space-y-6 pixel-card">
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -575,14 +724,14 @@ const BackgroundGenerator = () => {
                           <p className="text-xs font-semibold uppercase tracking-wide">Selected images</p>
                           <p className="mt-1 text-xs text-muted-foreground">Choose from uploads and the library.</p>
                         </div>
-                        <span className="shrink-0 rounded-full bg-cow-purple/20 px-2 py-1 text-xs font-semibold text-cow-purple">
-                          {selectedImages.length}
-                        </span>
+                         <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                           {selectedImages.length}
+                         </span>
                       </div>
                       {selectedImages.length > 0 && (
                         <div className="mt-3 flex flex-wrap gap-1.5">
-                          {selectedImages.map((image) => (
-                            <button key={image.id} type="button" aria-label={`Remove ${image.title} from selection`} onClick={() => toggleImageSelection(image)} title={`Remove ${image.title}`} className="group relative h-9 w-9 overflow-hidden rounded-sm border border-cow-purple/60 bg-background">
+                           {selectedImages.map((image) => (
+                             <button key={image.id} type="button" aria-label={`Remove ${image.title} from selection`} onClick={() => toggleImageSelection(image)} title={`Remove ${image.title}`} className="group relative h-9 w-9 overflow-hidden rounded-sm border border-border/60 bg-background">
                               <img src={image.url} alt="" className="h-full w-full object-contain" />
                               <span className="absolute inset-0 hidden items-center justify-center bg-black/60 text-xs text-white group-hover:flex">×</span>
                             </button>
@@ -613,15 +762,75 @@ const BackgroundGenerator = () => {
                           <SelectValue placeholder="Choose a pattern" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="random">Randomized mix</SelectItem>
+                           <SelectItem value="random">Randomized order</SelectItem>
                           <SelectItem value="grid">Classic grid</SelectItem>
                           <SelectItem value="staggered">Staggered tiles</SelectItem>
                           <SelectItem value="diagonal">Diagonal rows</SelectItem>
                           <SelectItem value="scattered">Scattered collage</SelectItem>
                         </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+                       </Select>
+                     </div>
+
+                     <div className="space-y-2 rounded-sm border border-primary/20 bg-black/10 p-3">
+                       <div className="flex items-center justify-between gap-3">
+                         <div className="flex items-center gap-2">
+                           <IconRotateClockwise className="h-4 w-4 text-cow-purple" />
+                           <label className="text-sm font-medium">Texture rotation</label>
+                         </div>
+                         <span className="text-xs text-muted-foreground">{rotation[0]}°</span>
+                       </div>
+                       <Slider
+                         value={rotation}
+                         onValueChange={setRotation}
+                         min={0}
+                         max={360}
+                         step={1}
+                         aria-label="Texture rotation"
+                         className="pixel-corners"
+                       />
+                       <div className="flex justify-between text-[10px] text-muted-foreground">
+                         <span>0°</span>
+                         <span>90°</span>
+                         <span>180°</span>
+                         <span>270°</span>
+                         <span>360°</span>
+                       </div>
+                     </div>
+
+                     {outputMode === "gif" && (
+                       <div className="space-y-4 rounded-sm border border-cow-purple/30 bg-cow-purple/10 p-3">
+                         <div>
+                           <p className="text-sm font-semibold">Animation controls</p>
+                           <p className="mt-1 text-xs text-muted-foreground">Create a repeating right-to-left WebM loop for the selected duration.</p>
+                         </div>
+
+                         <div className="space-y-2">
+                           <div className="flex justify-between">
+                             <label className="text-sm font-medium">Duration</label>
+                             <span className="text-xs text-muted-foreground">{animationDuration[0]}s</span>
+                           </div>
+                           <Slider value={animationDuration} onValueChange={setAnimationDuration} min={2} max={12} step={1} className="pixel-corners" />
+                         </div>
+
+                         <div className="space-y-2">
+                           <div className="flex justify-between">
+                             <label className="text-sm font-medium">Frame rate</label>
+                             <span className="text-xs text-muted-foreground">{animationFps[0]} FPS</span>
+                           </div>
+                           <Slider value={animationFps} onValueChange={setAnimationFps} min={6} max={30} step={1} className="pixel-corners" />
+                         </div>
+
+                         <div className="space-y-2">
+                           <div className="flex justify-between">
+                             <label className="text-sm font-medium">Movement distance</label>
+                             <span className="text-xs text-muted-foreground">{animationDistance[0]}px</span>
+                           </div>
+                           <Slider value={animationDistance} onValueChange={setAnimationDistance} min={40} max={400} step={10} className="pixel-corners" />
+                           <p className="text-xs text-muted-foreground">Textures move smoothly from right to left, then repeat.</p>
+                         </div>
+                       </div>
+                     )}
+                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -753,9 +962,19 @@ const BackgroundGenerator = () => {
                   <h3 className="text-lg font-jetbrains-mono">Preview</h3>
                 </div>
 
-                <div className="flex-grow flex items-center justify-center bg-black/20 rounded-md overflow-hidden relative min-h-[300px]">
-                  {generatedImage ? (
-                    <div className="relative w-full h-full flex items-center justify-center">
+                 <div className="flex-grow flex items-center justify-center bg-black/20 rounded-md overflow-hidden relative min-h-[300px]">
+                   {outputMode === "gif" && videoUrl ? (
+                     <video
+                       src={videoUrl}
+                       autoPlay
+                       loop
+                       muted
+                       playsInline
+                       aria-label="Animated background preview"
+                       className="max-h-full max-w-full object-contain"
+                     />
+                   ) : generatedImage ? (
+                     <div className="relative w-full h-full flex items-center justify-center">
                       <img
                         src={generatedImage}
                         alt="Generated background"
@@ -783,13 +1002,43 @@ const BackgroundGenerator = () => {
                     </div>
                   )}
 
-                  <canvas ref={canvasRef} className="hidden"></canvas>
-                </div>
+                   <canvas ref={canvasRef} className="hidden"></canvas>
+                 </div>
 
-                {generatedImage && (
-                  <Button
-                    onClick={handleDownload}
-                    className="mt-4 pixel-btn-primary flex items-center justify-center space-x-2"
+                 {outputMode === "gif" ? (
+                   <div className="mt-4 space-y-2">
+                     {isRecording && (
+                       <div className="space-y-1">
+                         <div className="flex justify-between text-xs text-muted-foreground">
+                           <span className="flex items-center gap-1.5"><IconPlayerStop className="h-3.5 w-3.5" /> Rendering video...</span>
+                           <span>{Math.round(recordingProgress)}%</span>
+                         </div>
+                         <div className="h-2 overflow-hidden rounded-full bg-black/20">
+                           <div className="h-full bg-cow-purple transition-[width]" style={{ width: `${recordingProgress}%` }} />
+                         </div>
+                       </div>
+                     )}
+                     <div className="flex flex-col gap-2 sm:flex-row">
+                       <Button
+                         onClick={handleCreateVideo}
+                         disabled={!selectedImages.length || isRecording}
+                         className="pixel-btn-primary flex flex-1 items-center justify-center gap-2"
+                       >
+                         <IconPlayerPlay className="h-5 w-5" />
+                         {isRecording ? "Rendering..." : "Create Animated Video"}
+                       </Button>
+                       {videoUrl && (
+                         <Button onClick={handleVideoDownload} variant="outline" className="flex items-center justify-center gap-2 pixel-corners">
+                           <IconDownload className="h-5 w-5" />
+                           Download WebM
+                         </Button>
+                       )}
+                     </div>
+                   </div>
+                 ) : generatedImage && (
+                   <Button
+                     onClick={handleDownload}
+                     className="mt-4 pixel-btn-primary flex items-center justify-center space-x-2"
                   >
                     <IconDownload className="h-5 w-5" />
                     <span>Download Background</span>
