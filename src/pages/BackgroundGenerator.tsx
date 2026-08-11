@@ -676,7 +676,7 @@ const BackgroundGenerator = () => {
              </Tabs>
 
               <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
-              <div className="md:col-span-1 space-y-6 pixel-card">
+               <div className="pixel-card relative flex flex-col space-y-6 border-l-4 border-l-cow-purple/70 shadow-2xl shadow-cow-purple/10 md:sticky md:top-24 md:col-span-1 md:max-h-[calc(100vh-7rem)] md:overflow-y-auto md:overscroll-contain md:custom-scrollbar">
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Select images</label>
