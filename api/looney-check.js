@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
-import { allowedOrigins } from './cors.js';
+import { isAllowedOrigin } from './cors.js';
 
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const DEFAULT_LOONEY_URL = 'https://looney.codersoft.xyz/check';
@@ -73,7 +73,7 @@ async function releaseRateLimit(buckets) {
 function corsHeaders(request) {
   const origin = getHeader(request, 'origin');
   return {
-    'Access-Control-Allow-Origin': origin && allowedOrigins.has(origin) ? origin : 'https://renderdragon.org',
+    'Access-Control-Allow-Origin': origin && isAllowedOrigin(origin) ? origin : 'https://renderdragon.org',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Looney-Browser-Id',
     'Access-Control-Max-Age': '86400',

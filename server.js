@@ -8,7 +8,7 @@ import downloadThumbnailHandler from './api/downloadThumbnail.js';
 import generateTitlesHandler from './api/generateTitles.js';
 import deleteAccountHandler from './api/deleteAccount.js';
 import looneyCheckHandler from './api/looney-check.js';
-import { allowedOrigins } from './api/cors.js';
+import { isAllowedOrigin } from './api/cors.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
 
@@ -19,7 +19,7 @@ app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (!allowedOrigins.has(origin)) {
+    if (!isAllowedOrigin(origin)) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
