@@ -7,10 +7,25 @@ const JOB_RECOVERY_INTERVAL_MS = 2000;
 const MAX_JOB_RECOVERY_ATTEMPTS = 150;
 const BROWSER_RATE_LIMIT_KEY = 'renderdragon-looney-browser-id';
 
+function createBrowserRateLimitId(): string {
+  const webCrypto = typeof globalThis.crypto !== 'undefined' ? globalThis.crypto : undefined;
+  if (typeof webCrypto?.randomUUID === 'function') return webCrypto.randomUUID();
+
+  if (typeof webCrypto?.getRandomValues === 'function') {
+    const bytes = webCrypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
 function getBrowserRateLimitId(): string {
   const existing = localStorage.getItem(BROWSER_RATE_LIMIT_KEY);
   if (existing) return existing;
-  const created = crypto.randomUUID();
+  const created = createBrowserRateLimitId();
   localStorage.setItem(BROWSER_RATE_LIMIT_KEY, created);
   return created;
 }
