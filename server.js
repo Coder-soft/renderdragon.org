@@ -34,7 +34,10 @@ app.use(express.json());
 const createAdapter = (handler) => (req, res) => {
   const vercelReq = {
     method: req.method,
-    headers: req.headers,
+    headers: {
+      ...req.headers,
+      'x-vercel-ip': req.ip || req.socket.remoteAddress || '',
+    },
     body: req.body,
     url: `http://${req.headers.host}${req.originalUrl}`,
   };

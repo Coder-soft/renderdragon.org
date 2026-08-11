@@ -14,7 +14,7 @@ function getHeader(request, name) {
 function getClientIp(request) {
   // Only use the platform-provided value; forwarded headers can be forged by callers.
   const platformIp = getHeader(request, 'x-vercel-ip');
-  return platformIp ? String(platformIp).trim() : 'unknown';
+  return platformIp ? String(platformIp).trim() : null;
 }
 
 function hashIdentifier(value) {
@@ -39,28 +39,35 @@ async function getAuthenticatedUserId(request) {
   }
 }
 
-async function consumeRateLimit(request, consume = true) {
+async function consumeRateLimit(request) {
   const browserId = getHeader(request, 'x-looney-browser-id');
   if (browserId && String(browserId).length > 200) return { allowed: false, error: 'The browser identifier is invalid.' };
   const userId = await getAuthenticatedUserId(request);
+  const clientIp = getClientIp(request);
   const buckets = [];
   if (browserId) buckets.push({ type: 'browser', hash: hashIdentifier(`browser:${browserId}`) });
   if (userId) {
-    buckets.push({ type: 'ip', hash: hashIdentifier(`ip:${getClientIp(request)}`) });
+    buckets.push({ type: 'ip', hash: hashIdentifier(`ip:${clientIp || 'unknown'}`) });
     buckets.push({ type: 'account', hash: hashIdentifier(`account:${userId}`), user_id: userId });
   } else {
-    // Anonymous callers must share a server-controlled bucket; client headers are not identities.
-    buckets.push({ type: 'ip', hash: hashIdentifier('anonymous') });
+    if (!clientIp) return { allowed: false, error: 'Unable to verify the anonymous request identity.' };
+    buckets.push({ type: 'ip', hash: hashIdentifier(`ip:${clientIp}`) });
   }
-  const { data, error } = await getSupabaseAdmin().rpc('consume_looney_check_rate_limit', { p_buckets: buckets, p_limit: DAILY_CHECK_LIMIT, p_consume: consume });
+  const { data, error } = await getSupabaseAdmin().rpc('consume_looney_check_rate_limit', { p_buckets: buckets, p_limit: DAILY_CHECK_LIMIT, p_consume: true });
   if (error) {
     // Keep local development usable before the migration is pushed; production fails closed.
     if (error.code === 'PGRST202' && process.env.NODE_ENV !== 'production') return { allowed: true };
     throw new Error(`Unable to verify check limit: ${error.message}`);
   }
   const result = Array.isArray(data) ? data[0] : data;
-  if (!result?.allowed) return { allowed: false, retryAfter: Number(result?.retry_after_seconds || 0) };
-  return { allowed: true };
+  if (!result?.allowed) return { allowed: false, retryAfter: Number(result?.retry_after_seconds || 0), buckets };
+  return { allowed: true, buckets };
+}
+
+async function releaseRateLimit(buckets) {
+  if (!buckets?.length) return;
+  const { error } = await getSupabaseAdmin().rpc('release_looney_check_rate_limit', { p_buckets: buckets });
+  if (error) throw new Error(`Unable to release check limit: ${error.message}`);
 }
 
 function corsHeaders(request) {
@@ -265,22 +272,35 @@ export default async function handler(request) {
 
   try {
     const upstream = await buildUpstreamRequest(request);
-    const preflightRateLimit = await consumeRateLimit(request, false);
-    if (!preflightRateLimit.allowed) {
-      const retryAfter = String(preflightRateLimit.retryAfter || 86400);
-      return jsonResponse(request, { error: `Daily limit reached. You can run up to ${DAILY_CHECK_LIMIT} checks per day.`, retry_after_seconds: Number(retryAfter) }, 429);
-    }
-    const response = await fetch(`${getLooneyBaseUrl()}/jobs`, {
-      method: 'POST',
-      headers: upstreamHeaders(upstream.contentType),
-      body: upstream.body,
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!response.ok) return proxyUpstreamResponse(request, response, true);
-    const rateLimit = await consumeRateLimit(request, true);
+    const rateLimit = await consumeRateLimit(request);
     if (!rateLimit.allowed) {
       const retryAfter = String(rateLimit.retryAfter || 86400);
-      return jsonResponse(request, { error: `Daily limit reached. You can run up to ${DAILY_CHECK_LIMIT} checks per day.`, retry_after_seconds: Number(retryAfter) }, 429);
+      const status = rateLimit.error ? 503 : 429;
+      return jsonResponse(request, { error: rateLimit.error || `Daily limit reached. You can run up to ${DAILY_CHECK_LIMIT} checks per day.`, retry_after_seconds: Number(retryAfter) }, status);
+    }
+    let response;
+    try {
+      response = await fetch(`${getLooneyBaseUrl()}/jobs`, {
+        method: 'POST',
+        headers: upstreamHeaders(upstream.contentType),
+        body: upstream.body,
+        signal: AbortSignal.timeout(30000),
+      });
+    } catch (error) {
+      try {
+        await releaseRateLimit(rateLimit.buckets);
+      } catch (releaseError) {
+        console.error('Failed to release Looney rate-limit reservation:', releaseError);
+      }
+      throw error;
+    }
+    if (!response.ok) {
+      try {
+        await releaseRateLimit(rateLimit.buckets);
+      } catch (releaseError) {
+        console.error('Failed to release Looney rate-limit reservation:', releaseError);
+      }
+      return proxyUpstreamResponse(request, response, true);
     }
     return proxyUpstreamResponse(request, response, true);
   } catch (error) {

@@ -156,6 +156,10 @@ export type Database = {
           account_count: number;
         }>;
       };
+      release_looney_check_rate_limit: {
+        Args: { p_buckets: Json };
+        Returns: undefined;
+      };
       get_my_profile: {
         Args: Record<string, never>;
         Returns: Json;
