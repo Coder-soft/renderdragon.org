@@ -318,17 +318,20 @@ const BackgroundGenerator = () => {
     }
     let tileIndex = 0;
 
-    const drawJitteredTile = (sourceIndex: number, x: number, y: number, width: number, height: number) => {
-      const positionJitter = (random() - 0.5) * Math.min(horizontalStep, verticalStep) * 0.12;
-      const tileScale = 0.9 + random() * 0.2;
-      const tileRotation = (random() < 0.5 ? -1 : 1) * (0.02 + random() * 0.06);
+    const drawStructuredTile = (sourceIndex: number, x: number, y: number) => {
+      const { width, height } = sizes[sourceIndex];
+      const rotationRadians = (rotationDegrees * Math.PI) / 180;
+      const rotatedWidth = Math.abs(width * Math.cos(rotationRadians)) + Math.abs(height * Math.sin(rotationRadians));
+      const rotatedHeight = Math.abs(width * Math.sin(rotationRadians)) + Math.abs(height * Math.cos(rotationRadians));
+      const fit = Math.min(1, maxWidth / rotatedWidth, baseHeight / rotatedHeight);
+      const drawWidth = width * fit;
+      const drawHeight = height * fit;
       drawTile(
         sourceIndex,
-        x + positionJitter,
-        y + positionJitter,
-        width * tileScale,
-        height * tileScale,
-        tileRotation,
+        x + (maxWidth - drawWidth) / 2,
+        y + (baseHeight - drawHeight) / 2,
+        drawWidth,
+        drawHeight,
       );
     };
 
@@ -349,9 +352,8 @@ const BackgroundGenerator = () => {
       for (let row = 0, y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; row += 1, y += verticalStep) {
         const rowOffset = (row % 2) * horizontalStep * 0.25;
         for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
-          const sourceIndex = tileIndex % images.length;
-          const { width, height } = sizes[sourceIndex];
-           drawJitteredTile(sourceIndex, x, y, width, height);
+           const sourceIndex = randomOrder[tileIndex % randomOrder.length];
+           drawStructuredTile(sourceIndex, x, y);
           tileIndex += 1;
         }
       }
@@ -367,9 +369,8 @@ const BackgroundGenerator = () => {
           : 0;
 
       for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
-        const sourceIndex = tileIndex % images.length;
-        const { width, height } = sizes[sourceIndex];
-        drawJitteredTile(sourceIndex, x, y, width, height);
+        const sourceIndex = randomOrder[tileIndex % randomOrder.length];
+        drawStructuredTile(sourceIndex, x, y);
         tileIndex += 1;
       }
     }
