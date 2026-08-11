@@ -8,29 +8,18 @@ import downloadThumbnailHandler from './api/downloadThumbnail.js';
 import generateTitlesHandler from './api/generateTitles.js';
 import deleteAccountHandler from './api/deleteAccount.js';
 import looneyCheckHandler from './api/looney-check.js';
+import { allowedOrigins } from './api/cors.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
 
 const app = express();
 const port = 3000;
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:8080',
-  'http://localhost:3000',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:8080',
-  'http://127.0.0.1:3000',
-  'https://renderdragon.org',
-  'https://www.renderdragon.org',
-  'https://assets-api-worker.powernplant101-c6b.workers.dev'
-];
-
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
+    if (!allowedOrigins.has(origin)) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
@@ -38,7 +27,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Looney-Browser-Id']
 }));
 app.use(express.json());
 

@@ -1,20 +1,10 @@
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
+import { allowedOrigins } from './cors.js';
 
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const DEFAULT_LOONEY_URL = 'https://looney.codersoft.xyz/check';
 const DAILY_CHECK_LIMIT = 5;
-
-const allowedOrigins = new Set([
-  'https://renderdragon.org',
-  'https://www.renderdragon.org',
-  'http://localhost:5173',
-  'http://localhost:8080',
-  'http://localhost:3000',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:8080',
-  'http://127.0.0.1:3000',
-]);
 
 function getHeader(request, name) {
   if (request.headers?.get) return request.headers.get(name);
@@ -22,12 +12,13 @@ function getHeader(request, name) {
 }
 
 function getClientIp(request) {
-  const forwarded = getHeader(request, 'x-forwarded-for') || getHeader(request, 'x-real-ip') || 'unknown';
-  return String(forwarded).split(',')[0].trim() || 'unknown';
+  // Only use the platform-provided value; forwarded headers can be forged by callers.
+  const platformIp = getHeader(request, 'x-vercel-ip');
+  return platformIp ? String(platformIp).trim() : 'unknown';
 }
 
 function hashIdentifier(value) {
-  return crypto.createHash('sha256').update(`${process.env.SUPABASE_SECRET_KEY || 'looney-rate-limit'}:${value}`).digest('hex');
+  return crypto.createHash('sha256').update(`${process.env.LOONEY_RATE_LIMIT_SALT || 'looney-rate-limit'}:${value}`).digest('hex');
 }
 
 function getSupabaseAdmin() {
@@ -48,16 +39,20 @@ async function getAuthenticatedUserId(request) {
   }
 }
 
-async function consumeRateLimit(request) {
+async function consumeRateLimit(request, consume = true) {
   const browserId = getHeader(request, 'x-looney-browser-id');
-  if (!browserId || String(browserId).length > 200) return { allowed: false, error: 'A browser identifier is required to run a check.' };
+  if (browserId && String(browserId).length > 200) return { allowed: false, error: 'The browser identifier is invalid.' };
   const userId = await getAuthenticatedUserId(request);
-  const buckets = [
-    { type: 'browser', hash: hashIdentifier(`browser:${browserId}`) },
-    { type: 'ip', hash: hashIdentifier(`ip:${getClientIp(request)}`) },
-  ];
-  if (userId) buckets.push({ type: 'account', hash: hashIdentifier(`account:${userId}`), user_id: userId });
-  const { data, error } = await getSupabaseAdmin().rpc('consume_looney_check_rate_limit', { p_buckets: buckets });
+  const buckets = [];
+  if (browserId) buckets.push({ type: 'browser', hash: hashIdentifier(`browser:${browserId}`) });
+  if (userId) {
+    buckets.push({ type: 'ip', hash: hashIdentifier(`ip:${getClientIp(request)}`) });
+    buckets.push({ type: 'account', hash: hashIdentifier(`account:${userId}`), user_id: userId });
+  } else {
+    // Anonymous callers must share a server-controlled bucket; client headers are not identities.
+    buckets.push({ type: 'ip', hash: hashIdentifier('anonymous') });
+  }
+  const { data, error } = await getSupabaseAdmin().rpc('consume_looney_check_rate_limit', { p_buckets: buckets, p_limit: DAILY_CHECK_LIMIT, p_consume: consume });
   if (error) {
     // Keep local development usable before the migration is pushed; production fails closed.
     if (error.code === 'PGRST202' && process.env.NODE_ENV !== 'production') return { allowed: true };
@@ -73,7 +68,8 @@ function corsHeaders(request) {
   return {
     'Access-Control-Allow-Origin': origin && allowedOrigins.has(origin) ? origin : 'https://renderdragon.org',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Looney-Browser-Id',
+    'Access-Control-Max-Age': '86400',
     'Vary': 'Origin',
   };
 }
@@ -163,7 +159,7 @@ async function readBody(request) {
     const buffer = Buffer.from(chunk);
     total += buffer.length;
     if (total > MAX_UPLOAD_BYTES + 1024 * 1024) {
-      throw new Error('Upload exceeds the 50 MB limit');
+      throw new ValidationError('Upload exceeds the 50 MB limit');
     }
     chunks.push(buffer);
   }
@@ -176,7 +172,7 @@ async function buildUpstreamRequest(request) {
   if (contentType.toLowerCase().startsWith('multipart/form-data')) {
     const body = await readBody(request);
     if (body.length > MAX_UPLOAD_BYTES + 1024 * 1024) {
-      throw new Error('Upload exceeds the 50 MB limit');
+      throw new ValidationError('Upload exceeds the 50 MB limit');
     }
     return { body, contentType };
   }
@@ -188,7 +184,7 @@ async function buildUpstreamRequest(request) {
       try {
         payload = JSON.parse(rawBody.toString('utf8'));
       } catch {
-        throw new Error('Invalid JSON request');
+        throw new ValidationError('Invalid JSON request');
       }
     } else {
       payload = null;
@@ -196,7 +192,7 @@ async function buildUpstreamRequest(request) {
   }
 
   if (!payload || (typeof payload.spotify_url !== 'string' && typeof payload.file_url !== 'string')) {
-    throw new Error('Provide a Spotify track URL or an audio file');
+    throw new ValidationError('Provide a Spotify track URL or an audio file');
   }
 
   if (typeof payload.file_url === 'string') {
@@ -204,9 +200,9 @@ async function buildUpstreamRequest(request) {
     try {
       fileUrl = new URL(payload.file_url);
     } catch {
-      throw new Error('Enter a valid public audio file URL');
+      throw new ValidationError('Enter a valid public audio file URL');
     }
-    if (!['http:', 'https:'].includes(fileUrl.protocol)) throw new Error('Enter a valid public audio file URL');
+    if (!['http:', 'https:'].includes(fileUrl.protocol)) throw new ValidationError('Enter a valid public audio file URL');
     return { body: JSON.stringify({ file_url: fileUrl.toString() }), contentType: 'application/json' };
   }
 
@@ -214,11 +210,11 @@ async function buildUpstreamRequest(request) {
   try {
     spotifyUrl = new URL(payload.spotify_url);
   } catch {
-    throw new Error('Enter a valid Spotify track URL');
+    throw new ValidationError('Enter a valid Spotify track URL');
   }
 
   if (spotifyUrl.hostname !== 'open.spotify.com' || !spotifyUrl.pathname.startsWith('/track/')) {
-    throw new Error('Enter a valid Spotify track URL');
+    throw new ValidationError('Enter a valid Spotify track URL');
   }
 
   return {
@@ -234,6 +230,8 @@ export const config = {
   },
   maxDuration: 300,
 };
+
+class ValidationError extends Error {}
 
 export default async function handler(request) {
   if (request.method === 'OPTIONS') {
@@ -267,9 +265,9 @@ export default async function handler(request) {
 
   try {
     const upstream = await buildUpstreamRequest(request);
-    const rateLimit = await consumeRateLimit(request);
-    if (!rateLimit.allowed) {
-      const retryAfter = String(rateLimit.retryAfter || 86400);
+    const preflightRateLimit = await consumeRateLimit(request, false);
+    if (!preflightRateLimit.allowed) {
+      const retryAfter = String(preflightRateLimit.retryAfter || 86400);
       return jsonResponse(request, { error: `Daily limit reached. You can run up to ${DAILY_CHECK_LIMIT} checks per day.`, retry_after_seconds: Number(retryAfter) }, 429);
     }
     const response = await fetch(`${getLooneyBaseUrl()}/jobs`, {
@@ -278,10 +276,16 @@ export default async function handler(request) {
       body: upstream.body,
       signal: AbortSignal.timeout(30000),
     });
+    if (!response.ok) return proxyUpstreamResponse(request, response, true);
+    const rateLimit = await consumeRateLimit(request, true);
+    if (!rateLimit.allowed) {
+      const retryAfter = String(rateLimit.retryAfter || 86400);
+      return jsonResponse(request, { error: `Daily limit reached. You can run up to ${DAILY_CHECK_LIMIT} checks per day.`, retry_after_seconds: Number(retryAfter) }, 429);
+    }
     return proxyUpstreamResponse(request, response, true);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unable to check this track';
-    const status = message.includes('50 MB') || message.includes('valid') || message.includes('Provide') || message.includes('Invalid JSON') ? 400 : 502;
+    const status = error instanceof ValidationError ? 400 : 502;
     return jsonResponse(request, { error: message }, status);
   }
 }

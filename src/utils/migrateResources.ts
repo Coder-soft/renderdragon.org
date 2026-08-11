@@ -11,21 +11,18 @@ interface JsonResource {
   preview_url?: string;
 }
 
-interface JsonResourcesData {
-  music: JsonResource[];
-  sfx: JsonResource[];
-  images: JsonResource[];
-  animations: JsonResource[];
-  fonts: JsonResource[];
-  presets: JsonResource[];
-}
+const isJsonResource = (value: unknown): value is JsonResource => {
+  if (!value || typeof value !== "object") return false;
+  const resource = value as Record<string, unknown>;
+  return typeof resource.id === "number" && typeof resource.title === "string";
+};
 
 export const migrateJsonResourcesToSupabase = async () => {
   try {
     console.log("Starting migration of JSON resources to Supabase...");
 
     // Fetch the JSON resources (new all-resources format with legacy fallback)
-    let jsonData: JsonResourcesData | Resource[] | null = null;
+    let jsonData: unknown = null;
 
     const allResponse = await fetch("/resources.all.json");
     if (allResponse.ok) {
@@ -38,30 +35,42 @@ export const migrateJsonResourcesToSupabase = async () => {
       jsonData = await legacyResponse.json();
     }
 
-    const sourceData = jsonData || {};
-    const normalizedData: Record<string, JsonResource[]> = Array.isArray(
-      sourceData,
-    )
+    if (!jsonData || typeof jsonData !== "object") {
+      throw new Error("Resource JSON is empty or malformed");
+    }
+
+    const sourceData = jsonData as Record<string, unknown> | unknown[];
+    const normalizedData: Record<string, JsonResource[]> = Array.isArray(sourceData)
       ? sourceData.reduce(
           (acc, resource) => {
-            const resourceId = (resource as Resource).id;
-            if (typeof resourceId !== "number") return acc;
-            const category = (resource as Resource).category || "uncategorized";
+            if (!isJsonResource(resource)) throw new Error("Resource JSON contains a malformed resource");
+            const typedResource = resource as Resource;
+            const category = typedResource.category || "uncategorized";
             if (!acc[category]) acc[category] = [];
             acc[category].push({
-              id: resourceId,
-              title: (resource as Resource).title,
-              credit: (resource as Resource).credit || undefined,
-              filetype: (resource as Resource).filetype || undefined,
-              software: (resource as Resource).software || undefined,
-              description: (resource as Resource).description || undefined,
-              preview_url: (resource as Resource).preview_url || undefined,
+              id: typedResource.id as number,
+              title: typedResource.title,
+              credit: typedResource.credit || undefined,
+              filetype: typedResource.filetype || undefined,
+              software: typedResource.software || undefined,
+              description: typedResource.description || undefined,
+              preview_url: typedResource.preview_url || undefined,
             });
             return acc;
           },
           {} as Record<string, JsonResource[]>,
         )
-      : (sourceData as JsonResourcesData);
+      : Object.entries(sourceData).reduce<Record<string, JsonResource[]>>((acc, [category, resources]) => {
+          if (!Array.isArray(resources) || !resources.every(isJsonResource)) {
+            throw new Error(`Resource JSON category "${category}" is malformed`);
+          }
+          acc[category] = resources;
+          return acc;
+        }, {});
+
+    if (Object.values(normalizedData).every((resources) => resources.length === 0)) {
+      throw new Error("Resource JSON contains no resources");
+    }
 
     console.log("Fetched JSON data:", normalizedData);
 
@@ -112,6 +121,9 @@ export const migrateJsonResourcesToSupabase = async () => {
     console.log(
       `Converted ${supabaseResources.length} resources for migration`,
     );
+    if (supabaseResources.length === 0) {
+      throw new Error("Migration produced no resources; existing data was preserved");
+    }
 
     // Clear existing resources (optional - comment out if you want to keep existing data)
     console.log("Clearing existing resources...");

@@ -37,21 +37,23 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
 
   useEffect(() => {
     const controllers = new Set<AbortController>();
+    let cancelled = false;
     const streamRunningJobs = async () => {
       const runningRecords = recordsRef.current.filter((record) => isRunning(record) && record.jobId !== activeJobId);
       await Promise.all(runningRecords.map(async (record) => {
         const controller = new AbortController();
         controllers.add(controller);
+        const currentRecord = () => loadLooneyHistory().find((item) => item.jobId === record.jobId) || record;
         try {
           const job = await streamLooneyJob(record.jobId, controller.signal, (message) => {
-            saveLooneyHistoryRecord({ ...record, progress: message });
+            saveLooneyHistoryRecord({ ...currentRecord(), progress: message });
           });
-          const updated = updateLooneyHistoryFromJob(record, job);
+          const updated = updateLooneyHistoryFromJob(currentRecord(), job);
           saveLooneyHistoryRecord(updated);
         } catch (error) {
           if (!controller.signal.aborted) {
             saveLooneyHistoryRecord({
-              ...record,
+              ...currentRecord(),
               status: 'failed',
               error: error instanceof Error ? error.message : 'Unable to resume this check.',
             });
@@ -60,11 +62,14 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
           controllers.delete(controller);
         }
       }));
-      setRecords(loadLooneyHistory());
+      if (!cancelled) setRecords(loadLooneyHistory());
     };
 
     void streamRunningJobs();
-    return () => controllers.forEach((controller) => controller.abort());
+    return () => {
+      cancelled = true;
+      controllers.forEach((controller) => controller.abort());
+    };
   }, [activeJobId]);
 
   const runningRecords = records.filter(isRunning);

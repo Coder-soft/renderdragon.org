@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 type Texture = { id: number | string; url: string; title: string; subcategory?: string };
 type PatternImage = { id: string; url: string; title: string; source: "library" | "upload" };
 type PatternType = "grid" | "staggered" | "diagonal" | "scattered" | "random";
-type OutputMode = "image" | "gif";
+type OutputMode = "image" | "video";
+
+const MAX_UPLOADED_IMAGES = 20;
+const MAX_IMAGE_FILE_BYTES = 10 * 1024 * 1024;
 
 const isTexture = (value: unknown): value is Texture => {
   if (!value || typeof value !== 'object') return false;
@@ -127,6 +130,13 @@ const BackgroundGenerator = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingProgress, setRecordingProgress] = useState(0);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
+  const spacingValue = spacing[0];
+  const opacityValue = opacity[0];
+  const scaleValue = scale[0];
+  const rotationValue = rotation[0];
+  const animationDurationValue = animationDuration[0];
+  const animationFpsValue = animationFps[0];
+  const animationDistanceValue = animationDistance[0];
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const uploadIdRef = useRef(0);
@@ -135,7 +145,10 @@ const BackgroundGenerator = () => {
 
   const invalidateGeneration = () => {
     generationIdRef.current += 1;
-    setGeneratedImage(null);
+    setGeneratedImage((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return null;
+    });
     setVideoUrl((current) => {
       if (current) URL.revokeObjectURL(current);
       return null;
@@ -143,13 +156,15 @@ const BackgroundGenerator = () => {
     setIsGenerating(false);
   };
 
-  const filteredTextures = textureSearch.trim()
-    ? textures
-      .map((texture) => ({ texture, score: fuzzyTextureScore(texture, textureSearch) }))
-      .filter(({ score }) => score !== Infinity)
-      .sort((left, right) => left.score - right.score || left.texture.title.localeCompare(right.texture.title))
-      .map(({ texture }) => texture)
-    : textures;
+  const filteredTextures = useMemo(() => (
+    textureSearch.trim()
+      ? textures
+        .map((texture) => ({ texture, score: fuzzyTextureScore(texture, textureSearch) }))
+        .filter(({ score }) => score !== Infinity)
+        .sort((left, right) => left.score - right.score || left.texture.title.localeCompare(right.texture.title))
+        .map(({ texture }) => texture)
+      : textures
+  ), [textures, textureSearch]);
 
   useEffect(() => {
     setVisibleTexturesCount(40);
@@ -184,10 +199,20 @@ const BackgroundGenerator = () => {
     if (imageFiles.length !== files.length) {
       toast.error("Only image files can be added");
     }
-    if (!imageFiles.length) return;
+    const validSizeFiles = imageFiles.filter((file) => {
+      if (file.size <= MAX_IMAGE_FILE_BYTES) return true;
+      toast.error(`${file.name} is larger than 10 MB`);
+      return false;
+    });
+    const availableSlots = Math.max(0, MAX_UPLOADED_IMAGES - uploadedImages.length);
+    if (validSizeFiles.length > availableSlots) {
+      toast.error(`You can upload up to ${MAX_UPLOADED_IMAGES} images`);
+    }
+    const acceptedFiles = validSizeFiles.slice(0, availableSlots);
+    if (!acceptedFiles.length) return;
     invalidateGeneration();
 
-    const newImages = imageFiles.map((file) => {
+    const newImages = acceptedFiles.map((file) => {
       const id = `upload-${uploadIdRef.current++}`;
       return new Promise<PatternImage>((resolve, reject) => {
         const reader = new FileReader();
@@ -202,12 +227,17 @@ const BackgroundGenerator = () => {
       });
     });
 
-    Promise.all(newImages)
-      .then((images) => {
+    Promise.allSettled(newImages)
+      .then((results) => {
+        const images = results
+          .filter((result): result is PromiseFulfilledResult<PatternImage> => result.status === "fulfilled")
+          .map((result) => result.value);
+        if (images.length) {
         setUploadedImages((current) => [...current, ...images]);
         setSelectedImages((current) => [...current, ...images]);
-      })
-      .catch(() => toast.error("One or more images could not be read"));
+        }
+        if (images.length !== results.length) toast.error("One or more images could not be read");
+      });
 
     event.target.value = "";
   };
@@ -247,6 +277,7 @@ const BackgroundGenerator = () => {
     seed: number,
     rotationDegrees: number,
     horizontalOffset = 0,
+    motionPadding = 0,
   ) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -262,8 +293,6 @@ const BackgroundGenerator = () => {
       const aspectRatio = source.image.width / source.image.height || 1;
       return { width: baseHeight * aspectRatio, height: baseHeight };
     });
-    // Keep the tile grid bounds stable between frames so seeded patterns do not reshuffle.
-    const motionPadding = 400;
     ctx.save();
     ctx.translate(horizontalOffset, 0);
 
@@ -278,8 +307,10 @@ const BackgroundGenerator = () => {
     };
 
     const maxWidth = Math.max(...sizes.map(({ width }) => width));
-    const horizontalStep = Math.max(12, maxWidth + spacingPixels);
-    const verticalStep = Math.max(12, baseHeight + spacingPixels);
+    const areaScale = Math.sqrt((canvasWidth * canvasHeight) / (1920 * 1080));
+    const minimumStep = Math.max(12, areaScale * 12);
+    const horizontalStep = Math.max(minimumStep, maxWidth + spacingPixels);
+    const verticalStep = Math.max(minimumStep, baseHeight + spacingPixels);
     const randomOrder = images.map((_, index) => index);
     for (let index = randomOrder.length - 1; index > 0; index -= 1) {
       const swapIndex = Math.floor(random() * (index + 1));
@@ -287,12 +318,26 @@ const BackgroundGenerator = () => {
     }
     let tileIndex = 0;
 
+    const drawJitteredTile = (sourceIndex: number, x: number, y: number, width: number, height: number) => {
+      const positionJitter = (random() - 0.5) * Math.min(horizontalStep, verticalStep) * 0.12;
+      const tileScale = 0.9 + random() * 0.2;
+      const tileRotation = (random() < 0.5 ? -1 : 1) * (0.02 + random() * 0.06);
+      drawTile(
+        sourceIndex,
+        x + positionJitter,
+        y + positionJitter,
+        width * tileScale,
+        height * tileScale,
+        tileRotation,
+      );
+    };
+
     if (type === "random") {
       for (let y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; y += verticalStep) {
         for (let x = -maxWidth - motionPadding; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
           const sourceIndex = randomOrder[tileIndex % randomOrder.length];
           const { width, height } = sizes[sourceIndex];
-          drawTile(sourceIndex, x, y, width, height);
+           drawTile(sourceIndex, x, y, width, height);
           tileIndex += 1;
         }
       }
@@ -306,7 +351,7 @@ const BackgroundGenerator = () => {
         for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
           const sourceIndex = tileIndex % images.length;
           const { width, height } = sizes[sourceIndex];
-          drawTile(sourceIndex, x, y, width, height);
+           drawJitteredTile(sourceIndex, x, y, width, height);
           tileIndex += 1;
         }
       }
@@ -324,28 +369,40 @@ const BackgroundGenerator = () => {
       for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
         const sourceIndex = tileIndex % images.length;
         const { width, height } = sizes[sourceIndex];
-        drawTile(sourceIndex, x, y, width, height);
+        drawJitteredTile(sourceIndex, x, y, width, height);
         tileIndex += 1;
       }
     }
     ctx.restore();
   };
 
+  const loadSelectedImages = () => Promise.all(selectedImages.map((source) => new Promise<PatternImage & { image: HTMLImageElement }>((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = "Anonymous";
+    image.onload = () => resolve({ ...source, image });
+    image.onerror = () => reject(new Error(`Failed to load ${source.title}`));
+    image.src = source.url;
+  })));
+
+  const canvasToObjectUrl = (canvas: HTMLCanvasElement): Promise<string> => new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("The generated image could not be encoded"));
+        return;
+      }
+      resolve(URL.createObjectURL(blob));
+    }, "image/png");
+  });
+
   const handleGenerate = async () => {
-    if (!selectedImages.length) return;
+    if (!selectedImages.length || isRecording) return;
 
     const generationId = ++generationIdRef.current;
     setIsGenerating(true);
     const [width, height] = size.split("x").map((dim) => parseInt(dim, 10));
 
     try {
-      const loadedImages = await Promise.all(selectedImages.map((source) => new Promise<PatternImage & { image: HTMLImageElement }>((resolve, reject) => {
-        const image = new Image();
-        image.crossOrigin = "Anonymous";
-        image.onload = () => resolve({ ...source, image });
-        image.onerror = () => reject(new Error(`Failed to load ${source.title}`));
-        image.src = source.url;
-      })));
+      const loadedImages = await loadSelectedImages();
 
       const canvas = canvasRef.current;
       if (!canvas) return;
@@ -356,7 +413,15 @@ const BackgroundGenerator = () => {
 
       generatePattern(ctx, loadedImages, width, height, spacing[0], opacity[0], scale[0], patternType, randomSeed, rotation[0]);
       if (generationId === generationIdRef.current) {
-        setGeneratedImage(canvas.toDataURL("image/png"));
+        const imageUrl = await canvasToObjectUrl(canvas);
+        if (generationId === generationIdRef.current) {
+          setGeneratedImage((current) => {
+            if (current) URL.revokeObjectURL(current);
+            return imageUrl;
+          });
+        } else {
+          URL.revokeObjectURL(imageUrl);
+        }
       }
     } catch (error) {
       console.error("Failed to load image for generation", error);
@@ -369,7 +434,7 @@ const BackgroundGenerator = () => {
   };
 
   useEffect(() => {
-    if (!selectedImages.length) return;
+    if (!selectedImages.length || isRecording) return;
 
     const timer = setTimeout(() => {
       handleGenerate();
@@ -378,15 +443,14 @@ const BackgroundGenerator = () => {
     return () => clearTimeout(timer);
     // Generation is intentionally debounced from these controls.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, size, spacing[0], opacity[0], scale[0], selectedImages, patternType, isTransparent, randomSeed, rotation[0]]);
+  }, [color, size, spacingValue, opacityValue, scaleValue, selectedImages, patternType, isTransparent, randomSeed, rotationValue, isRecording]);
 
-  const loadSelectedImages = () => Promise.all(selectedImages.map((source) => new Promise<PatternImage & { image: HTMLImageElement }>((resolve, reject) => {
-    const image = new Image();
-    image.crossOrigin = "Anonymous";
-    image.onload = () => resolve({ ...source, image });
-    image.onerror = () => reject(new Error(`Failed to load ${source.title}`));
-    image.src = source.url;
-  })));
+  useEffect(() => {
+    setVideoUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return null;
+    });
+  }, [color, size, spacingValue, opacityValue, scaleValue, patternType, isTransparent, rotationValue, randomSeed, animationDurationValue, animationFpsValue, animationDistanceValue, selectedImages]);
 
   const handleCreateVideo = async () => {
     if (!selectedImages.length || isRecording) return;
@@ -422,6 +486,8 @@ const BackgroundGenerator = () => {
         patternType,
         randomSeed,
         rotation[0],
+        0,
+        400,
       );
 
       const stream = canvas.captureStream(animationFps[0]);
@@ -435,14 +501,34 @@ const BackgroundGenerator = () => {
         if (event.data.size) chunks.push(event.data);
       };
 
-      const recordingPromise = new Promise<Blob>((resolve) => {
+      let rejectRecording: (reason?: unknown) => void = () => undefined;
+      const recordingPromise = new Promise<Blob>((resolve, reject) => {
+        rejectRecording = reject;
         recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType || "video/webm" }));
+        recorder.onerror = (event) => {
+          if (recordingTimerRef.current) {
+            clearTimeout(recordingTimerRef.current);
+            recordingTimerRef.current = null;
+          }
+          stream.getTracks().forEach((track) => track.stop());
+          reject((event as ErrorEvent).error || new Error("Recording failed"));
+        };
       });
       const durationMs = animationDuration[0] * 1000;
       const frameInterval = 1000 / animationFps[0];
       const totalFrames = Math.max(1, Math.round(animationDuration[0] * animationFps[0]));
       let frameIndex = 0;
-      recorder.start();
+      try {
+        recorder.start();
+      } catch (error) {
+        rejectRecording(error);
+        if (recordingTimerRef.current) {
+          clearTimeout(recordingTimerRef.current);
+          recordingTimerRef.current = null;
+        }
+        stream.getTracks().forEach((track) => track.stop());
+        throw error;
+      }
       const startedAt = performance.now();
 
       const renderFrame = () => {
@@ -474,6 +560,10 @@ const BackgroundGenerator = () => {
       console.error("Failed to create animated background", error);
       toast.error("Could not create the animated background");
     } finally {
+      if (recordingTimerRef.current) {
+        clearTimeout(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
       setIsRecording(false);
     }
   };
@@ -507,6 +597,10 @@ const BackgroundGenerator = () => {
     if (recordingTimerRef.current) clearTimeout(recordingTimerRef.current);
     if (videoUrl) URL.revokeObjectURL(videoUrl);
   }, [videoUrl]);
+
+  useEffect(() => () => {
+    if (generatedImage) URL.revokeObjectURL(generatedImage);
+  }, [generatedImage]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -557,10 +651,14 @@ const BackgroundGenerator = () => {
              </p>
 
              <Tabs
-               value={outputMode}
-               onValueChange={(value) => {
-                 setOutputMode(value as OutputMode);
-               }}
+                value={outputMode}
+                onValueChange={(value) => {
+                  const nextMode = value as OutputMode;
+                  setOutputMode(nextMode);
+                  if (nextMode === "video" && (size === "5120x2880" || size === "7680x4320")) {
+                    setSize("3840x2160");
+                  }
+                }}
                className="mb-8"
              >
                <TabsList className="mx-auto grid h-14 w-full max-w-md grid-cols-2 pixel-corners bg-black/20 p-1">
@@ -568,9 +666,9 @@ const BackgroundGenerator = () => {
                    <IconPhoto className="h-4 w-4" />
                    Image
                  </TabsTrigger>
-                 <TabsTrigger value="gif" className="gap-2 pixel-corners text-sm">
-                   <IconPlayerPlay className="h-4 w-4" />
-                   GIF / Video
+                  <TabsTrigger value="video" className="gap-2 pixel-corners text-sm">
+                    <IconPlayerPlay className="h-4 w-4" />
+                    Video (WebM)
                  </TabsTrigger>
                </TabsList>
              </Tabs>
@@ -797,7 +895,7 @@ const BackgroundGenerator = () => {
                        </div>
                      </div>
 
-                     {outputMode === "gif" && (
+                      {outputMode === "video" && (
                        <div className="space-y-4 rounded-sm border border-cow-purple/30 bg-cow-purple/10 p-3">
                          <div>
                            <p className="text-sm font-semibold">Animation controls</p>
@@ -809,7 +907,7 @@ const BackgroundGenerator = () => {
                              <label className="text-sm font-medium">Duration</label>
                              <span className="text-xs text-muted-foreground">{animationDuration[0]}s</span>
                            </div>
-                           <Slider value={animationDuration} onValueChange={setAnimationDuration} min={2} max={12} step={1} className="pixel-corners" />
+                            <Slider value={animationDuration} onValueChange={setAnimationDuration} min={2} max={12} step={1} aria-label="Animation duration" className="pixel-corners" />
                          </div>
 
                          <div className="space-y-2">
@@ -817,7 +915,7 @@ const BackgroundGenerator = () => {
                              <label className="text-sm font-medium">Frame rate</label>
                              <span className="text-xs text-muted-foreground">{animationFps[0]} FPS</span>
                            </div>
-                           <Slider value={animationFps} onValueChange={setAnimationFps} min={6} max={30} step={1} className="pixel-corners" />
+                            <Slider value={animationFps} onValueChange={setAnimationFps} min={6} max={30} step={1} aria-label="Animation frame rate" className="pixel-corners" />
                          </div>
 
                          <div className="space-y-2">
@@ -825,7 +923,7 @@ const BackgroundGenerator = () => {
                              <label className="text-sm font-medium">Movement distance</label>
                              <span className="text-xs text-muted-foreground">{animationDistance[0]}px</span>
                            </div>
-                           <Slider value={animationDistance} onValueChange={setAnimationDistance} min={40} max={400} step={10} className="pixel-corners" />
+                            <Slider value={animationDistance} onValueChange={setAnimationDistance} min={40} max={400} step={10} aria-label="Animation movement distance" className="pixel-corners" />
                            <p className="text-xs text-muted-foreground">Textures move smoothly from right to left, then repeat.</p>
                          </div>
                        </div>
@@ -938,12 +1036,12 @@ const BackgroundGenerator = () => {
                         <SelectItem value="4096x2160">
                           4096x2160 (DCI 4K)
                         </SelectItem>
-                        <SelectItem value="5120x2880">
-                          5120x2880 (5K)
-                        </SelectItem>
-                        <SelectItem value="7680x4320">
-                          7680x4320 (8K)
-                        </SelectItem>
+                         {outputMode === "image" && <SelectItem value="5120x2880">
+                           5120x2880 (5K)
+                         </SelectItem>}
+                         {outputMode === "image" && <SelectItem value="7680x4320">
+                           7680x4320 (8K)
+                         </SelectItem>}
                         <SelectItem value="1080x1080">
                           1080x1080 (1:1)
                         </SelectItem>
@@ -963,7 +1061,7 @@ const BackgroundGenerator = () => {
                 </div>
 
                  <div className="flex-grow flex items-center justify-center bg-black/20 rounded-md overflow-hidden relative min-h-[300px]">
-                   {outputMode === "gif" && videoUrl ? (
+                    {outputMode === "video" && videoUrl ? (
                      <video
                        src={videoUrl}
                        autoPlay
@@ -1005,7 +1103,7 @@ const BackgroundGenerator = () => {
                    <canvas ref={canvasRef} className="hidden"></canvas>
                  </div>
 
-                 {outputMode === "gif" ? (
+                  {outputMode === "video" ? (
                    <div className="mt-4 space-y-2">
                      {isRecording && (
                        <div className="space-y-1">

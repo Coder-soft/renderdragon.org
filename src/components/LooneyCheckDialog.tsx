@@ -16,7 +16,7 @@ const LooneyCheckDialog = ({ resource, onClose }: LooneyCheckDialogProps) => {
   const navigate = useNavigate();
   const [existingJob, setExistingJob] = useState<LooneyHistoryRecord | null>(null);
   const [limitReached, setLimitReached] = useState(false);
-  return <><Dialog open={!!resource} onOpenChange={(open) => !open && onClose()}>
+  return <><Dialog open={!!resource} onOpenChange={(open) => { if (!open) { setLimitReached(false); onClose(); } }}>
     <DialogContent className="max-h-[92vh] overflow-y-auto custom-scrollbar sm:max-w-4xl pixel-corners border-2 border-cow-purple">
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2 font-jetbrains-mono text-xl">

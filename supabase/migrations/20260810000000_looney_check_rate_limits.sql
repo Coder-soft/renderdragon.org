@@ -12,11 +12,31 @@ create table if not exists public.looney_check_rate_limits (
 create index if not exists looney_check_rate_limits_user_idx
   on public.looney_check_rate_limits (user_id, window_started_at);
 
+create extension if not exists pg_cron with schema extensions;
+
+do $$
+begin
+  if not exists (
+    select 1 from cron.job where jobname = 'looney-check-rate-limit-retention'
+  ) then
+    perform cron.schedule(
+      'looney-check-rate-limit-retention',
+      '17 3 * * *',
+      $job$delete from public.looney_check_rate_limits where window_started_at < now() - interval '7 days'$job$
+    );
+  end if;
+end;
+$$;
+
 alter table public.looney_check_rate_limits enable row level security;
 
 revoke all on public.looney_check_rate_limits from anon, authenticated;
 
-create or replace function public.consume_looney_check_rate_limit(p_buckets jsonb)
+create or replace function public.consume_looney_check_rate_limit(
+  p_buckets jsonb,
+  p_limit integer default 5,
+  p_consume boolean default true
+)
 returns table (
   allowed boolean,
   retry_after_seconds integer,
@@ -39,11 +59,21 @@ declare
   ip_total integer := 0;
   account_total integer := 0;
 begin
+  if p_limit is null or p_limit < 1 then
+    raise exception 'Rate-limit must be positive';
+  end if;
+
   if jsonb_typeof(p_buckets) <> 'array' or jsonb_array_length(p_buckets) = 0 then
     raise exception 'At least one rate-limit bucket is required';
   end if;
 
-  for bucket in select value from jsonb_array_elements(p_buckets)
+  for bucket in
+    select value
+    from (
+      select distinct on (value->>'type', value->>'hash') value
+      from jsonb_array_elements(p_buckets)
+      order by value->>'type', value->>'hash'
+    ) unique_buckets
   loop
     bucket_type_value := bucket->>'type';
     bucket_hash_value := bucket->>'hash';
@@ -65,21 +95,29 @@ begin
     if bucket_type_value = 'browser' then browser_total := bucket_count; end if;
     if bucket_type_value = 'ip' then ip_total := bucket_count; end if;
     if bucket_type_value = 'account' then account_total := bucket_count; end if;
-    if bucket_count >= 5 then blocked := true; end if;
+    if bucket_count >= p_limit then blocked := true; end if;
   end loop;
 
-  if not blocked then
-    for bucket in select value from jsonb_array_elements(p_buckets)
-    loop
-      update public.looney_check_rate_limits
-      set check_count = check_count + 1, last_check_at = now()
-      where bucket_type = bucket->>'type'
-        and bucket_hash = bucket->>'hash'
-        and window_started_at = current_window;
-    end loop;
-    browser_total := browser_total + case when p_buckets @> '[{"type":"browser"}]'::jsonb then 1 else 0 end;
-    ip_total := ip_total + case when p_buckets @> '[{"type":"ip"}]'::jsonb then 1 else 0 end;
-    account_total := account_total + case when p_buckets @> '[{"type":"account"}]'::jsonb then 1 else 0 end;
+  if not blocked and p_consume then
+    update public.looney_check_rate_limits as limits
+    set check_count = limits.check_count + 1, last_check_at = now()
+    from (
+      select distinct on (value->>'type', value->>'hash') value
+      from jsonb_array_elements(p_buckets)
+      order by value->>'type', value->>'hash'
+    ) unique_buckets
+    where limits.bucket_type = unique_buckets.value->>'type'
+      and limits.bucket_hash = unique_buckets.value->>'hash'
+      and limits.window_started_at = current_window;
+    browser_total := browser_total + case when exists (
+      select 1 from jsonb_array_elements(p_buckets) item where item->>'type' = 'browser'
+    ) then 1 else 0 end;
+    ip_total := ip_total + case when exists (
+      select 1 from jsonb_array_elements(p_buckets) item where item->>'type' = 'ip'
+    ) then 1 else 0 end;
+    account_total := account_total + case when exists (
+      select 1 from jsonb_array_elements(p_buckets) item where item->>'type' = 'account'
+    ) then 1 else 0 end;
   end if;
 
   return query select not blocked,
@@ -88,5 +126,5 @@ begin
 end;
 $$;
 
-revoke all on function public.consume_looney_check_rate_limit(jsonb) from public, anon, authenticated;
-grant execute on function public.consume_looney_check_rate_limit(jsonb) to service_role;
+revoke all on function public.consume_looney_check_rate_limit(jsonb, integer, boolean) from public, anon, authenticated;
+grant execute on function public.consume_looney_check_rate_limit(jsonb, integer, boolean) to service_role;

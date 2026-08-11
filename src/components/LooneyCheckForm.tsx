@@ -117,6 +117,7 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
             };
             historyJobId = job.job_id;
             saveLooneyHistoryRecord(record);
+            pendingSourceKeys.delete(sourceKey);
             onJobChange?.(job.job_id);
           },
           onJobUpdate: (job) => {
@@ -219,10 +220,18 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
         <>
           <input ref={fileInputRef} type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.aac,.opus" className="sr-only" onChange={(event) => setSelectedFile(event.target.files?.[0] || null)} />
           <div
-            onClick={() => fileInputRef.current?.click()}
+           onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') return;
+              event.preventDefault();
+              fileInputRef.current?.click();
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Choose an audio file to check"
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleDrop}
-            className="cursor-pointer rounded-lg border-2 border-dashed border-cow-purple/50 bg-cow-purple/5 p-8 text-center transition-colors hover:border-cow-purple hover:bg-cow-purple/10"
+            className="cursor-pointer rounded-lg border-2 border-dashed border-cow-purple/50 bg-cow-purple/5 p-8 text-center transition-colors hover:border-cow-purple hover:bg-cow-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple"
           >
             <IconUpload className="mx-auto h-8 w-8 text-cow-purple" />
             <p className="mt-3 font-jetbrains-mono text-sm font-semibold">{file ? file.name : 'Drop an audio file here or browse'}</p>

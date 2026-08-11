@@ -119,7 +119,7 @@ const App = () => {
                     />
                     <Route
                       path="/music-copyright"
-                      element={<MusicCopyright />}
+                      element={<Navigate to="/gappa" replace />}
                     />
                     <Route
                       path="/gappa"

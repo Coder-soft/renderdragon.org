@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, lazy, Suspense, useMemo } from 'react';
+import { useRef, useEffect, useState, useCallback, lazy, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -209,9 +209,9 @@ const ResourcesHub = () => {
     }
   };
 
-  const onCheckCopyright = (resource: Resource) => {
+  const onCheckCopyright = useCallback((resource: Resource) => {
     setCopyrightResource(resource);
-  };
+  }, []);
 
   const renderContent = () => (
     <>

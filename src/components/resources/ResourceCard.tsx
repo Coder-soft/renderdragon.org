@@ -18,6 +18,16 @@ interface ResourceCardProps {
   onCheckCopyright?: (resource: Resource) => void;
 }
 
+const getPreviewUrl = (resource: Resource) => {
+  if (resource.download_url) return resource.download_url;
+
+  if (!resource.title) return "";
+  const titleLowered = resource.title.toLowerCase().replace(/ /g, "%20");
+  const basePath = "https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main";
+  const creditPart = resource.credit ? `__${resource.credit.replace(/ /g, "_")}` : "";
+  return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
+};
+
 const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -28,20 +38,6 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
 
   const { toggleFavorite, isFavorited } = useUserFavorites();
   const isFavorite = isFavorited(String(resource.id));
-
-  const getPreviewUrl = (resource: Resource) => {
-    if (resource.download_url) return resource.download_url;
-
-    // Fallback
-    if (!resource.title) return "";
-    const titleLowered = resource.title.toLowerCase().replace(/ /g, "%20");
-    const basePath =
-      "https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main";
-    const creditPart = resource.credit
-      ? `__${resource.credit.replace(/ /g, "_")}`
-      : "";
-    return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
-  };
 
   const [isInView, setIsInView] = useState(false);
   const [isFontLoaded, setIsFontLoaded] = useState(false);
@@ -74,7 +70,9 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
       return () => { active = false; };
     }
 
-    const fontUrl = getPreviewUrl(resource);
+    const fontUrl = resource.download_url || (resource.title
+      ? `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${resource.title.toLowerCase().replace(/ /g, "%20")}${resource.credit ? `__${resource.credit.replace(/ /g, "_")}` : ""}.${resource.filetype}`
+      : "");
     if (!fontUrl) {
       return () => { active = false; };
     }
@@ -82,14 +80,24 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
     const fontName = resource.title;
 
     const maybeLoadFont = () => {
-      const fontFace = new FontFace(fontName, `url("${fontUrl}")`);
+      if (document.fonts.check(`12px "${fontName}"`)) {
+        if (active) setIsFontLoaded(true);
+        return;
+      }
+      let fontFace: FontFace;
+      try {
+        const safeFontName = fontName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        const safeFontUrl = encodeURI(fontUrl).replace(/"/g, '%22');
+        fontFace = new FontFace(safeFontName, `url("${safeFontUrl}")`);
+      } catch (error) {
+        if (active) console.error(`Invalid font descriptor for "${fontName}":`, error);
+        return;
+      }
       fontFace.load().then((loadedFont) => {
         document.fonts.add(loadedFont);
         if (active) setIsFontLoaded(true);
       }).catch((error) => {
-        if (active) {
-          console.error(`Failed to load font "${fontName}":`, error);
-        }
+        if (active) console.error(`Failed to load font "${fontName}":`, error);
       });
     };
 
@@ -100,7 +108,7 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
       return () => { active = false; clearTimeout(timer); };
     }
     return () => { active = false; };
-  }, [resource, isInView]);
+  }, [resource.category, resource.title, resource.download_url, resource.credit, resource.filetype, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -179,14 +187,14 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
               isInView={isInView}
               className="w-full shadow-none border-none bg-transparent p-0"
             />
-            {resource.category === "music" && onCheckCopyright && (
+            {(resource.category === "music" || resource.category === "minecraft-music") && onCheckCopyright && (
               <button
                 type="button"
                 onClick={handleCopyrightClick}
                 aria-label={`Check ${resource.title} for copyright`}
                 className="group/check absolute right-2 top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-md border border-white bg-white p-1.5 text-black shadow-lg backdrop-blur-sm transition-all hover:w-auto hover:bg-white/90 hover:text-black"
               >
-                <img src="/assets/image%20copy.png" alt="" aria-hidden="true" className="h-6 w-6 shrink-0 object-contain" />
+                <img src="/assets/looney-icon.png" alt="" aria-hidden="true" className="h-6 w-6 shrink-0 object-contain" />
                 <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all group-hover/check:max-w-32 group-hover/check:opacity-100">
                   Check for copyright
                 </span>

@@ -20,7 +20,7 @@ const tools: Tool[] = [
     title: 'Looney Checks',
     description: 'Research a track before it gets your video copyright-striked.',
     icon: IconMusic,
-    hoverImage: '/assets/image%20copy.png',
+    hoverImage: '/assets/looney-icon.png',
     path: '/music-copyright',
   },
   {
@@ -106,7 +106,7 @@ const PopularTools = () => {
                     {'hoverIcon' in tool && tool.hoverIcon && <tool.hoverIcon className="absolute h-6 w-6 text-red-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" stroke={2.5} />}
                     {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" className="absolute h-7 w-7 rounded-sm object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}
                   </div>
-                  <IconArrowRight className="w-5 h-5 text-cow-purple opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                   <IconArrowRight className="relative z-10 w-5 h-5 text-cow-purple opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
 
                  <h3 className="relative z-10 font-jetbrains-mono text-xl md:text-2xl text-foreground mb-2 tracking-wide uppercase">

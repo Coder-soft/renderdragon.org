@@ -15,7 +15,7 @@ const isFreshRunningRecord = (record: LooneyHistoryRecord) => {
 
 export function findRunningLooneyCheck(sourceKey: string): LooneyHistoryRecord | undefined {
   return loadLooneyHistory().find((record) => {
-    if (record.status !== 'queued' && record.status !== 'running') return false;
+    if (!isFreshRunningRecord(record)) return false;
     const legacySpotifyKey = record.sourceType === 'spotify' ? `spotify:${(record.sourceLabel.match(/track\/([a-zA-Z0-9]+)/)?.[1] || record.sourceLabel).toLowerCase()}` : '';
     return record.sourceKey === sourceKey || (!record.sourceKey && (sourceKey === `file:${record.sourceLabel.toLowerCase().trim()}` || sourceKey === legacySpotifyKey));
   });
@@ -60,7 +60,7 @@ export function updateLooneyHistoryFromJob(
 ): LooneyHistoryRecord {
   return {
     ...current,
-    status: job.status,
+    status: job.status || current.status,
     result: job.result || current.result,
     error: job.error || job.detail || job.message || current.error,
   };

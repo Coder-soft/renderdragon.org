@@ -67,15 +67,12 @@ export async function startLooneyJob(
     throw new Error('Choose an audio file or enter a Spotify track URL.');
   }
 
-  const options: RequestInit = { method: 'POST' };
-  options.signal = signal;
-  if (fileUrl) {
-    options.headers = await getLooneyRequestHeaders('application/json');
-    options.body = JSON.stringify({ file_url: fileUrl });
-  } else {
-    options.headers = await getLooneyRequestHeaders('application/json');
-    options.body = JSON.stringify({ spotify_url: spotifyUrl });
-  }
+  const options: RequestInit = {
+    method: 'POST',
+    signal,
+    headers: await getLooneyRequestHeaders('application/json'),
+    body: JSON.stringify(fileUrl ? { file_url: fileUrl } : { spotify_url: spotifyUrl }),
+  };
 
   const response = await fetch('/api/looney-check', options);
   const data = await readJsonResponse(response);
@@ -147,7 +144,10 @@ export async function streamLooneyJob(
   let streamJob: LooneyJob | null = null;
 
   const processEvent = () => {
-    if (eventData.length === 0) return;
+    if (eventData.length === 0) {
+      eventName = 'message';
+      return;
+    }
     const rawData = eventData.join('\n');
     let payload: Record<string, unknown>;
     try {
@@ -195,6 +195,8 @@ export async function streamLooneyJob(
   } catch (streamError) {
     if (signal?.aborted) throw streamError;
     return waitForTerminalJob(jobId, signal, onProgress);
+  } finally {
+    await reader.cancel().catch(() => undefined);
   }
 
   if (streamJob?.status === 'complete' && !streamJob.result) return waitForTerminalJob(jobId, signal, onProgress);
