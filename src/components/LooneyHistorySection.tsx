@@ -78,7 +78,7 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
   return (
     <section className="mx-auto mt-8 w-full max-w-6xl min-w-0 overflow-hidden rounded-xl border-2 border-foreground/10 bg-card p-5 shadow-sm sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
+         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-cow-purple/15 text-cow-purple">
             <IconHistory className="h-6 w-6" />
           </div>
@@ -96,7 +96,7 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
 
       <div className="mt-6 grid min-w-0 gap-5 md:grid-cols-2">
         <div className="min-w-0">
-          <h3 className="mb-3 flex items-center gap-2 font-minecraftia text-sm"><IconActivity className="h-4 w-4 text-cow-purple" /> Running checks</h3>
+           <h3 className="mb-3 flex items-center gap-2 font-minecraftia text-sm"><IconActivity className="inline-flex h-4 w-4 shrink-0 text-cow-purple" /> Running checks</h3>
           {runningRecords.length === 0 ? (
             <p className="rounded-md border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">No checks are currently running.</p>
           ) : (
@@ -115,7 +115,7 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
         </div>
 
         <div className="min-w-0">
-          <h3 className="mb-3 flex items-center gap-2 font-minecraftia text-sm"><IconClock className="h-4 w-4 text-cow-purple" /> Previous checks</h3>
+           <h3 className="mb-3 flex items-center gap-2 font-minecraftia text-sm"><IconClock className="inline-flex h-4 w-4 shrink-0 text-cow-purple" /> Previous checks</h3>
           {historyRecords.length === 0 ? (
             <p className="rounded-md border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">Your completed checks will appear here.</p>
           ) : (
