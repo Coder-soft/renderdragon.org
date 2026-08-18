@@ -5,6 +5,7 @@ import { isAllowedOrigin } from './cors.js';
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const DEFAULT_LOONEY_URL = 'https://looney.codersoft.xyz/check';
 const DAILY_CHECK_LIMIT = 5;
+const UPSTREAM_JOB_CREATE_TIMEOUT_MS = 55000;
 
 function getHeader(request, name) {
   if (request.headers?.get) return request.headers.get(name);
@@ -235,7 +236,7 @@ export const config = {
     bodyParser: false,
     sizeLimit: '52mb',
   },
-  maxDuration: 300,
+  maxDuration: 60,
 };
 
 class ValidationError extends Error {}
@@ -284,7 +285,8 @@ export default async function handler(request) {
         method: 'POST',
         headers: upstreamHeaders(upstream.contentType),
         body: upstream.body,
-        signal: AbortSignal.timeout(30000),
+        // Remote file checks may download and inspect the audio before returning a job ID.
+        signal: AbortSignal.timeout(UPSTREAM_JOB_CREATE_TIMEOUT_MS),
       });
     } catch (error) {
       try {
