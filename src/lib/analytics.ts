@@ -1,5 +1,5 @@
 const ANALYTICS_ORIGIN = (import.meta.env.VITE_ANALYTICS_URL as string | undefined)?.replace(/\/$/, "");
-const TRACK_URL = ANALYTICS_ORIGIN ? `${ANALYTICS_ORIGIN}/track` : "/api/track";
+const TRACK_URL = "/api/track";
 const STATS_URL = ANALYTICS_ORIGIN ? `${ANALYTICS_ORIGIN}/stats` : "/api/stats";
 const SESSION_KEY = "rd_analytics_last";
 const SESSION_WINDOW_MS = 30 * 60 * 1000;

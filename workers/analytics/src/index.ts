@@ -5,6 +5,8 @@ interface Env {
 }
 
 const COOKIE_NAME = "rd_vid";
+const STATS_COOKIE_NAME = "rd_stats";
+const STATS_COOKIE_MAX_AGE = 60 * 60;
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const SESSION_WINDOW_MS = 30 * 60 * 1000;
 const MAX_FIELD_LENGTH = 512;
@@ -59,6 +61,10 @@ function visitorCookie(id: string): string {
   return `${COOKIE_NAME}=${id}; Path=/; Max-Age=${COOKIE_MAX_AGE}; HttpOnly; Secure; SameSite=Lax`;
 }
 
+function statsCookie(token: string): string {
+  return `${STATS_COOKIE_NAME}=${token}; Path=/; Max-Age=${STATS_COOKIE_MAX_AGE}; HttpOnly; Secure; SameSite=Strict`;
+}
+
 function constantTimeEqual(a: string, b: string): boolean {
   const enc = new TextEncoder();
   const left = enc.encode(a);
@@ -76,7 +82,7 @@ function bearerToken(request: Request): string | null {
 }
 
 function authorized(request: Request, env: Env): boolean {
-  const token = bearerToken(request) ?? new URL(request.url).searchParams.get("token");
+  const token = bearerToken(request) ?? readCookie(request, STATS_COOKIE_NAME);
   if (!token || !env.STATS_TOKEN) return false;
   return constantTimeEqual(token, env.STATS_TOKEN);
 }
@@ -117,24 +123,35 @@ async function handleTrack(request: Request, env: Env): Promise<Response> {
     .bind(visitorId)
     .first<{ last_seen: number }>();
 
-  const isSession = !existing || now - Number(existing.last_seen) > SESSION_WINDOW_MS;
+  let isSession: boolean;
 
   if (!existing) {
-    await env.DB.prepare(
+    const inserted = await env.DB.prepare(
       "INSERT OR IGNORE INTO visitors (visitor_id, first_seen, last_seen, visits) VALUES (?1, ?2, ?2, 1)",
     )
       .bind(visitorId, now)
       .run();
-  } else if (isSession) {
-    await env.DB.prepare(
-      "UPDATE visitors SET last_seen = ?1, visits = visits + 1 WHERE visitor_id = ?2",
-    )
-      .bind(now, visitorId)
-      .run();
+    isSession = (inserted.meta?.changes ?? 0) === 1;
   } else {
-    await env.DB.prepare("UPDATE visitors SET last_seen = ?1 WHERE visitor_id = ?2")
-      .bind(now, visitorId)
-      .run();
+    const previous = Number(existing.last_seen);
+    isSession = now - previous > SESSION_WINDOW_MS;
+    if (isSession) {
+      const updated = await env.DB.prepare(
+        "UPDATE visitors SET last_seen = ?1, visits = visits + 1 WHERE visitor_id = ?2 AND last_seen = ?3",
+      )
+        .bind(now, visitorId, previous)
+        .run();
+      isSession = (updated.meta?.changes ?? 0) === 1;
+      if (!isSession) {
+        await env.DB.prepare("UPDATE visitors SET last_seen = ?1 WHERE visitor_id = ?2")
+          .bind(now, visitorId)
+          .run();
+      }
+    } else {
+      await env.DB.prepare("UPDATE visitors SET last_seen = ?1 WHERE visitor_id = ?2")
+        .bind(now, visitorId)
+        .run();
+    }
   }
 
   if (isSession) {
@@ -230,15 +247,37 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+function loginPage(error?: string, status = 200): Response {
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RenderDragon analytics</title><style>body{font-family:ui-monospace,monospace;background:#0b0b0c;color:#e7e7e7;display:grid;place-items:center;height:100vh;margin:0}form{display:flex;flex-direction:column;gap:8px;width:220px}input{background:#17171a;border:1px solid #333;color:#e7e7e7;padding:10px;border-radius:6px}button{background:#e7e7e7;color:#0b0b0c;border:0;padding:10px 14px;border-radius:6px;cursor:pointer}.error{color:#f87171;font-size:12px;margin:0}</style></head><body><form method="post"><input name="token" type="password" placeholder="stats token" autofocus><button>view</button>${error ? `<p class="error">${escapeHtml(error)}</p>` : ""}</form></body></html>`;
+  return new Response(html, {
+    status,
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+  });
+}
+
 async function handleDashboard(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
-  if (!authorized(request, env)) {
-    const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RenderDragon analytics</title><style>body{font-family:ui-monospace,monospace;background:#0b0b0c;color:#e7e7e7;display:grid;place-items:center;height:100vh;margin:0}form{display:flex;gap:8px}input{background:#17171a;border:1px solid #333;color:#e7e7e7;padding:10px;border-radius:6px}button{background:#e7e7e7;color:#0b0b0c;border:0;padding:10px 14px;border-radius:6px;cursor:pointer}</style></head><body><form><input name="token" type="password" placeholder="stats token" autofocus><button>view</button></form></body></html>`;
-    return new Response(html, {
-      status: 200,
-      headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+
+  if (request.method === "POST") {
+    let token = "";
+    try {
+      const value = (await request.formData()).get("token");
+      if (typeof value === "string") token = value;
+    } catch {
+      token = "";
+    }
+    if (!token || !env.STATS_TOKEN || !constantTimeEqual(token, env.STATS_TOKEN)) {
+      return loginPage("That token was rejected. Try again.", 401);
+    }
+    const headers = new Headers({
+      Location: url.pathname,
+      "Set-Cookie": statsCookie(token),
+      "Cache-Control": "no-store",
     });
+    return new Response(null, { status: 303, headers });
   }
+
+  if (!authorized(request, env)) return loginPage();
 
   const to = toMs(url.searchParams.get("to"), Date.now());
   const from = toMs(url.searchParams.get("from"), to - DEFAULT_RANGE_MS);
