@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
   IconVideo,
   IconCheck,
   IconHeart,
-  IconRobot,
+  IconSunglasses,
 } from "@tabler/icons-react";
 import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
 
   const [isInView, setIsInView] = useState(false);
   const [isFontLoaded, setIsFontLoaded] = useState(false);
+  const [isLinkHovered, setIsLinkHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -189,15 +190,36 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
               className="w-full shadow-none border-none bg-transparent p-0"
             />
             {resource.category === "music" && onMusicLink && (
-              <button
+              <motion.button
                 type="button"
                 onClick={handleCopyrightClick}
+                onMouseEnter={() => setIsLinkHovered(true)}
+                onMouseLeave={() => setIsLinkHovered(false)}
+                onFocus={() => setIsLinkHovered(true)}
+                onBlur={() => setIsLinkHovered(false)}
                 aria-label={`Copy a RenderBot copyright-check link for ${resource.title}`}
-                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-cow-purple/60 bg-cow-purple/95 px-2.5 text-white shadow-lg shadow-cow-purple/20 backdrop-blur-sm transition-all hover:bg-cow-purple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple focus-visible:ring-offset-1"
+                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center overflow-hidden rounded-md border border-cow-purple/60 bg-cow-purple/95 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple"
+                initial={false}
+                animate={{ width: isLinkHovered ? 152 : 36 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
               >
-                <IconRobot className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span className="whitespace-nowrap text-xs font-semibold">Check copyright</span>
-              </button>
+                <span className="flex h-full w-9 shrink-0 items-center justify-center">
+                  <IconSunglasses className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <AnimatePresence initial={false}>
+                  {isLinkHovered && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -8 }}
+                      transition={{ duration: 0.15 }}
+                      className="whitespace-nowrap pr-3 text-xs font-semibold"
+                    >
+                      Check copyright
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             )}
           </div>
         );
