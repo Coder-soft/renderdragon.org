@@ -96,7 +96,7 @@ async function inspectDirectFile(directUrl) {
   }
 }
 
-export default async function handler(request) {
+export async function handler(request) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
@@ -158,3 +158,7 @@ export default async function handler(request) {
   metadata.content_type = inspection.contentType ?? null;
   return jsonResponse(metadata, 200);
 }
+
+// Vercel's Node.js runtime ignores a Response returned from a default-exported
+// function, so expose the Web `fetch` handler it recognizes instead.
+export default { fetch: handler };
