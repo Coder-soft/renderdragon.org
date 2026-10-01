@@ -26,7 +26,7 @@ const teamMembers: TeamMember[] = [
     socials: {
       github: "https://github.com/coder-soft",
       discord: "https://discordapp.com/users/1094475489734819840",
-      website: "https://coder-soft.pages.dev/",
+      website: "https://codersoft.xyz",
     },
   },
   {

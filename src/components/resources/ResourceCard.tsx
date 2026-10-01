@@ -15,7 +15,7 @@ import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 interface ResourceCardProps {
   resource: Resource;
   onClick: (resource: Resource) => void;
-  onCheckCopyright?: (resource: Resource) => void;
+  onMusicLink?: (resource: Resource) => void;
 }
 
 const getPreviewUrl = (resource: Resource) => {
@@ -28,7 +28,7 @@ const getPreviewUrl = (resource: Resource) => {
   return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
 };
 
-const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps) => {
+const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   // Reset image loaded state when resource changes
@@ -123,7 +123,7 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
   const handleCopyrightClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    onCheckCopyright?.(resource);
+    onMusicLink?.(resource);
   };
 
   const renderPreview = () => {
@@ -187,6 +187,19 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
               isInView={isInView}
               className="w-full shadow-none border-none bg-transparent p-0"
             />
+            {resource.category === "music" && onMusicLink && (
+              <button
+                type="button"
+                onClick={handleCopyrightClick}
+                aria-label={`Create a copyright check link for ${resource.title}`}
+                className="group/check absolute right-2 top-2 z-10 inline-flex h-10 w-auto items-center justify-center gap-1 rounded-md border border-white bg-white px-2 text-black shadow-lg backdrop-blur-sm transition-all hover:bg-white/90 sm:w-10 sm:px-1.5 sm:hover:w-auto"
+              >
+                <img src="/assets/looney-icon.png" alt="" aria-hidden="true" className="h-6 w-6 shrink-0 object-contain" />
+                <span className="max-w-32 overflow-hidden whitespace-nowrap text-xs font-medium opacity-100 transition-all sm:max-w-0 sm:opacity-0 sm:group-hover/check:max-w-32 sm:group-hover/check:opacity-100">
+                  Check for copyright
+                </span>
+              </button>
+            )}
           </div>
         );
       case "minecraft-music":

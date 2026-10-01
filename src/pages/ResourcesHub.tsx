@@ -6,9 +6,10 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { useResources } from '@/hooks/useResources';
 import { useMinecraftMusic, ensurePlaylistCached } from '@/hooks/useMinecraftMusic';
-import { Resource } from '@/types/resources';
+import { Resource, getResourceUrl } from '@/types/resources';
 import { MusicMood } from '@/types/music';
 import { DownloadProgress } from '@/lib/download';
+import { buildMusicLink } from '@/utils/musicLink';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
@@ -17,7 +18,7 @@ import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
 import MusicPacksTab from '@/components/resources/MusicPacksTab';
 import MusicMoodFilter from '@/components/resources/MusicMoodFilter';
 import MinecraftMusicFilter from '@/components/resources/MinecraftMusicFilter';
-import LooneyCheckDialog from '@/components/LooneyCheckDialog';
+import MusicLinkDialog from '@/components/resources/MusicLinkDialog';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -43,7 +44,7 @@ const ResourcesHub = () => {
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
   const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
-  const [copyrightResource, setCopyrightResource] = useState<Resource | null>(null);
+  const [musicLink, setMusicLink] = useState<{ resource: Resource; link: string } | null>(null);
 
   const {
     resources,
@@ -172,6 +173,37 @@ const ResourcesHub = () => {
     else if (tabParam === 'music-packs') setActiveTab('music-packs');
   }, []);
 
+  // Deep link from a shared music link: /resources?track=<id>&file=<name>&url=<direct>
+  const deepLinkHandled = useRef(false);
+  useEffect(() => {
+    if (deepLinkHandled.current || isLoading) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const track = urlParams.get('track');
+    const file = urlParams.get('file');
+    const directUrl = urlParams.get('url');
+    if (!track && !file && !directUrl) return;
+
+    const match = resources.find((resource) =>
+      (track && String(resource.id) === track) ||
+      (file && resource.filename === file) ||
+      (directUrl && getResourceUrl(resource) === directUrl)
+    );
+    if (!match) return;
+
+    deepLinkHandled.current = true;
+    if (match.category === 'music') {
+      setActiveTab('resources');
+      setMusicView('community');
+      handleCategoryChange('music');
+    }
+    setSelectedResource(match);
+
+    const cleanUrl = new URL(window.location.href);
+    ['track', 'cat', 'file', 'url'].forEach((key) => cleanUrl.searchParams.delete(key));
+    window.history.replaceState({}, '', `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+  }, [resources, isLoading, setSelectedResource, handleCategoryChange]);
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -209,8 +241,16 @@ const ResourcesHub = () => {
     }
   };
 
-  const onCheckCopyright = useCallback((resource: Resource) => {
-    setCopyrightResource(resource);
+  const onMusicLink = useCallback((resource: Resource) => {
+    const link = buildMusicLink(resource);
+    setMusicLink({ resource, link });
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(link).then(() => {
+        toast.success('Music link copied');
+      }).catch(() => {
+        // The dialog still lets the user copy the link manually.
+      });
+    }
   }, []);
 
   const renderContent = () => (
@@ -350,7 +390,7 @@ const ResourcesHub = () => {
           onSelectResource={setSelectedResource}
           onClearFilters={handleClearSearchWrapped}
           hasCategoryResources={minecraftMusic.resources.length > 0}
-            onCheckCopyright={onCheckCopyright}
+            onMusicLink={onMusicLink}
           />
       ) : (
           <ResourcesList
@@ -363,7 +403,7 @@ const ResourcesHub = () => {
           onSelectResource={setSelectedResource}
           onClearFilters={handleClearSearch}
           hasCategoryResources={hasCategoryResources}
-            onCheckCopyright={onCheckCopyright}
+            onMusicLink={onMusicLink}
           />
       )}
     </>
@@ -577,9 +617,10 @@ const ResourcesHub = () => {
         onOpenChange={setAuthDialogOpen}
       />
 
-      <LooneyCheckDialog
-        resource={copyrightResource}
-        onClose={() => setCopyrightResource(null)}
+      <MusicLinkDialog
+        resource={musicLink?.resource ?? null}
+        link={musicLink?.link ?? ''}
+        onClose={() => setMusicLink(null)}
       />
 
 
