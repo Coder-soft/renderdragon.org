@@ -44,7 +44,7 @@ const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
             <IconLink className="h-5 w-5 text-cow-purple" /> Music link
           </DialogTitle>
           <DialogDescription>
-            Share this link with copyright-checking tools. It points to {resource?.title ? `"${resource.title}"` : 'this track'} and exposes its direct GitHub file, name, and credits.
+            Share this link with others or use RenderBot to check copyright.
           </DialogDescription>
         </DialogHeader>
 
@@ -72,10 +72,6 @@ const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
           <Button type="button" className="pixel-btn-primary w-full" onClick={openLink}>
             <IconExternalLink className="mr-2 h-4 w-4" /> Open link
           </Button>
-
-          <p className="text-xs text-muted-foreground">
-            Tools receive the track&apos;s metadata as JSON; people are redirected to this track on RenderDragon.
-          </p>
         </div>
       </DialogContent>
     </Dialog>

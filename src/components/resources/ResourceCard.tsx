@@ -5,6 +5,7 @@ import {
   IconVideo,
   IconCheck,
   IconHeart,
+  IconRobot,
 } from "@tabler/icons-react";
 import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
@@ -191,13 +192,11 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
               <button
                 type="button"
                 onClick={handleCopyrightClick}
-                aria-label={`Create a copyright check link for ${resource.title}`}
-                className="group/check absolute right-2 top-2 z-10 inline-flex h-10 w-auto items-center justify-center gap-1 rounded-md border border-white bg-white px-2 text-black shadow-lg backdrop-blur-sm transition-all hover:bg-white/90 sm:w-10 sm:px-1.5 sm:hover:w-auto"
+                aria-label={`Copy a RenderBot copyright-check link for ${resource.title}`}
+                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-cow-purple/60 bg-cow-purple/95 px-2.5 text-white shadow-lg shadow-cow-purple/20 backdrop-blur-sm transition-all hover:bg-cow-purple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple focus-visible:ring-offset-1"
               >
-                <img src="/assets/looney-icon.png" alt="" aria-hidden="true" className="h-6 w-6 shrink-0 object-contain" />
-                <span className="max-w-32 overflow-hidden whitespace-nowrap text-xs font-medium opacity-100 transition-all sm:max-w-0 sm:opacity-0 sm:group-hover/check:max-w-32 sm:group-hover/check:opacity-100">
-                  Check for copyright
-                </span>
+                <IconRobot className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span className="whitespace-nowrap text-xs font-semibold">Check copyright</span>
               </button>
             )}
           </div>
