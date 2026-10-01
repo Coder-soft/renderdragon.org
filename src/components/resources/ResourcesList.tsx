@@ -26,7 +26,7 @@ interface ResourcesListProps {
   onClearFilters: () => void;
   hasCategoryResources: boolean;
   filteredResources: Resource[];
-  onCheckCopyright?: (resource: Resource) => void;
+  onMusicLink?: (resource: Resource) => void;
 }
 
 const ResourcesList = ({
@@ -39,7 +39,7 @@ const ResourcesList = ({
   onClearFilters,
   hasCategoryResources,
   filteredResources,
-  onCheckCopyright,
+  onMusicLink,
 }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 12;
@@ -183,7 +183,7 @@ const ResourcesList = ({
               <ResourceCard
                 resource={resource}
                 onClick={onSelectResource}
-                onCheckCopyright={onCheckCopyright}
+                onMusicLink={onMusicLink}
               />
           </motion.div>
         ))}
