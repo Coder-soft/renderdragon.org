@@ -13,9 +13,14 @@ const ALLOWED_REPO_PREFIXES = [
   '/Coder-soft/Minecraft-Creator-Safe-Playlist/',
 ];
 
+function getHeader(request, name) {
+  if (request.headers?.get) return request.headers.get(name);
+  return request.headers?.[name.toLowerCase()] || request.headers?.[name] || null;
+}
+
 function getSearchParams(request) {
   try {
-    return new URL(request.url || 'http://localhost/api/music-link').searchParams;
+    return new URL(request.url || '', SITE_ORIGIN).searchParams;
   } catch {
     return new URLSearchParams();
   }
@@ -47,12 +52,13 @@ function buildWebsiteUrl(resource) {
   return target.toString();
 }
 
-function jsonResponse(body, status = 200) {
+function jsonResponse(body, status = 200, cacheSeconds = 300) {
   return new Response(JSON.stringify(body, null, 2), {
     status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'public, max-age=300',
+      'Cache-Control': cacheSeconds > 0 ? `public, max-age=${cacheSeconds}` : 'no-store',
+      Vary: 'Accept',
       ...CORS_HEADERS,
     },
   });
@@ -86,7 +92,7 @@ async function inspectDirectFile(directUrl) {
     const contentType = response.headers.get('content-type');
     return { available: true, size, contentType: contentType && contentType !== 'text/plain' ? contentType : null };
   } catch {
-    return { available: false };
+    return { available: false, error: true };
   }
 }
 
@@ -110,13 +116,13 @@ export default async function handler(request) {
     id: toCsvValue(params.get('id')),
   };
 
-  const accept = request.headers.get('accept') || '';
+  const accept = getHeader(request, 'accept') || '';
 
   // Humans opening the link in a browser land on the page where the music lives.
   if (accept.includes('text/html')) {
     return new Response(null, {
       status: 302,
-      headers: { Location: buildWebsiteUrl(resource), 'Cache-Control': 'no-store' },
+      headers: { Location: buildWebsiteUrl(resource), 'Cache-Control': 'no-store', Vary: 'Accept' },
     });
   }
 
@@ -143,6 +149,10 @@ export default async function handler(request) {
   }
 
   const inspection = await inspectDirectFile(resource.url);
+  if (inspection.error) {
+    metadata.error = 'Unable to verify the direct file right now.';
+    return jsonResponse(metadata, 502, 0);
+  }
   metadata.available = inspection.available;
   metadata.size = inspection.size ?? null;
   metadata.content_type = inspection.contentType ?? null;

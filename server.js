@@ -8,6 +8,7 @@ import downloadThumbnailHandler from './api/downloadThumbnail.js';
 import generateTitlesHandler from './api/generateTitles.js';
 import deleteAccountHandler from './api/deleteAccount.js';
 import looneyCheckHandler from './api/looney-check.js';
+import musicLinkHandler from './api/music-link.js';
 import { isAllowedOrigin } from './api/cors.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
@@ -74,6 +75,7 @@ app.all('/api/downloadThumbnail', createAdapter(downloadThumbnailHandler));
 app.all('/api/generateTitles', createAdapter(generateTitlesHandler));
 app.all('/api/deleteAccount', createAdapter(deleteAccountHandler));
 app.all('/api/looney-check', createAdapter(looneyCheckHandler));
+app.all('/api/music-link', createAdapter(musicLinkHandler));
 // UploadThing route
 app.use(
   '/api/uploadthing',
