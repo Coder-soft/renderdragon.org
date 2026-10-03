@@ -46,8 +46,12 @@ const urls = Object.entries(staticRoutes).map(([route, priority]) =>
 );
 
 // Guide slugs come straight from the markdown files that GuideView serves.
-const guideFiles = await readdir("public/guides").catch(() => []);
-for (const file of guideFiles) {
+// Sort so the tracked sitemap is stable across filesystem readdir orderings.
+const guideFiles = await readdir("public/guides").catch((error) => {
+  console.warn("Skipping guide sitemap entries:", error instanceof Error ? error.message : error);
+  return [];
+});
+for (const file of guideFiles.sort()) {
   if (file.endsWith(".md")) urls.push(urlEntry(`${site}/guides/${file.slice(0, -3)}`, 0.6));
 }
 
