@@ -1,6 +1,7 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Helmet } from 'react-helmet-async';
+import Seo from '@/components/Seo';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -75,10 +76,19 @@ const AiTitleHelper = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>AI Title Helper - Renderdragon</title>
-        <meta name="description" content="Generate engaging video titles with AI." />
-      </Helmet>
+      <Seo
+        title="AI Title Helper - Renderdragon"
+        description="Generate engaging, SEO-friendly YouTube video titles with AI. Free for Minecraft creators, no signup required."
+        path="/ai-title-helper"
+        image="/ogimg/aititlehelper.png"
+        jsonLd={softwareApplicationSchema({
+          name: "AI Title Helper",
+          description: "Generate engaging, SEO-friendly YouTube video titles with AI.",
+          path: "/ai-title-helper",
+          image: "/ogimg/aititlehelper.png",
+          category: "UtilitiesApplication",
+        })}
+      />
       <Navbar />
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="max-w-6xl mx-auto px-4">

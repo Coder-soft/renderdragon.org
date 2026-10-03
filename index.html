@@ -4,35 +4,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>
+  <!--
+    These are no-JS fallback SEO tags. Tags marked data-rh="true" are the ones
+    react-helmet-async manages, so each route's <Seo> can replace them with
+    route-specific title/description/canonical/og values. Untagged tags
+    (site verification, theme-color, og:site_name) are intentionally left for
+    Helmet to pass over.
+  -->
+  <title data-rh="true">
     Renderdragon - Minecraft Content Creator Tools & Assets
   </title>
   <meta name="google-site-verification" content="_1Znm2uL6EbALUvDw11BNaWNKQQ716QK-tixIKVEf3c" />
   <meta name="google-site-verification" content="4OMiAaKP1HZLfBS0KsFTys2mYkfSA4M6uRiuZMv_W_U" />
-  <meta name="description"
+  <meta name="description" data-rh="true"
     content="Your ultimate toolkit for creating Minecraft YouTube content. Get free tools, assets, music, and guides—all ad-free." />
   <meta name="keywords"
     content="Minecraft, YouTube, Content Creator, Tools, Assets, Free, Music, SFX, Animations, Fonts, Images, Premiere Pro Presets, DaVinci Resolve Presets, AI Title Helper, YouTube Downloader, Copyright Checker, Renderdragon" />
   <meta name="author" content="Team Wheels" />
   <meta name="copyrighted-site-verification" content="7d293d30ff247a9a" />
-  <link rel="canonical" href="https://renderdragon.org" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" data-rh="true" />
+  <meta name="theme-color" content="#9333ea" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0b0b12" media="(prefers-color-scheme: dark)" />
+  <link rel="canonical" href="https://renderdragon.org" data-rh="true" />
 
-  <meta property="og:title" content="Renderdragon - Minecraft YouTube Tools & Assets" />
-  <meta property="og:description"
+  <meta property="og:title" content="Renderdragon - Minecraft YouTube Tools & Assets" data-rh="true" />
+  <meta property="og:description" data-rh="true"
     content="Your ultimate toolkit for creating Minecraft YouTube content. Get free tools, assets, music, and guides—all ad-free." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://renderdragon.org" />
+  <meta property="og:type" content="website" data-rh="true" />
+  <meta property="og:url" content="https://renderdragon.org" data-rh="true" />
   <meta property="og:site_name" content="Renderdragon" />
-  <meta property="og:image" content="https://renderdragon.org/ogimg.png" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://renderdragon.org/ogimg.png" data-rh="true" />
+  <meta property="og:image:width" content="1920" data-rh="true" />
+  <meta property="og:image:height" content="1440" data-rh="true" />
+  <meta property="og:image:alt" content="Renderdragon — free tools and assets for Minecraft YouTube creators" data-rh="true" />
 
   <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@renderdragon" />
-  <meta name="twitter:title" content="Renderdragon - Minecraft YouTube Tools & Assets" />
-  <meta name="twitter:description"
+  <meta name="twitter:card" content="summary_large_image" data-rh="true" />
+  <meta name="twitter:site" content="@_renderdragon" />
+  <meta name="twitter:creator" content="@_renderdragon" />
+  <meta name="twitter:title" content="Renderdragon - Minecraft YouTube Tools & Assets" data-rh="true" />
+  <meta name="twitter:description" data-rh="true"
     content="Your ultimate toolkit for creating Minecraft YouTube content. Get free tools, assets, music, and guides—all ad-free." />
-  <meta name="twitter:image" content="https://renderdragon.org/ogimg.png" />
-  <link rel="icon" type="image/png" href="https://renderdragon.org/renderdragon.png">
+  <meta name="twitter:image" content="https://renderdragon.org/ogimg.png" data-rh="true" />
+  <meta name="twitter:image:alt" content="Renderdragon — free tools and assets for Minecraft YouTube creators" data-rh="true" />
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,11 +61,62 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Chakra+Petch:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
   <link href="https://fonts.cdnfonts.com/css/minecraft-3" rel="stylesheet">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://renderdragon.org/#organization",
+          "name": "Renderdragon",
+          "url": "https://renderdragon.org",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://renderdragon.org/renderdragon.png"
+          },
+          "description": "Free, ad-free tools, assets, music, and guides for Minecraft YouTube content creators.",
+          "sameAs": [
+            "https://discord.renderdragon.org",
+            "https://x.com/_renderdragon",
+            "https://www.youtube.com/channel/UCOheNYpPEHcS2ljttRmllxg"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://renderdragon.org/#website",
+          "url": "https://renderdragon.org",
+          "name": "Renderdragon",
+          "inLanguage": "en",
+          "publisher": { "@id": "https://renderdragon.org/#organization" }
+        }
+      ]
+    }
+  </script>
 </head>
 
 
 <body>
   <div id="root"></div>
+  <noscript>
+    <div style="max-width:720px;margin:0 auto;padding:32px 20px;font-family:system-ui,sans-serif">
+      <h1>Renderdragon — Free tools &amp; assets for Minecraft YouTubers</h1>
+      <p>Renderdragon is a free, ad-free toolkit for Minecraft content creators: music and sound
+        effects, fonts, presets, thumbnails, background and text generators, a player renderer,
+        a YouTube downloader, and a music copyright checker.</p>
+      <ul>
+        <li><a href="/resources">Browse free resources</a></li>
+        <li><a href="/generators">Content generators</a></li>
+        <li><a href="/background-generator">Background generator</a></li>
+        <li><a href="/text-generator">Minecraft text generator</a></li>
+        <li><a href="/player-renderer">Player renderer</a></li>
+        <li><a href="/gappa">Music copyright checker</a></li>
+        <li><a href="/guides">Creator guides</a></li>
+        <li><a href="/faq">FAQ</a></li>
+      </ul>
+      <p>JavaScript is required for the full interactive experience.</p>
+    </div>
+  </noscript>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

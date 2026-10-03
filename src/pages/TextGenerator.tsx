@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
+import Seo from '@/components/Seo';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -108,10 +109,18 @@ const TextGenerator = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Minecraft Text Generator</title>
-        <meta name="description" content="Generate custom Minecraft text with various styles and effects" />
-      </Helmet>
+      <Seo
+        title="Minecraft Text Generator - Renderdragon"
+        description="Generate custom Minecraft text with pixel fonts, colors, and effects — free, in your browser, no signup."
+        path="/text-generator"
+        image="/ogimg/index.png"
+        jsonLd={softwareApplicationSchema({
+          name: "Minecraft Text Generator",
+          description: "Generate custom Minecraft text with pixel fonts, colors, and effects.",
+          path: "/text-generator",
+          image: "/ogimg/index.png",
+        })}
+      />
 
       <Navbar />
       

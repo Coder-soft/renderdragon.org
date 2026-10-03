@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { IconDownload, IconCopy, IconRefresh, IconLoader2 } from '@tabler/icons-react';
 import { toast } from 'sonner';
-import { Helmet } from 'react-helmet-async';
+import Seo from '@/components/Seo';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -145,17 +146,18 @@ const PlayerRenderer = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Player Renderer - Renderdragon</title>
-        <meta name="description" content="Generate and download Minecraft player renders using different rendering services." />
-        <meta property="og:title" content="Player Renderer - Renderdragon" />
-        <meta property="og:description" content="Generate and download Minecraft player renders using different rendering services." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/player.png" />
-        <meta property="og:url" content="https://renderdragon.org/player-renderer" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Player Renderer - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/player.png" />
-      </Helmet>
+      <Seo
+        title="Player Renderer - Renderdragon"
+        description="Generate and download Minecraft player renders using different rendering services."
+        path="/player-renderer"
+        image="/ogimg/software.png"
+        jsonLd={softwareApplicationSchema({
+          name: "Player Renderer",
+          description: "Generate and download Minecraft player renders using different rendering services.",
+          path: "/player-renderer",
+          image: "/ogimg/software.png",
+        })}
+      />
 
       <Navbar />
 
