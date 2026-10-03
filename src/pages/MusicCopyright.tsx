@@ -7,6 +7,7 @@ import LooneyHistorySection from '@/components/LooneyHistorySection';
 import LooneyRunningCheckDialog from '@/components/LooneyRunningCheckDialog';
 import { IconFileMusic } from '@tabler/icons-react';
 import { Helmet } from 'react-helmet-async';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import { LooneyHistoryRecord } from '@/types/looney';
 
 const MusicCopyright = () => {
@@ -18,7 +19,26 @@ const MusicCopyright = () => {
   const showRecord = (record: LooneyHistoryRecord) => { if (record.result) navigate(`/gappa/check/${encodeURIComponent(record.jobId)}`); };
 
   return <div className="flex min-h-screen flex-col">
-    <Helmet><title>Looney Checks - Renderdragon</title><meta name="description" content="Research music licensing and copyright signals before using a track." /><meta property="og:title" content="Looney Checks - Renderdragon" /></Helmet>
+    <Helmet>
+      <title>Looney Checks - Music Copyright Checker | Renderdragon</title>
+      <meta name="description" content="Research music licensing and copyright signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself." />
+      <link rel="canonical" href="https://renderdragon.org/gappa" />
+      <meta property="og:title" content="Looney Checks - Music Copyright Checker | Renderdragon" />
+      <meta property="og:description" content="Research music licensing and copyright signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself." />
+      <meta property="og:url" content="https://renderdragon.org/gappa" />
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content="https://renderdragon.org/ogimg/copyright.png" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Looney Checks - Music Copyright Checker | Renderdragon" />
+      <meta name="twitter:image" content="https://renderdragon.org/ogimg/copyright.png" />
+      <script type="application/ld+json">{JSON.stringify(softwareApplicationSchema({
+        name: "Looney Checks",
+        description: "Research music licensing and copyright signals before you publish.",
+        path: "/gappa",
+        image: "/ogimg/copyright.png",
+        category: "UtilitiesApplication",
+      }))}</script>
+    </Helmet>
     <Navbar />
     <main className="flex-grow cow-grid-bg bg-background px-4 pb-20 pt-28">
       <div className="container mx-auto max-w-6xl">

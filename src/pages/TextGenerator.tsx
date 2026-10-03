@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -109,8 +110,23 @@ const TextGenerator = () => {
   return (
     <>
       <Helmet>
-        <title>Minecraft Text Generator</title>
-        <meta name="description" content="Generate custom Minecraft text with various styles and effects" />
+        <title>Minecraft Text Generator - Renderdragon</title>
+        <meta name="description" content="Generate custom Minecraft text with pixel fonts, colors, and effects — free, in your browser, no signup." />
+        <link rel="canonical" href="https://renderdragon.org/text-generator" />
+        <meta property="og:title" content="Minecraft Text Generator - Renderdragon" />
+        <meta property="og:description" content="Generate custom Minecraft text with pixel fonts, colors, and effects — free, in your browser, no signup." />
+        <meta property="og:url" content="https://renderdragon.org/text-generator" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://renderdragon.org/ogimg/index.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Minecraft Text Generator - Renderdragon" />
+        <meta name="twitter:image" content="https://renderdragon.org/ogimg/index.png" />
+        <script type="application/ld+json">{JSON.stringify(softwareApplicationSchema({
+          name: "Minecraft Text Generator",
+          description: "Generate custom Minecraft text with pixel fonts, colors, and effects.",
+          path: "/text-generator",
+          image: "/ogimg/index.png",
+        }))}</script>
       </Helmet>
 
       <Navbar />

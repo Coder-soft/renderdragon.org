@@ -1,16 +1,53 @@
 import { mkdir, writeFile } from "node:fs/promises";
 
 const site = "https://renderdragon.org";
-const routes = [
-  "/", "/resources", "/blogs", "/guides", "/faq", "/contact", "/showcase",
-  "/community", "/changelogs", "/utilities", "/generators", "/background-generator",
-  "/text-generator", "/ai-title-helper", "/youtube-downloader", "/player-renderer",
-  "/renderbot", "/native-application", "/tos", "/privacy",
-  "/guides/scriptwriting", "/guides/AI", "/guides/questions", "/guides/copyright", "/guides/thingstoask", "/guides/voice",
-];
 
-const escapeXml = (value) => value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
-const urls = routes.map((route) => `<url><loc>${site}${route}</loc></url>`);
+// Static routes with a priority hint. Higher priority = more important to crawlers.
+const staticRoutes = {
+  "/": 1.0,
+  "/resources": 0.9,
+  "/generators": 0.8,
+  "/guides": 0.8,
+  "/gappa": 0.8,
+  "/background-generator": 0.7,
+  "/text-generator": 0.7,
+  "/player-renderer": 0.7,
+  "/youtube-downloader": 0.7,
+  "/ai-title-helper": 0.7,
+  "/utilities": 0.6,
+  "/showcase": 0.6,
+  "/blogs": 0.6,
+  "/community": 0.6,
+  "/guides/scriptwriting": 0.6,
+  "/guides/AI": 0.6,
+  "/guides/questions": 0.6,
+  "/guides/copyright": 0.6,
+  "/guides/thingstoask": 0.6,
+  "/guides/voice": 0.6,
+  "/renderbot": 0.5,
+  "/native-application": 0.5,
+  "/changelogs": 0.4,
+  "/contact": 0.4,
+  "/faq": 0.5,
+  "/privacy": 0.2,
+  "/tos": 0.2,
+};
+
+const escapeXml = (value) =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+
+const lastmod = new Date().toISOString();
+const entry = (loc, priority = 0.5, changefreq = "weekly") =>
+  `<url><loc>${escapeXml(loc)}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority.toFixed(1)}</priority></url>`;
+
+const urls = Object.entries(staticRoutes).map(([route, priority]) =>
+  entry(`${site}${route}`, priority, route === "/" ? "daily" : "weekly"),
+);
 
 // Public profile and creator-pack slugs are added when build credentials are available.
 if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
@@ -49,9 +86,9 @@ if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY) 
     fetchJson("creator_packs?select=slug&status=eq.approved&order=slug.asc"),
     fetchJson("blogs?select=slug&published=eq.true&order=slug.asc"),
   ]);
-  for (const { username } of profiles) if (username) urls.push(`<url><loc>${site}/u/${escapeXml(username)}</loc></url>`);
-  for (const { slug } of packs) if (slug) urls.push(`<url><loc>${site}/creator-packs/${escapeXml(slug)}</loc></url>`);
-  for (const { slug } of blogs) if (slug) urls.push(`<url><loc>${site}/blogs/${escapeXml(slug)}</loc></url>`);
+  for (const { username } of profiles) if (username) urls.push(entry(`${site}/u/${escapeXml(username)}`, 0.4));
+  for (const { slug } of packs) if (slug) urls.push(entry(`${site}/creator-packs/${escapeXml(slug)}`, 0.6));
+  for (const { slug } of blogs) if (slug) urls.push(entry(`${site}/blogs/${escapeXml(slug)}`, 0.6));
 }
 
 await mkdir("public", { recursive: true });

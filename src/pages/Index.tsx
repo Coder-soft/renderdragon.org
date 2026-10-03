@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import TrustBar from '@/components/TrustBar';
@@ -30,6 +31,13 @@ const Index = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="RenderDragon - Free Minecraft Creator Tools & Resources" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg.png" />
+        <link rel="canonical" href="https://renderdragon.org/" />
+        <script type="application/ld+json">{JSON.stringify(softwareApplicationSchema({
+          name: "Renderdragon",
+          description: "Free music, SFX, fonts, presets, and editing tools for Minecraft YouTubers. No signup, no paywalls, no watermarks.",
+          path: "/",
+          image: "/ogimg.png",
+        }))}</script>
       </Helmet>
       <Navbar />
       <main className="flex-grow">

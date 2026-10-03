@@ -4,6 +4,31 @@ import Footer from '@/components/Footer';
 
 import { Helmet } from 'react-helmet-async';
 
+const FAQ_ENTRIES: { question: string; answer: string }[] = [
+  { question: "Is everything on Renderdragon really free?", answer: "Yes! All resources, tools, and guides on Renderdragon are 100% free to use. We believe in making content creation accessible to everyone." },
+  { question: "Do I need to credit Renderdragon when using resources?", answer: "While crediting is not required, it's always appreciated! A simple mention helps spread the word and supports our mission to help more creators." },
+  { question: "Can I use resources for commercial projects?", answer: "Yes, you can use our resources in your commercial projects unless specifically stated otherwise on the resource page." },
+  { question: "What file formats do you support?", answer: "We provide resources in various formats including PNG, MP3, WAV, PSD, and more. Each resource specifies its available formats." },
+  { question: "Are the tools compatible with my device?", answer: "Our tools are web-based and work on any modern browser, regardless of your operating system (Windows, Mac, Linux, etc.)." },
+  { question: "What if I encounter technical issues?", answer: "If you experience any technical problems, please reach out through our Discord server or contact page. Our team is here to help!" },
+  { question: "Can I modify the resources?", answer: "Yes, you're free to modify our resources to suit your needs. We encourage creativity!" },
+  { question: "Are there any usage restrictions?", answer: "The only restriction is reselling or redistributing our resources as-is. Please don't claim our resources as your own or share them on other platforms." },
+  { question: "What about copyright claims?", answer: "We strive to provide copyright-safe resources, but it's always good practice to check the specific terms for each resource, especially for music and sound effects." },
+  { question: "How can I get help?", answer: "Join our Discord server for quick support, or use the Contact page for specific inquiries. We typically respond within 48 hours." },
+  { question: "Can I suggest new features or resources?", answer: "Absolutely! We love hearing from our community. Share your suggestions on our Discord server or through the Contact page." },
+  { question: "How can I support Renderdragon?", answer: "The best ways to support us are spreading the word, giving credit when using our resources, and considering a donation if you'd like to contribute financially." },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_ENTRIES.map(({ question, answer }) => ({
+    "@type": "Question",
+    name: question,
+    acceptedAnswer: { "@type": "Answer", text: answer },
+  })),
+};
+
 const FAQ = () => {
 
   return (
@@ -18,6 +43,7 @@ const FAQ = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="FAQ - Renderdragon" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/faq.png" />
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 
       <Navbar />

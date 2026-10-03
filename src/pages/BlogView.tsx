@@ -103,7 +103,39 @@ export default function BlogView() {
         <div className="min-h-screen flex flex-col">
             <Helmet>
                 <title>{blog.title} - Renderdragon Blog</title>
-                <meta name="description" content={`Read ${blog.title} on Renderdragon.`} />
+                <meta name="description" content={`Read ${blog.title} on the Renderdragon blog — free tools and resources for Minecraft content creators.`} />
+                <link rel="canonical" href={`https://renderdragon.org/blogs/${slug}`} />
+                <meta property="og:type" content="article" />
+                <meta property="og:title" content={`${blog.title} - Renderdragon Blog`} />
+                <meta property="og:description" content={`Read ${blog.title} on the Renderdragon blog.`} />
+                <meta property="og:url" content={`https://renderdragon.org/blogs/${slug}`} />
+                <meta property="og:image" content="https://renderdragon.org/ogimg.png" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={`${blog.title} - Renderdragon Blog`} />
+                <meta name="twitter:image" content="https://renderdragon.org/ogimg.png" />
+                <script type="application/ld+json">{JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@graph": [
+                        {
+                            "@type": "BlogPosting",
+                            headline: blog.title,
+                            url: `https://renderdragon.org/blogs/${slug}`,
+                            datePublished: blog.created_at,
+                            dateModified: blog.created_at,
+                            author: { "@type": "Person", name: author?.display_name || "Renderdragon" },
+                            publisher: { "@id": "https://renderdragon.org/#organization" },
+                            mainEntityOfPage: `https://renderdragon.org/blogs/${slug}`,
+                        },
+                        {
+                            "@type": "BreadcrumbList",
+                            itemListElement: [
+                                { "@type": "ListItem", position: 1, name: "Home", item: "https://renderdragon.org/" },
+                                { "@type": "ListItem", position: 2, name: "Blog", item: "https://renderdragon.org/blogs" },
+                                { "@type": "ListItem", position: 3, name: blog.title, item: `https://renderdragon.org/blogs/${slug}` },
+                            ],
+                        },
+                    ],
+                })}</script>
             </Helmet>
 
             <Navbar />

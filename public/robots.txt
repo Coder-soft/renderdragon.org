@@ -1,3 +1,15 @@
 User-agent: *
 Allow: /
+
+# Private / account-only areas — keep them out of the index.
+Disallow: /admin
+Disallow: /admin/
+Disallow: /account
+Disallow: /account/
+Disallow: /analytics
+Disallow: /creator-packs/new
+Disallow: /creator-packs/manage
+Disallow: /api/
+
 Sitemap: https://renderdragon.org/sitemap.xml
+Host: https://renderdragon.org

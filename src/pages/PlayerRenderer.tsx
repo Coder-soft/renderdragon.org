@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { IconDownload, IconCopy, IconRefresh, IconLoader2 } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -155,6 +156,12 @@ const PlayerRenderer = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Player Renderer - Renderdragon" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/player.png" />
+        <script type="application/ld+json">{JSON.stringify(softwareApplicationSchema({
+          name: "Player Renderer",
+          description: "Generate and download Minecraft player renders using different rendering services.",
+          path: "/player-renderer",
+          image: "/ogimg/player.png",
+        }))}</script>
       </Helmet>
 
       <Navbar />

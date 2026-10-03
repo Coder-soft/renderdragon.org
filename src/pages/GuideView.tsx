@@ -75,6 +75,11 @@ export default function GuideView() {
           name="description"
           content={`Read the ${title} guide on Renderdragon.`}
         />
+        <link
+          rel="canonical"
+          href={`https://renderdragon.org/guides/${slug}`}
+        />
+        <meta property="og:type" content="article" />
         <meta property="og:title" content={`${title} - Renderdragon Guides`} />
         <meta
           property="og:description"
@@ -94,6 +99,30 @@ export default function GuideView() {
           name="twitter:image"
           content="https://renderdragon.org/ogimg/guides.png"
         />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "TechArticle",
+              headline: title,
+              name: title,
+              description: `Read the ${title} guide on Renderdragon.`,
+              url: `https://renderdragon.org/guides/${slug}`,
+              image: "https://renderdragon.org/ogimg/guides.png",
+              inLanguage: "en",
+              author: { "@type": "Organization", name: "Renderdragon" },
+              publisher: { "@id": "https://renderdragon.org/#organization" },
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://renderdragon.org/" },
+                { "@type": "ListItem", position: 2, name: "Guides", item: "https://renderdragon.org/guides" },
+                { "@type": "ListItem", position: 3, name: title, item: `https://renderdragon.org/guides/${slug}` },
+              ],
+            },
+          ],
+        })}</script>
       </Helmet>
 
       <Navbar />

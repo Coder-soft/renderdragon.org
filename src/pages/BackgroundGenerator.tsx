@@ -26,6 +26,7 @@ import {
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { softwareApplicationSchema } from "@/lib/structuredData";
 import { fetchFromAssetsApi } from "@/lib/assetsApi";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -654,6 +655,12 @@ const BackgroundGenerator = () => {
           name="twitter:image"
           content="https://renderdragon.org/ogimg/background.png"
         />
+        <script type="application/ld+json">{JSON.stringify(softwareApplicationSchema({
+          name: "Background Generator",
+          description: "Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art.",
+          path: "/background-generator",
+          image: "/ogimg/background.png",
+        }))}</script>
       </Helmet>
       <Navbar />
 

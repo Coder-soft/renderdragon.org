@@ -1,0 +1,24 @@
+{
+  "name": "Renderdragon",
+  "short_name": "Renderdragon",
+  "description": "Free tools and assets for Minecraft YouTube creators.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0b12",
+  "theme_color": "#9333ea",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/renderdragon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
