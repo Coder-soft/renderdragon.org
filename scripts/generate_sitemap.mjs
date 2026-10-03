@@ -66,7 +66,10 @@ if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY) 
           headers: { ...headers, Range: `${start}-${start + pageSize - 1}`, Prefer: "count=exact" },
           signal: controller.signal,
         });
-        if (!response.ok) return rows;
+        if (!response.ok) {
+          console.warn(`Skipping sitemap enrichment for ${path}: HTTP ${response.status}`);
+          return rows;
+        }
 
         const page = await response.json();
         if (!Array.isArray(page)) return rows;
@@ -83,13 +86,16 @@ if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY) 
       }
     }
   };
+  // Select only columns readable by the anonymous role:
+  //  - profiles.updated_at is revoked from `anon`, so we only ask for username.
+  //  - creator_packs has no updated_at column, so we use created_at for lastmod.
   const [profiles, packs, blogs] = await Promise.all([
-    fetchJson("profiles?select=username,updated_at&username=not.is.null&order=username.asc"),
-    fetchJson("creator_packs?select=slug,updated_at&status=eq.approved&order=slug.asc"),
+    fetchJson("profiles?select=username&username=not.is.null&order=username.asc"),
+    fetchJson("creator_packs?select=slug,created_at&status=eq.approved&order=slug.asc"),
     fetchJson("blogs?select=slug,updated_at&published=eq.true&order=slug.asc"),
   ]);
-  for (const { username, updated_at } of profiles) if (username) urls.push(urlEntry(`${site}/u/${username}`, 0.4, "weekly", updated_at));
-  for (const { slug, updated_at } of packs) if (slug) urls.push(urlEntry(`${site}/creator-packs/${slug}`, 0.6, "weekly", updated_at));
+  for (const { username } of profiles) if (username) urls.push(urlEntry(`${site}/u/${username}`, 0.4));
+  for (const { slug, created_at } of packs) if (slug) urls.push(urlEntry(`${site}/creator-packs/${slug}`, 0.6, "weekly", created_at));
   for (const { slug, updated_at } of blogs) if (slug) urls.push(urlEntry(`${site}/blogs/${slug}`, 0.6, "weekly", updated_at));
 }
 
