@@ -19,11 +19,14 @@ import Seo from "@/components/Seo";
 // Routes that should never be indexed by search engines.
 const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/manage'];
 
+// Subset of private routes that also hide the global Donate button.
+const DONATE_HIDDEN_ROUTE_PREFIXES = ['/admin', '/account'];
+
 // Global components wrapper to use hooks like useLocation
 const GlobalComponents = () => {
   const location = useLocation();
   const isPrivateRoute = PRIVATE_ROUTE_PREFIXES.some((prefix) => location.pathname.startsWith(prefix));
-  const hideDonateButton = location.pathname.startsWith('/admin') || location.pathname.startsWith('/account');
+  const hideDonateButton = DONATE_HIDDEN_ROUTE_PREFIXES.some((prefix) => location.pathname.startsWith(prefix));
   const routeName = location.pathname === '/' ? 'Minecraft Creator Tools & Resources' :
     location.pathname.split('/').filter(Boolean).map((part) => part.split('-').join(' ')).join(' / ');
 

@@ -4,6 +4,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    These are no-JS fallback SEO tags. Tags marked data-rh="true" are the ones
+    react-helmet-async manages, so each route's <Seo> can replace them with
+    route-specific title/description/canonical/og values. Untagged tags
+    (site verification, theme-color, og:site_name) are intentionally left for
+    Helmet to pass over.
+  -->
   <title data-rh="true">
     Renderdragon - Minecraft Content Creator Tools & Assets
   </title>
@@ -42,7 +49,8 @@
   <meta name="twitter:image" content="https://renderdragon.org/ogimg.png" data-rh="true" />
   <meta name="twitter:image:alt" content="Renderdragon — free tools and assets for Minecraft YouTube creators" data-rh="true" />
 
-  <link rel="icon" type="image/png" href="https://renderdragon.org/renderdragon.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">

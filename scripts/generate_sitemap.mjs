@@ -1,8 +1,9 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 
 const site = "https://renderdragon.org";
 
 // Static routes with a priority hint. Higher priority = more important to crawlers.
+// Guide routes are discovered from public/guides/*.md below.
 const staticRoutes = {
   "/": 1.0,
   "/resources": 0.9,
@@ -18,12 +19,6 @@ const staticRoutes = {
   "/showcase": 0.6,
   "/blogs": 0.6,
   "/community": 0.6,
-  "/guides/scriptwriting": 0.6,
-  "/guides/AI": 0.6,
-  "/guides/questions": 0.6,
-  "/guides/copyright": 0.6,
-  "/guides/thingstoask": 0.6,
-  "/guides/voice": 0.6,
   "/renderbot": 0.5,
   "/native-application": 0.5,
   "/changelogs": 0.4,
@@ -41,13 +36,20 @@ const escapeXml = (value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;");
 
-const lastmod = new Date().toISOString();
-const urlEntry = (loc, priority, changefreq = "weekly") =>
-  `<url><loc>${escapeXml(loc)}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority.toFixed(1)}</priority></url>`;
+// lastmod is only emitted when a real modification time is known; static routes
+// do not have one, so we omit it rather than stamping build time on every page.
+const urlEntry = (loc, priority, changefreq = "weekly", lastmod) =>
+  `<url><loc>${escapeXml(loc)}</loc>${lastmod ? `<lastmod>${escapeXml(lastmod)}</lastmod>` : ""}<changefreq>${changefreq}</changefreq><priority>${priority.toFixed(1)}</priority></url>`;
 
 const urls = Object.entries(staticRoutes).map(([route, priority]) =>
   urlEntry(`${site}${route}`, priority, route === "/" ? "daily" : "weekly"),
 );
+
+// Guide slugs come straight from the markdown files that GuideView serves.
+const guideFiles = await readdir("public/guides").catch(() => []);
+for (const file of guideFiles) {
+  if (file.endsWith(".md")) urls.push(urlEntry(`${site}/guides/${file.slice(0, -3)}`, 0.6));
+}
 
 // Public profile and creator-pack slugs are added when build credentials are available.
 if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
@@ -82,13 +84,13 @@ if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY) 
     }
   };
   const [profiles, packs, blogs] = await Promise.all([
-    fetchJson("profiles?select=username&username=not.is.null&order=username.asc"),
-    fetchJson("creator_packs?select=slug&status=eq.approved&order=slug.asc"),
-    fetchJson("blogs?select=slug&published=eq.true&order=slug.asc"),
+    fetchJson("profiles?select=username,updated_at&username=not.is.null&order=username.asc"),
+    fetchJson("creator_packs?select=slug,updated_at&status=eq.approved&order=slug.asc"),
+    fetchJson("blogs?select=slug,updated_at&published=eq.true&order=slug.asc"),
   ]);
-  for (const { username } of profiles) if (username) urls.push(urlEntry(`${site}/u/${escapeXml(username)}`, 0.4));
-  for (const { slug } of packs) if (slug) urls.push(urlEntry(`${site}/creator-packs/${escapeXml(slug)}`, 0.6));
-  for (const { slug } of blogs) if (slug) urls.push(urlEntry(`${site}/blogs/${escapeXml(slug)}`, 0.6));
+  for (const { username, updated_at } of profiles) if (username) urls.push(urlEntry(`${site}/u/${username}`, 0.4, "weekly", updated_at));
+  for (const { slug, updated_at } of packs) if (slug) urls.push(urlEntry(`${site}/creator-packs/${slug}`, 0.6, "weekly", updated_at));
+  for (const { slug, updated_at } of blogs) if (slug) urls.push(urlEntry(`${site}/blogs/${slug}`, 0.6, "weekly", updated_at));
 }
 
 await mkdir("public", { recursive: true });
