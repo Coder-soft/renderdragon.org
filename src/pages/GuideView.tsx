@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 
 import Seo from "@/components/Seo";
 import { breadcrumbSchema } from "@/lib/structuredData";
+import { SITE_URL } from "@/lib/site";
 import ReactMarkdown from "react-markdown";
 import { IconArrowLeft, IconList, IconLoader2 } from "@tabler/icons-react";
 
@@ -83,11 +84,11 @@ export default function GuideView() {
             headline: title,
             name: title,
             description: `Read the ${title} guide on Renderdragon.`,
-            url: `https://renderdragon.org/guides/${slug}`,
-            image: "https://renderdragon.org/ogimg/guides.png",
+            url: `${SITE_URL}/guides/${slug}`,
+            image: `${SITE_URL}/ogimg/guides.png`,
             inLanguage: "en",
             author: { "@type": "Organization", name: "Renderdragon" },
-            publisher: { "@id": "https://renderdragon.org/#organization" },
+            publisher: { "@id": `${SITE_URL}/#organization` },
           },
           breadcrumbSchema([
             { name: "Home", path: "/" },

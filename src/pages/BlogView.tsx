@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { breadcrumbSchema } from "@/lib/structuredData";
+import { SITE_URL } from "@/lib/site";
 import ReactMarkdown from "react-markdown";
 import { IconArrowLeft, IconLoader2, IconCalendar, IconUser } from "@tabler/icons-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -113,13 +114,13 @@ export default function BlogView() {
                         "@context": "https://schema.org",
                         "@type": "BlogPosting",
                         headline: blog.title,
-                        url: `https://renderdragon.org/blogs/${slug}`,
+                        url: `${SITE_URL}/blogs/${slug}`,
                         datePublished: blog.created_at,
                         dateModified: blog.created_at,
-                        image: "https://renderdragon.org/ogimg.png",
+                        image: `${SITE_URL}/ogimg.png`,
                         author: { "@type": "Person", name: author?.display_name || "Renderdragon" },
-                        publisher: { "@id": "https://renderdragon.org/#organization" },
-                        mainEntityOfPage: `https://renderdragon.org/blogs/${slug}`,
+                        publisher: { "@id": `${SITE_URL}/#organization` },
+                        mainEntityOfPage: `${SITE_URL}/blogs/${slug}`,
                     },
                     breadcrumbSchema([
                         { name: "Home", path: "/" },
