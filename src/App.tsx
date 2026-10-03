@@ -17,13 +17,13 @@ import Navbar from "@/components/Navbar";
 import Seo from "@/components/Seo";
 
 // Routes that should never be indexed by search engines.
-const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/new', '/creator-packs/manage'];
+const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/manage'];
 
 // Global components wrapper to use hooks like useLocation
 const GlobalComponents = () => {
   const location = useLocation();
   const isPrivateRoute = PRIVATE_ROUTE_PREFIXES.some((prefix) => location.pathname.startsWith(prefix));
-  const hideDonateButton = isPrivateRoute;
+  const hideDonateButton = location.pathname.startsWith('/admin') || location.pathname.startsWith('/account');
   const routeName = location.pathname === '/' ? 'Minecraft Creator Tools & Resources' :
     location.pathname.split('/').filter(Boolean).map((part) => part.split('-').join(' ')).join(' / ');
 

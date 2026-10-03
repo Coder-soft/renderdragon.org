@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { Helmet } from 'react-helmet-async';
+import Seo from '@/components/Seo';
 import { softwareApplicationSchema } from '@/lib/structuredData';
 import VideoInfoSkeleton from '@/components/skeletons/VideoInfoSkeleton';
 
@@ -260,32 +260,19 @@ const YouTubeDownloader: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>YouTube Tools - Download Thumbnails & Stats | Renderdragon</title>
-        <meta
-          name="description"
-          content="Inspect YouTube video details and download thumbnails for fair use and educational purposes. View channel, stats, duration, and more."
-        />
-        <link rel="canonical" href="https://renderdragon.org/youtube-downloader" />
-        <meta property="og:title" content="YouTube Tools - Download Thumbnails & Stats | Renderdragon" />
-        <meta
-          property="og:description"
-          content="Inspect YouTube video details and download thumbnails for fair use and educational purposes."
-        />
-        <meta property="og:url" content="https://renderdragon.org/youtube-downloader" />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/index.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="YouTube Tools - Download Thumbnails & Stats | Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/index.png" />
-        <script type="application/ld+json">{JSON.stringify(softwareApplicationSchema({
+      <Seo
+        title="YouTube Tools - Download Thumbnails & Stats | Renderdragon"
+        description="Inspect YouTube video details and download thumbnails for fair use and educational purposes. View channel, stats, duration, and more."
+        path="/youtube-downloader"
+        image="/ogimg/index.png"
+        jsonLd={softwareApplicationSchema({
           name: "YouTube Tools",
           description: "Inspect YouTube video details and download thumbnails for fair use and educational purposes.",
           path: "/youtube-downloader",
           image: "/ogimg/index.png",
           category: "UtilitiesApplication",
-        }))}</script>
-      </Helmet>
+        })}
+      />
       <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

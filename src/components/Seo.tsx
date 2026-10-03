@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 
-const SITE_URL = "https://renderdragon.org";
-const DEFAULT_IMAGE = "/ogimg.png";
 const DEFAULT_ROBOTS = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 
 type JsonLd = Record<string, unknown>;
@@ -20,7 +19,7 @@ export default function Seo({
   title,
   description,
   path,
-  image = DEFAULT_IMAGE,
+  image = DEFAULT_OG_IMAGE,
   type = "website",
   robots = DEFAULT_ROBOTS,
   jsonLd,

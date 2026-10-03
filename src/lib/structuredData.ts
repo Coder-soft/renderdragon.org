@@ -1,4 +1,4 @@
-const SITE_URL = "https://renderdragon.org";
+import { SITE_URL } from "@/lib/site";
 
 interface SoftwareApplicationOptions {
   name: string;

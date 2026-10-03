@@ -7,7 +7,6 @@ Disallow: /admin/
 Disallow: /account
 Disallow: /account/
 Disallow: /analytics
-Disallow: /creator-packs/new
 Disallow: /creator-packs/manage
 Disallow: /api/
 

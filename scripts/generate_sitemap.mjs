@@ -42,11 +42,11 @@ const escapeXml = (value) =>
     .replaceAll("'", "&apos;");
 
 const lastmod = new Date().toISOString();
-const entry = (loc, priority = 0.5, changefreq = "weekly") =>
+const urlEntry = (loc, priority, changefreq = "weekly") =>
   `<url><loc>${escapeXml(loc)}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority.toFixed(1)}</priority></url>`;
 
 const urls = Object.entries(staticRoutes).map(([route, priority]) =>
-  entry(`${site}${route}`, priority, route === "/" ? "daily" : "weekly"),
+  urlEntry(`${site}${route}`, priority, route === "/" ? "daily" : "weekly"),
 );
 
 // Public profile and creator-pack slugs are added when build credentials are available.
@@ -86,9 +86,9 @@ if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_PUBLISHABLE_KEY) 
     fetchJson("creator_packs?select=slug&status=eq.approved&order=slug.asc"),
     fetchJson("blogs?select=slug&published=eq.true&order=slug.asc"),
   ]);
-  for (const { username } of profiles) if (username) urls.push(entry(`${site}/u/${escapeXml(username)}`, 0.4));
-  for (const { slug } of packs) if (slug) urls.push(entry(`${site}/creator-packs/${escapeXml(slug)}`, 0.6));
-  for (const { slug } of blogs) if (slug) urls.push(entry(`${site}/blogs/${escapeXml(slug)}`, 0.6));
+  for (const { username } of profiles) if (username) urls.push(urlEntry(`${site}/u/${escapeXml(username)}`, 0.4));
+  for (const { slug } of packs) if (slug) urls.push(urlEntry(`${site}/creator-packs/${escapeXml(slug)}`, 0.6));
+  for (const { slug } of blogs) if (slug) urls.push(urlEntry(`${site}/blogs/${escapeXml(slug)}`, 0.6));
 }
 
 await mkdir("public", { recursive: true });

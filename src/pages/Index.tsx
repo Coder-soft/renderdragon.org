@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
+import Seo from '@/components/Seo';
 import { softwareApplicationSchema } from '@/lib/structuredData';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -21,24 +21,18 @@ const fadeInUp = {
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Helmet>
-        <title>RenderDragon - Free Minecraft Creator Tools & Resources</title>
-        <meta name="description" content="Free music, SFX, fonts, presets, and editing tools for Minecraft YouTubers. No signup, no paywalls, no watermarks." />
-        <meta property="og:title" content="RenderDragon - Free Minecraft Creator Tools & Resources" />
-        <meta property="og:description" content="Free music, SFX, fonts, presets, and editing tools for Minecraft YouTubers. No signup, no paywalls, no watermarks." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg.png" />
-        <meta property="og:url" content="https://renderdragon.org" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="RenderDragon - Free Minecraft Creator Tools & Resources" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg.png" />
-        <link rel="canonical" href="https://renderdragon.org/" />
-        <script type="application/ld+json">{JSON.stringify(softwareApplicationSchema({
+      <Seo
+        title="RenderDragon - Free Minecraft Creator Tools & Resources"
+        description="Free music, SFX, fonts, presets, and editing tools for Minecraft YouTubers. No signup, no paywalls, no watermarks."
+        path="/"
+        image="/ogimg.png"
+        jsonLd={softwareApplicationSchema({
           name: "Renderdragon",
           description: "Free music, SFX, fonts, presets, and editing tools for Minecraft YouTubers. No signup, no paywalls, no watermarks.",
           path: "/",
           image: "/ogimg.png",
-        }))}</script>
-      </Helmet>
+        })}
+      />
       <Navbar />
       <main className="flex-grow">
         <motion.div
