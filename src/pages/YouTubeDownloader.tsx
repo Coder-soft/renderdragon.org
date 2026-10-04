@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { Helmet } from 'react-helmet-async';
+import Seo from '@/components/Seo';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import VideoInfoSkeleton from '@/components/skeletons/VideoInfoSkeleton';
 
 // API types from mediapye YouTube Video Inspector
@@ -259,13 +260,19 @@ const YouTubeDownloader: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Youtube Tools - Renderdragon</title>
-        <meta
-          name="description"
-          content="Inspect YouTube video details for fair use and educational purposes. View channel, stats, duration, and thumbnail with quick download."
-        />
-      </Helmet>
+      <Seo
+        title="YouTube Tools - Download Thumbnails & Stats | Renderdragon"
+        description="Inspect YouTube video details and download thumbnails for fair use and educational purposes. View channel, stats, duration, and more."
+        path="/youtube-downloader"
+        image="/ogimg/index.png"
+        jsonLd={softwareApplicationSchema({
+          name: "YouTube Tools",
+          description: "Inspect YouTube video details and download thumbnails for fair use and educational purposes.",
+          path: "/youtube-downloader",
+          image: "/ogimg/index.png",
+          category: "UtilitiesApplication",
+        })}
+      />
       <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

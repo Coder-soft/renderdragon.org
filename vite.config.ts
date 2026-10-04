@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import sitemap from 'vite-plugin-sitemap';
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
@@ -34,11 +33,8 @@ export default defineConfig(() => {
       },
     },
     plugins: [
-      sitemap({
-        hostname: 'https://renderdragon.org',
-      }),
       react(),
-    ].filter(Boolean),
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

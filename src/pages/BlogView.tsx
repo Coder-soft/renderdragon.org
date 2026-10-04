@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
+import Seo from "@/components/Seo";
+import { breadcrumbSchema } from "@/lib/structuredData";
+import { SITE_URL } from "@/lib/site";
 import ReactMarkdown from "react-markdown";
 import { IconArrowLeft, IconLoader2, IconCalendar, IconUser } from "@tabler/icons-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,10 +103,32 @@ export default function BlogView() {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Helmet>
-                <title>{blog.title} - Renderdragon Blog</title>
-                <meta name="description" content={`Read ${blog.title} on Renderdragon.`} />
-            </Helmet>
+            <Seo
+                title={`${blog.title} - Renderdragon Blog`}
+                description={`Read ${blog.title} on the Renderdragon blog — free tools and resources for Minecraft content creators.`}
+                path={`/blogs/${slug}`}
+                image="/ogimg.png"
+                type="article"
+                jsonLd={[
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "BlogPosting",
+                        headline: blog.title,
+                        url: `${SITE_URL}/blogs/${slug}`,
+                        datePublished: blog.created_at,
+                        dateModified: blog.created_at,
+                        image: `${SITE_URL}/ogimg.png`,
+                        author: { "@type": "Person", name: author?.display_name || "Renderdragon" },
+                        publisher: { "@id": `${SITE_URL}/#organization` },
+                        mainEntityOfPage: `${SITE_URL}/blogs/${slug}`,
+                    },
+                    breadcrumbSchema([
+                        { name: "Home", path: "/" },
+                        { name: "Blog", path: "/blogs" },
+                        { name: blog.title, path: `/blogs/${slug}` },
+                    ]),
+                ]}
+            />
 
             <Navbar />
 

@@ -25,7 +25,8 @@ import {
   IconRotateClockwise,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
-import { Helmet } from "react-helmet-async";
+import Seo from "@/components/Seo";
+import { softwareApplicationSchema } from "@/lib/structuredData";
 import { fetchFromAssetsApi } from "@/lib/assetsApi";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -623,38 +624,18 @@ const BackgroundGenerator = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>Background Generator - Renderdragon</title>
-        <meta
-          name="description"
-          content="Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art with our background generator tool."
-        />
-        <meta
-          property="og:title"
-          content="Background Generator - Renderdragon"
-        />
-        <meta
-          property="og:description"
-          content="Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art with our background generator tool."
-        />
-        <meta
-          property="og:image"
-          content="https://renderdragon.org/ogimg/background.png"
-        />
-        <meta
-          property="og:url"
-          content="https://renderdragon.org/background-generator"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Background Generator - Renderdragon"
-        />
-        <meta
-          name="twitter:image"
-          content="https://renderdragon.org/ogimg/background.png"
-        />
-      </Helmet>
+      <Seo
+        title="Background Generator - Renderdragon"
+        description="Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art with our background generator tool."
+        path="/background-generator"
+        image="/ogimg/background.png"
+        jsonLd={softwareApplicationSchema({
+          name: "Background Generator",
+          description: "Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art.",
+          path: "/background-generator",
+          image: "/ogimg/background.png",
+        })}
+      />
       <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

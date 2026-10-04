@@ -3,7 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-import { Helmet } from "react-helmet-async";
+import Seo from "@/components/Seo";
+import { breadcrumbSchema } from "@/lib/structuredData";
+import { SITE_URL } from "@/lib/site";
 import ReactMarkdown from "react-markdown";
 import { IconArrowLeft, IconList, IconLoader2 } from "@tabler/icons-react";
 
@@ -69,32 +71,32 @@ export default function GuideView() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Helmet>
-        <title>{title} - Guides - Renderdragon</title>
-        <meta
-          name="description"
-          content={`Read the ${title} guide on Renderdragon.`}
-        />
-        <meta property="og:title" content={`${title} - Renderdragon Guides`} />
-        <meta
-          property="og:description"
-          content={`Read the ${title} guide on Renderdragon.`}
-        />
-        <meta
-          property="og:image"
-          content="https://renderdragon.org/ogimg/guides.png"
-        />
-        <meta
-          property="og:url"
-          content={`https://renderdragon.org/guides/${slug}`}
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${title} - Renderdragon Guides`} />
-        <meta
-          name="twitter:image"
-          content="https://renderdragon.org/ogimg/guides.png"
-        />
-      </Helmet>
+      <Seo
+        title={`${title} - Guides - Renderdragon`}
+        description={`Read the ${title} guide on Renderdragon.`}
+        path={`/guides/${slug}`}
+        image="/ogimg/guides.png"
+        type="article"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "TechArticle",
+            headline: title,
+            name: title,
+            description: `Read the ${title} guide on Renderdragon.`,
+            url: `${SITE_URL}/guides/${slug}`,
+            image: `${SITE_URL}/ogimg/guides.png`,
+            inLanguage: "en",
+            author: { "@type": "Organization", name: "Renderdragon" },
+            publisher: { "@id": `${SITE_URL}/#organization` },
+          },
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Guides", path: "/guides" },
+            { name: title, path: `/guides/${slug}` },
+          ]),
+        ]}
+      />
 
       <Navbar />
 

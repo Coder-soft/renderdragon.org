@@ -6,7 +6,8 @@ import LooneyCheckForm from '@/components/LooneyCheckForm';
 import LooneyHistorySection from '@/components/LooneyHistorySection';
 import LooneyRunningCheckDialog from '@/components/LooneyRunningCheckDialog';
 import { IconFileMusic } from '@tabler/icons-react';
-import { Helmet } from 'react-helmet-async';
+import Seo from '@/components/Seo';
+import { softwareApplicationSchema } from '@/lib/structuredData';
 import { LooneyHistoryRecord } from '@/types/looney';
 
 const MusicCopyright = () => {
@@ -18,7 +19,19 @@ const MusicCopyright = () => {
   const showRecord = (record: LooneyHistoryRecord) => { if (record.result) navigate(`/gappa/check/${encodeURIComponent(record.jobId)}`); };
 
   return <div className="flex min-h-screen flex-col">
-    <Helmet><title>Looney Checks - Renderdragon</title><meta name="description" content="Research music licensing and copyright signals before using a track." /><meta property="og:title" content="Looney Checks - Renderdragon" /></Helmet>
+    <Seo
+      title="Looney Checks - Music Copyright Checker | Renderdragon"
+      description="Research music licensing and copyright signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself."
+      path="/gappa"
+      image="/ogimg/copyright.png"
+      jsonLd={softwareApplicationSchema({
+        name: "Looney Checks",
+        description: "Research music licensing and copyright signals before you publish.",
+        path: "/gappa",
+        image: "/ogimg/copyright.png",
+        category: "UtilitiesApplication",
+      })}
+    />
     <Navbar />
     <main className="flex-grow cow-grid-bg bg-background px-4 pb-20 pt-28">
       <div className="container mx-auto max-w-6xl">

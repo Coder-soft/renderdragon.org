@@ -16,17 +16,28 @@ import { AdBlockDetector } from "@/components/AdBlockDetector";
 import Navbar from "@/components/Navbar";
 import Seo from "@/components/Seo";
 
+// Routes that should never be indexed by search engines.
+const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/manage'];
+
+// Subset of private routes that also hide the global Donate button.
+const DONATE_HIDDEN_ROUTE_PREFIXES = ['/admin', '/account'];
+
 // Global components wrapper to use hooks like useLocation
 const GlobalComponents = () => {
   const location = useLocation();
-  const hideDonateButton = location.pathname.startsWith('/admin') ||
-    location.pathname.startsWith('/account');
+  const isPrivateRoute = PRIVATE_ROUTE_PREFIXES.some((prefix) => location.pathname.startsWith(prefix));
+  const hideDonateButton = DONATE_HIDDEN_ROUTE_PREFIXES.some((prefix) => location.pathname.startsWith(prefix));
   const routeName = location.pathname === '/' ? 'Minecraft Creator Tools & Resources' :
     location.pathname.split('/').filter(Boolean).map((part) => part.split('-').join(' ')).join(' / ');
 
   return (
     <>
-      <Seo title={`${routeName.replace(/\b\w/g, (letter) => letter.toUpperCase())} | RenderDragon`} description={`Explore ${routeName} on RenderDragon, free tools and resources for Minecraft content creators.`} path={location.pathname} />
+      <Seo
+        title={`${routeName.replace(/\b\w/g, (letter) => letter.toUpperCase())} | RenderDragon`}
+        description={`Explore ${routeName} on RenderDragon, free tools and resources for Minecraft content creators.`}
+        path={location.pathname}
+        robots={isPrivateRoute ? 'noindex, nofollow' : undefined}
+      />
       {!hideDonateButton && <DonateButton />}
       <AdBlockDetector />
     </>
