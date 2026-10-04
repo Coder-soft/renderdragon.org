@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { IconHome, IconCompass, IconTool, IconPick } from "@tabler/icons-react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 
@@ -46,7 +45,6 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
 
         <main className="font-geist flex-grow pt-32 pb-20 cow-grid-bg flex items-center justify-center relative overflow-hidden">
         <motion.div

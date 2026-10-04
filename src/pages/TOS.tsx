@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 
@@ -19,7 +18,6 @@ const TOS = () => {
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/tos.png" />
       </Helmet>
 
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

@@ -13,7 +13,6 @@ import {
   IconUserPlus,
   IconUsers,
 } from "@tabler/icons-react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
@@ -139,7 +138,6 @@ const Analytics = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <Navbar />
 
       <main className="cow-grid-bg flex-grow pb-16 pt-24">
         <div className="container mx-auto px-4">

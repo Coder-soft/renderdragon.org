@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -129,7 +128,6 @@ const EditCreatorPackPage = () => {
     if (isLoading) {
         return (
             <div className="min-h-screen flex flex-col">
-                <Navbar />
                 <div className="flex-grow flex items-center justify-center">
                     <IconLoader2 className="w-10 h-10 animate-spin text-cow-purple" />
                 </div>
@@ -156,7 +154,6 @@ const EditCreatorPackPage = () => {
                 <title>Edit Creator Pack | RenderDragon</title>
             </Helmet>
 
-            <Navbar />
 
             <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
                 <div className="container mx-auto px-4 max-w-3xl">

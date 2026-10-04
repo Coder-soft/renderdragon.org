@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Seo from '@/components/Seo';
 import { softwareApplicationSchema } from '@/lib/structuredData';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -122,7 +121,6 @@ const TextGenerator = () => {
         })}
       />
 
-      <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">

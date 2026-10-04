@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState, useCallback, lazy, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
@@ -422,7 +421,6 @@ const ResourcesHub = () => {
         <meta name="twitter:title" content="Resources Hub" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/resources.png" />
       </Helmet>
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">

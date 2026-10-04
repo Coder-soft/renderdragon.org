@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -100,7 +99,6 @@ const CreateCreatorPackPage = () => {
                 <title>Upload Creator Pack | RenderDragon</title>
             </Helmet>
 
-            <Navbar />
 
             <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
                 <div className="container mx-auto px-4 max-w-3xl">

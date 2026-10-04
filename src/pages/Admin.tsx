@@ -1,7 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -18,7 +17,6 @@ const Admin = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
         <main className="flex-grow pt-24 pb-16 cow-grid-bg">
           <div className="container mx-auto px-4">
             <div className="max-w-7xl mx-auto">
@@ -45,7 +43,6 @@ const Admin = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

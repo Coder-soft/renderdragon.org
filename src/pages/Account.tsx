@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
 import { IconUser, IconMail, IconCalendar, IconLogout } from '@tabler/icons-react';
@@ -55,7 +54,6 @@ const Account = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
         <main className="flex-grow pt-24 pb-16 cow-grid-bg">
           <div className="container mx-auto px-4">
             <AccountPageSkeleton />
@@ -124,7 +122,6 @@ const Account = () => {
         <meta name="description" content="Manage your Renderdragon account settings and profile information." />
       </Helmet>
 
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

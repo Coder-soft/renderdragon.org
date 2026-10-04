@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { IconAlertTriangle, IconArrowLeft, IconLoader2 } from '@tabler/icons-react';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LooneyResultDisplay from '@/components/LooneyResultDisplay';
 import { LooneyJob, LooneyHistoryRecord } from '@/types/looney';
@@ -124,7 +123,6 @@ const LooneyResultPage = () => {
 
   return <div className="flex min-h-screen flex-col">
     <Helmet><title>{record?.sourceLabel || 'Check result'} - Looney</title></Helmet>
-    <Navbar />
     <main className="flex-grow cow-grid-bg bg-background px-4 pb-20 pt-28">
       <div className="container mx-auto max-w-6xl">
         <Link to="/gappa" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"><IconArrowLeft className="h-4 w-4" /> Back to checks</Link>

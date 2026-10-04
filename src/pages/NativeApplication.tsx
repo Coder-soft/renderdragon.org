@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { IconDownload, IconClipboard, IconLayout, IconBackground, IconBolt, IconExternalLink, IconBrandGithub } from '@tabler/icons-react';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -64,7 +63,6 @@ const NativeApplication = () => {
         <meta name="twitter:title" content="Native Application - Renderdragon" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/native-app.png" />
       </Helmet>
-      <Navbar />
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

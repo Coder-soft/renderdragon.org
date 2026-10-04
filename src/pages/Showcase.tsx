@@ -19,7 +19,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { IconCode, IconDownload, IconFileText, IconLoader2, IconPlus, IconSearch, IconTypography } from '@tabler/icons-react';
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AuthDialog from "@/components/auth/AuthDialog";
 import AudioPlayer from "@/components/AudioPlayer";
@@ -378,7 +377,6 @@ const ShowcasePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background cow-grid-bg">
-      <Navbar />
       {/* pad top to avoid content under fixed navbar */}
       <div className="container mx-auto px-4 pt-28 pb-12">
         <Helmet>
