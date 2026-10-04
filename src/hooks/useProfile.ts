@@ -25,9 +25,9 @@ export const useProfile = () => {
   const fetchProfile = useCallback(async () => {
     if (!user) return;
 
-    const supabase = await getSupabase();
     setLoading(true);
     try {
+      const supabase = await getSupabase();
       // Own-profile reads go through the security-definer RPC so the client
       // never needs (and no longer has) column access to email/first/last/etc.
       const { data: rawData, error } = await supabase.rpc("get_my_profile");
@@ -73,9 +73,9 @@ export const useProfile = () => {
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return;
 
-    const supabase = await getSupabase();
     setLoading(true);
     try {
+      const supabase = await getSupabase();
       // Only columns the owner is actually allowed to change (RLS-granted).
       // email/created_at/updated_at/role/etc. are never written from the client.
       const allowedFields = [
@@ -115,8 +115,8 @@ export const useProfile = () => {
   const deleteAccount = async () => {
     if (!user) return;
 
-    const supabase = await getSupabase();
     try {
+      const supabase = await getSupabase();
       // Get the current session to send the access token
       const { data: { session } } = await supabase.auth.getSession();
 

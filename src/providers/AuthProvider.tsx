@@ -13,25 +13,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         let cancelled = false;
 
         (async () => {
-            const supabase = await getSupabase();
-            if (cancelled) return;
+            try {
+                const supabase = await getSupabase();
+                if (cancelled) return;
 
-            const {
-                data: { subscription },
-            } = supabase.auth.onAuthStateChange((_event, session) => {
+                const {
+                    data: { subscription },
+                } = supabase.auth.onAuthStateChange((_event, session) => {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+                    setLoading(false);
+                });
+                unsubscribe = () => subscription.unsubscribe();
+
+                const {
+                    data: { session },
+                } = await supabase.auth.getSession();
+                if (cancelled) return;
                 setSession(session);
                 setUser(session?.user ?? null);
                 setLoading(false);
-            });
-            unsubscribe = () => subscription.unsubscribe();
-
-            const {
-                data: { session },
-            } = await supabase.auth.getSession();
-            if (cancelled) return;
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
+            } catch (error) {
+                console.error("Auth initialization failed:", error);
+                if (!cancelled) setLoading(false);
+            }
         })();
 
         return () => {
