@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { getSupabase } from '@/integrations/supabase/lazyClient';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
@@ -25,6 +25,7 @@ export const useProfile = () => {
   const fetchProfile = useCallback(async () => {
     if (!user) return;
 
+    const supabase = await getSupabase();
     setLoading(true);
     try {
       // Own-profile reads go through the security-definer RPC so the client
@@ -72,6 +73,7 @@ export const useProfile = () => {
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return;
 
+    const supabase = await getSupabase();
     setLoading(true);
     try {
       // Only columns the owner is actually allowed to change (RLS-granted).
@@ -113,6 +115,7 @@ export const useProfile = () => {
   const deleteAccount = async () => {
     if (!user) return;
 
+    const supabase = await getSupabase();
     try {
       // Get the current session to send the access token
       const { data: { session } } = await supabase.auth.getSession();

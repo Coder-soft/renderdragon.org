@@ -7,6 +7,7 @@ interface Testimonial {
   name: string;
   role: string;
   content: string;
+  avatar: string;
 }
 
 const testimonialsData: Testimonial[] = [
@@ -15,24 +16,28 @@ const testimonialsData: Testimonial[] = [
     name: "yFury",
     role: 'YouTuber',
     content: 'RenderDragon is a fantastic resource for any creator. I use it all the time for my videos!',
+    avatar: '/assets/yFury.webp',
   },
   {
     id: 2,
     name: "Jkingnick",
     role: 'Designer',
     content: 'The assets on RenderDragon are top-notch. They save me a ton of time and effort.',
+    avatar: '/assets/Jkingnick.webp',
   },
   {
     id: 3,
     name: "AlphaReturns",
     role: 'Editor',
     content: 'I love the variety of resources available. It\'s my go-to for all my editing needs.',
+    avatar: '/assets/AlphaReturns.webp',
   },
   {
     id: 4,
     name: "ItsProger",
     role: 'Minecraft YouTuber and Thumbnail Designer',
     content: "I really like renderdragon, it's one of the only and best websites for Minecraft content creators. I really like the style, assets, tools and the whole team working on this amazing project. I'll use it for every single video that I make in the future",
+    avatar: '/assets/ItsProger.webp',
   }
 ];
 
@@ -103,10 +108,13 @@ const Testimonials = () => {
               <div className="flex items-center gap-4 mb-5 pb-5 border-b-2 border-dashed border-border relative">
                 <div className="w-14 h-14 overflow-hidden border-2 border-cow-purple pixel-corners">
                   <img
-                    src={`/assets/${testimonial.name}.jpg`}
+                    src={testimonial.avatar}
                     alt={testimonial.name}
+                    width={112}
+                    height={112}
                     className="w-full h-full object-cover"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <div>
