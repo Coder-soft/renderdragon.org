@@ -28,7 +28,7 @@ const tools: Tool[] = [
     title: 'Background Gen',
     description: 'Generate stunning, unique backgrounds for your thumbnails in seconds.',
     icon: IconPhoto,
-    backgroundImage: '/assets/minecraft-pattern-background-1920x1080.png',
+    backgroundImage: '/assets/minecraft-pattern-background.webp',
     path: '/background-generator',
   },
   {
@@ -88,14 +88,14 @@ const PopularTools = () => {
                    className={`group relative block h-full pixel-card bg-card hover:bg-cow-purple/5 border-2 border-border hover:border-cow-purple p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-cow-purple/20 ${tool.backgroundImage ? 'overflow-hidden' : ''}`}
                  >
                    {tool.backgroundImage && <>
-                     <img src={tool.backgroundImage} alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                     <img src={tool.backgroundImage} alt="" aria-hidden="true" width={800} height={450} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.55)_100%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                    </>}
                   <div className="flex items-start justify-between mb-5">
                    <div className="relative z-10 w-12 h-12 bg-cow-purple/15 border-2 border-cow-purple pixel-corners flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
                      <tool.icon className={`h-6 w-6 text-cow-purple transition-opacity duration-150 ${tool.hoverIcon || tool.hoverImage ? 'group-hover:opacity-0' : ''}`} stroke={2.5} />
                     {'hoverIcon' in tool && tool.hoverIcon && <tool.hoverIcon className="absolute h-6 w-6 text-red-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" stroke={2.5} />}
-                    {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" className="absolute h-7 w-7 rounded-sm object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}
+                    {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" loading="lazy" decoding="async" className="absolute h-7 w-7 rounded-sm object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}
                   </div>
                    <IconArrowRight className="relative z-10 w-5 h-5 text-cow-purple opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>

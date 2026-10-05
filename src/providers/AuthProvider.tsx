@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import type { User, Session } from "@supabase/supabase-js";
+import { getSupabase } from "@/integrations/supabase/lazyClient";
 import { AuthContext, AuthResult } from "@/providers/AuthContext";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -9,27 +9,47 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
+        let unsubscribe: (() => void) | undefined;
+        let cancelled = false;
 
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
+        (async () => {
+            try {
+                const supabase = await getSupabase();
+                if (cancelled) return;
 
-        return () => subscription.unsubscribe();
+                const {
+                    data: { subscription },
+                } = supabase.auth.onAuthStateChange((_event, session) => {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+                    setLoading(false);
+                });
+                unsubscribe = () => subscription.unsubscribe();
+
+                const {
+                    data: { session },
+                } = await supabase.auth.getSession();
+                if (cancelled) return;
+                setSession(session);
+                setUser(session?.user ?? null);
+                setLoading(false);
+            } catch (error) {
+                console.error("Auth initialization failed:", error);
+                if (!cancelled) setLoading(false);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+            unsubscribe?.();
+        };
     }, []);
 
     // Keep profiles.avatar_url in sync with the latest auth metadata
     useEffect(() => {
         const syncAvatar = async () => {
             if (!user) return;
+            const supabase = await getSupabase();
             const meta = (user.user_metadata as Record<string, unknown>) || {};
             let avatarUrl: string | undefined = (meta.avatar_url as string | undefined) || (meta.picture as string | undefined);
 
@@ -123,6 +143,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         lastName: string,
         captchaToken: string | null,
     ): Promise<AuthResult> => {
+        const supabase = await getSupabase();
         const redirectUrl = `${window.location.origin}/`;
 
         const { error } = await supabase.auth.signUp({
@@ -153,6 +174,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         password: string,
         captchaToken: string | null,
     ): Promise<AuthResult> => {
+        const supabase = await getSupabase();
         const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -170,6 +192,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // UPDATED signOut function
     const signOut = async (): Promise<AuthResult> => {
+        const supabase = await getSupabase();
         const { error } = await supabase.auth.signOut();
         if (error) {
             console.error("Sign out error:", error);
@@ -185,6 +208,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signInWithGitHub = async (): Promise<AuthResult> => {
+        const supabase = await getSupabase();
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "github",
             options: {
@@ -199,6 +223,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signInWithDiscord = async (): Promise<AuthResult> => {
+        const supabase = await getSupabase();
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "discord",
             options: {
@@ -213,6 +238,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signInWithGoogle = async (): Promise<AuthResult> => {
+        const supabase = await getSupabase();
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
@@ -231,6 +257,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const refreshUser = async () => {
+        const supabase = await getSupabase();
         const { data, error } = await supabase.auth.refreshSession();
         if (error) {
             console.error("Failed to refresh user:", error);

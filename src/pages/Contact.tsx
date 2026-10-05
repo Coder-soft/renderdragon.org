@@ -22,7 +22,7 @@ const teamMembers: TeamMember[] = [
   {
     name: "Coder-soft",
     role: "Founder",
-    avatar: "/assets/codersoft.png",
+    avatar: "/assets/codersoft.webp",
     socials: {
       github: "https://github.com/coder-soft",
       discord: "https://discordapp.com/users/1094475489734819840",
@@ -32,7 +32,7 @@ const teamMembers: TeamMember[] = [
   {
     name: "Clover",
     role: "Admin",
-    avatar: "/assets/clover.jpeg",
+    avatar: "/assets/clover.webp",
     socials: {
       github: "https://github.com/CloverTheBunny",
       discord: "https://discordapp.com/users/789997917661560862",
@@ -41,7 +41,7 @@ const teamMembers: TeamMember[] = [
   {
     name: "Yamura",
     role: "Lead Programmer",
-    avatar: "/assets/yamura.png",
+    avatar: "/assets/yamura.webp",
     socials: {
       github: "https://github.com/Yxmura",
       discord: "https://discordapp.com/users/877933841170432071",
@@ -51,7 +51,7 @@ const teamMembers: TeamMember[] = [
   {
     name: "TomatoKing",
     role: "King of Yapping",
-    avatar: "/assets/tomatoking.png",
+    avatar: "/assets/tomatoking.webp",
     socials: {
       discord: "https://discordapp.com/users/1279190506126966847",
       website: "https://tomatosportfolio.netlify.app",
@@ -60,7 +60,7 @@ const teamMembers: TeamMember[] = [
   {
     name: "Denji",
     role: "Guides writer",
-    avatar: "/assets/denji.png",
+    avatar: "/assets/denji.webp",
     socials: {
       discord: "https://discordapp.com/users/1114195537093201992",
       website: "https://yournotluis.xyz/",
@@ -80,7 +80,7 @@ const teamMembers: TeamMember[] = [
   {
     name: "VOVOplay",
     role: "Animator",
-    avatar: "/assets/VOVOplay.png",
+    avatar: "/assets/VOVOplay.webp",
     socials: {
       website: "https://vovomotion.com/",
       discord: "https://discordapp.com/users/758322333437394944",
@@ -228,8 +228,11 @@ const Contact = () => {
                       <img
                         src={member.avatar}
                         alt={member.name}
+                        width={192}
+                        height={192}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                       />
                     </div>
                      <h3 className="text-lg font-geist font-medium">{member.name}</h3>

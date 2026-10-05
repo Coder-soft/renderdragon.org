@@ -56,6 +56,7 @@ export default defineConfig(() => {
       ]
     },
     build: {
+      assetsDir: "static",
       commonjsOptions: {
         include: [/node_modules/],
         transformMixedEsModules: true

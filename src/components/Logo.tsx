@@ -1,6 +1,8 @@
 import React from 'react';
 
-export const Logo = ({ className = "", size = "md", mobile = false }: { className?: string, size?: "sm" | "md" | "lg" | "xl", mobile?: boolean }) => {
+const LOGO_SRC = "/renderdragon-logo.webp";
+
+export const Logo = ({ className = "", size = "md" }: { className?: string, size?: "sm" | "md" | "lg" | "xl" }) => {
   const dimensions = {
     sm: "h-8",
     md: "h-10",
@@ -8,12 +10,13 @@ export const Logo = ({ className = "", size = "md", mobile = false }: { classNam
     xl: "h-14"
   }[size];
 
-  const src = mobile ? "/renderdragon.png" : "/favicon.ico";
-
   return (
     <img
-      src={src}
+      src={LOGO_SRC}
       alt="Renderdragon"
+      width={128}
+      height={92}
+      decoding="async"
       className={`${dimensions} w-auto object-contain ${className}`}
     />
   );
