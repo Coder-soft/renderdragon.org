@@ -1,17 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IconHeart } from "@tabler/icons-react";
 import { supporters } from "@/data/supporters";
 
 const DonateButton = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
   const supporterCount = supporters.length;
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = Math.max(
+        document.documentElement.scrollTop,
+        document.body.scrollTop,
+      );
+      const viewportHeight = window.innerHeight;
+      const fullHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+      );
+      setIsNearBottom(fullHeight - (scrollTop + viewportHeight) < 200);
+    };
+
+    handleScroll();
+    document.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("resize", handleScroll);
+    const resizeObserver = new ResizeObserver(handleScroll);
+    resizeObserver.observe(document.body);
+    return () => {
+      document.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleScroll);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
-    <div
+    <motion.div
       className="fixed bottom-6 left-6 z-50 py-2 pr-4"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      initial={false}
+      animate={{ opacity: isNearBottom ? 0 : 1 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      style={{ pointerEvents: isNearBottom ? "none" : "auto" }}
+      aria-hidden={isNearBottom}
     >
       <motion.a
         href="https://www.buymeacoffee.com/renderdragon"
@@ -54,7 +86,7 @@ const DonateButton = () => {
           )}
         </AnimatePresence>
       </motion.a>
-    </div>
+    </motion.div>
   );
 };
 
