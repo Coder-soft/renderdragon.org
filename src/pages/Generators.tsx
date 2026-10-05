@@ -1,5 +1,4 @@
 import { lazy, Suspense } from 'react';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Helmet } from 'react-helmet-async';
@@ -24,7 +23,6 @@ const Generators = () => {
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/generators.png" />
       </Helmet>
 
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

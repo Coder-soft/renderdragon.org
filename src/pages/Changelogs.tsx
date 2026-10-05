@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 import { Helmet } from 'react-helmet-async';
@@ -46,7 +45,6 @@ export default function Changelogs() {
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

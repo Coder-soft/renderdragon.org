@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import Seo from '@/components/Seo';
 import { softwareApplicationSchema } from '@/lib/structuredData';
-import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import TrustBar from '@/components/TrustBar';
 import PopularTools from '@/components/PopularTools';
@@ -33,7 +32,6 @@ const Index = () => {
           image: "/ogimg.png",
         })}
       />
-      <Navbar />
       <main className="flex-grow">
         <motion.div
           initial={{ opacity: 0, y: 12 }}

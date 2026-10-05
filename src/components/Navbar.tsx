@@ -110,6 +110,12 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    setActiveDropdown(null);
+    setOpenMobileCollapsible(null);
+    setIsDrawerOpen(false);
+  }, [location.pathname]);
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);

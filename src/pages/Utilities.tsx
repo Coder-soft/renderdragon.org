@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { IconArrowUpRight, IconPencil, IconMovie, IconCode, IconDeviceGamepad2 } from '@tabler/icons-react';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -193,7 +192,6 @@ const Utils = () => {
         <meta name="twitter:title" content="Useful Utilities - Renderdragon" />
         <meta name="twitter:image" content="https://renderdragon.org/ogimg/software.png" />
       </Helmet>
-      <Navbar />
       
       <main className="flex-grow cow-grid-bg">
         <div className="container mx-auto px-4 py-16 pt-24">

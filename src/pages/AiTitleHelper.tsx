@@ -1,4 +1,3 @@
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Seo from '@/components/Seo';
 import { softwareApplicationSchema } from '@/lib/structuredData';
@@ -89,7 +88,6 @@ const AiTitleHelper = () => {
           category: "UtilitiesApplication",
         })}
       />
-      <Navbar />
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">

@@ -4,34 +4,11 @@ import { IconCheck, IconChevronRight, IconCircle } from '@tabler/icons-react'
 
 import { cn } from "@/lib/utils"
 
-// Add effect to prevent layout shift when opening dropdown menu
-const PreventLayoutShift = () => {
-  React.useEffect(() => {
-    const html = document.documentElement;
-    const scrollbarWidth = window.innerWidth - html.clientWidth;
-    
-    if (scrollbarWidth > 0) {
-      const originalPaddingRight = getComputedStyle(html).getPropertyValue('padding-right');
-      
-      html.style.paddingRight = `${scrollbarWidth}px`;
-      html.classList.add('overflow-hidden');
-      
-      return () => {
-        html.style.paddingRight = originalPaddingRight;
-        html.classList.remove('overflow-hidden');
-      };
-    }
-  }, []);
-  
-  return null;
-}
-
 const DropdownMenu = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>
->(({ children, ...props }, ref) => (
-  <DropdownMenuPrimitive.Root {...props}>
-    {props.open && <PreventLayoutShift />}
+>(({ modal = false, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.Root modal={modal} {...props}>
     {children}
   </DropdownMenuPrimitive.Root>
 ))
@@ -89,24 +66,6 @@ const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => {
-  // Add effect to prevent layout shift when opening dropdown
-  React.useEffect(() => {
-    const html = document.documentElement;
-    const scrollbarWidth = window.innerWidth - html.clientWidth;
-    
-    if (scrollbarWidth > 0) {
-      const originalPaddingRight = getComputedStyle(html).getPropertyValue('padding-right');
-      
-      html.style.paddingRight = `${scrollbarWidth}px`;
-      html.style.overflow = 'hidden';
-      
-      return () => {
-        html.style.paddingRight = originalPaddingRight;
-        html.style.overflow = '';
-      };
-    }
-  }, []);
-
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content

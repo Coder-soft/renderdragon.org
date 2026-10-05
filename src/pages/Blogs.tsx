@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -102,7 +101,6 @@ export default function Blogs() {
                 <meta name="description" content="Read the latest news and guides from Renderdragon." />
             </Helmet>
 
-            <Navbar />
 
             <main className="flex-grow pt-24 pb-16 cow-grid-bg">
                 <div className="container mx-auto px-4">

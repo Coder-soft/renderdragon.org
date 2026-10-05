@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { breadcrumbSchema } from "@/lib/structuredData";
@@ -76,7 +75,6 @@ export default function BlogView() {
     if (loading) {
         return (
             <div className="min-h-screen flex flex-col">
-                <Navbar />
                 <main className="flex-grow flex items-center justify-center">
                     <IconLoader2 className="h-8 w-8 animate-spin text-cow-purple" />
                 </main>
@@ -88,7 +86,6 @@ export default function BlogView() {
     if (error || !blog) {
         return (
             <div className="min-h-screen flex flex-col">
-                <Navbar />
                 <main className="flex-grow pt-24 pb-16 cow-grid-bg">
                     <div className="container mx-auto px-4 text-center">
                         <h1 className="text-2xl font-minecraftia text-red-400">Error</h1>
@@ -130,7 +127,6 @@ export default function BlogView() {
                 ]}
             />
 
-            <Navbar />
 
             <main className="flex-grow pt-24 pb-16 cow-grid-bg">
                 <div className="container mx-auto px-4 max-w-4xl">

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -636,7 +635,6 @@ const BackgroundGenerator = () => {
           image: "/ogimg/background.png",
         })}
       />
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 import { IconDownload, IconAlertCircle, IconRefresh, IconBrandYoutube, IconInfoCircle } from '@tabler/icons-react';
@@ -273,7 +272,6 @@ const YouTubeDownloader: React.FC = () => {
           category: "UtilitiesApplication",
         })}
       />
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

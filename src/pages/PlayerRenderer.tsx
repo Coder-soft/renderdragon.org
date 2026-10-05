@@ -4,7 +4,6 @@ import { IconDownload, IconCopy, IconRefresh, IconLoader2 } from '@tabler/icons-
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { softwareApplicationSchema } from '@/lib/structuredData';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -159,7 +158,6 @@ const PlayerRenderer = () => {
         })}
       />
 
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">

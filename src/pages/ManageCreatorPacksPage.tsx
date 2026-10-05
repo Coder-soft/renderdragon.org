@@ -5,7 +5,6 @@ import { IconArrowLeft, IconEdit, IconTrash, IconExternalLink, IconLoader2, Icon
 import { useCreatorPacks, CreatorPack } from '@/hooks/useCreatorPacks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'sonner';
@@ -54,7 +53,6 @@ const ManageCreatorPacksPage = () => {
                 <title>Manage My Creator Packs | RenderDragon</title>
             </Helmet>
 
-            <Navbar />
 
             <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
                 <div className="container mx-auto px-4 max-w-5xl">

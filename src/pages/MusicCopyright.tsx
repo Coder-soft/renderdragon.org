@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LooneyCheckForm from '@/components/LooneyCheckForm';
 import LooneyHistorySection from '@/components/LooneyHistorySection';
@@ -32,7 +31,6 @@ const MusicCopyright = () => {
         category: "UtilitiesApplication",
       })}
     />
-    <Navbar />
     <main className="flex-grow cow-grid-bg bg-background px-4 pb-20 pt-28">
       <div className="container mx-auto max-w-6xl">
          <div className="mx-auto max-w-3xl text-center"><h1 className="font-minecraftia text-2xl font-bold leading-relaxed sm:text-3xl md:text-5xl"><span className="text-cow-purple">Looney</span> Checks</h1><p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">Research music licensing signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself.</p></div>

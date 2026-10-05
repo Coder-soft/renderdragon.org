@@ -120,6 +120,7 @@ const App = () => {
           <HelmetProvider>
             <TooltipProvider>
               <BrowserRouter>
+                <Navbar />
                 <Suspense fallback={<LoadingFallback />}>
                   <Routes>
                     <Route path="/" element={<HomeRedirect />} />
@@ -154,7 +155,6 @@ const App = () => {
                     <Route path="/account" element={<Account />} />
                     <Route path="/account/profile" element={
                       <div className="min-h-screen flex flex-col cow-grid-bg bg-background text-foreground">
-                        <Navbar />
                         <main className="flex-grow pt-24 pb-16 px-4 container mx-auto">
                           <ProfileEditor />
                         </main>

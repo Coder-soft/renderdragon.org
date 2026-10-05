@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { IconCopy, IconMail, IconCheck, IconBrandGithub, IconGlobe, IconExternalLink } from '@tabler/icons-react';
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -138,7 +137,6 @@ const Contact = () => {
           content="https://renderdragon.org/ogimg/contact.png"
         />
       </Helmet>
-      <Navbar />
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
