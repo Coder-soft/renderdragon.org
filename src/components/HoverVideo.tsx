@@ -8,11 +8,16 @@ interface HoverVideoProps {
   /** Frame (in seconds) used as the static thumbnail. */
   thumbnailTime?: number;
   ariaLabel?: string;
+  /** Play when the video receives keyboard focus (adds it to the tab order). */
+  focusable?: boolean;
+  /** Allow touch users to toggle playback by tapping the preview. */
+  tapToPlay?: boolean;
 }
 
 /**
- * Displays the first frame of a video as a lightweight thumbnail and only
- * decodes/plays it while hovered. Avoids the cost of autoplaying every card.
+ * Displays the first frame of a video as a lightweight thumbnail
+ * (`preload="metadata"` + a `#t=` fragment) and only decodes/plays it while
+ * hovered, focused, or tapped. Avoids autoplaying every card at once.
  */
 const HoverVideo: React.FC<HoverVideoProps> = ({
   src,
@@ -20,27 +25,46 @@ const HoverVideo: React.FC<HoverVideoProps> = ({
   className,
   thumbnailTime = 0.1,
   ariaLabel,
+  focusable = false,
+  tapToPlay = false,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  const seekToThumbnail = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    try {
+      video.currentTime = thumbnailTime;
+    } catch {
+      /* not seekable yet */
+    }
+  }, [thumbnailTime]);
+
+  // Reset transient state when the source changes (memoized component reuses state).
+  useEffect(() => {
+    setIsActive(false);
+    setIsReady(false);
+    setHasError(false);
+  }, [src]);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video || hasError) return;
 
-    if (isHovered) {
-      void video.play().catch(() => setHasError(true));
+    if (isActive) {
+      void video.play().catch((err: DOMException) => {
+        // A pending play() rejects with AbortError when interrupted by pause()
+        // (e.g. a quick hover in/out). That is not a real failure.
+        if (err.name !== "AbortError") setHasError(true);
+      });
     } else {
       video.pause();
-      try {
-        video.currentTime = thumbnailTime;
-      } catch {
-        /* not seekable yet */
-      }
+      seekToThumbnail();
     }
-  }, [isHovered, hasError, thumbnailTime]);
+  }, [isActive, hasError, seekToThumbnail]);
 
   useEffect(() => {
     const onVisibilityChange = () => {
@@ -49,8 +73,6 @@ const HoverVideo: React.FC<HoverVideoProps> = ({
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => document.removeEventListener("visibilitychange", onVisibilityChange);
   }, []);
-
-  const markReady = useCallback(() => setIsReady(true), []);
 
   if (hasError) return null;
 
@@ -64,24 +86,29 @@ const HoverVideo: React.FC<HoverVideoProps> = ({
       muted
       playsInline
       aria-label={ariaLabel}
+      tabIndex={focusable ? 0 : undefined}
       className={cn(
         "w-full h-full object-cover transition-opacity duration-300",
         isReady ? "opacity-100" : "opacity-0",
         className,
       )}
-      onLoadedData={markReady}
-      onSeeked={markReady}
-      onLoadedMetadata={() => {
-        const video = videoRef.current;
-        if (!video) return;
-        try {
-          video.currentTime = thumbnailTime;
-        } catch {
-          /* ignore */
+      onLoadedData={() => setIsReady(true)}
+      onSeeked={() => setIsReady(true)}
+      onLoadedMetadata={seekToThumbnail}
+      onPointerEnter={(e) => {
+        if (e.pointerType !== "touch") setIsActive(true);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "touch") setIsActive(false);
+      }}
+      onPointerDown={(e) => {
+        if (tapToPlay && e.pointerType === "touch") {
+          e.stopPropagation();
+          setIsActive((active) => !active);
         }
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsActive(true)}
+      onBlur={() => setIsActive(false)}
       onError={() => setHasError(true)}
     />
   );

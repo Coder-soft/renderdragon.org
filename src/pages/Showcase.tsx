@@ -22,7 +22,6 @@ import { supabase } from "@/integrations/supabase/client";
 import Footer from "@/components/Footer";
 import AuthDialog from "@/components/auth/AuthDialog";
 import AudioPlayer from "@/components/AudioPlayer";
-import VideoPlayer from "@/components/VideoPlayer";
 import HoverVideo from "@/components/HoverVideo";
 
 
