@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import ResourcePreview from './ResourcePreview';
 import { getCategoryIcon, getCategoryColor } from '@/utils/resourceCategories';
 import { DownloadProgress } from '@/lib/download';
+import { RESOURCES_REPO_RAW_BASE, RESOURCES_REPO_BLOB_BASE } from '@/lib/resourcesRepo';
 import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -102,7 +103,7 @@ const ResourceDetailDialog = ({
         .toLowerCase()
         .replace(/ /g, '%20');
 
-      let fontUrl = `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${titleLowered}`;
+      let fontUrl = `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${titleLowered}`;
 
       if (resource.credit) {
         const creditName = resource.credit.replace(/ /g, '_');
@@ -142,7 +143,7 @@ const ResourceDetailDialog = ({
       .toLowerCase()
       .replace(/ /g, '%20');
 
-    return `https://github.com/Yxmura/resources_renderdragon/blob/main/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
+    return `${RESOURCES_REPO_BLOB_BASE}/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
   };
 
   if (!resource) return null;

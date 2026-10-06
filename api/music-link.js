@@ -9,6 +9,7 @@ const CORS_HEADERS = {
 // Only allow direct links to repositories RenderDragon actually owns, so this
 // endpoint cannot be abused as an open redirect/proxy for arbitrary files.
 const ALLOWED_REPO_PREFIXES = [
+  '/Renderdragonorg/resources_renderdragon/',
   '/Yxmura/resources_renderdragon/',
   '/Coder-soft/Minecraft-Creator-Safe-Playlist/',
 ];

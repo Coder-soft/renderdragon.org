@@ -3,6 +3,7 @@ import { Resource } from '@/types/resources';
 import AudioPlayer from '@/components/AudioPlayer';
 import { useState, useEffect } from 'react';
 import VideoPlayer from '@/components/VideoPlayer';
+import { RESOURCES_REPO_RAW_BASE } from '@/lib/resourcesRepo';
 
 interface ResourcePreviewProps {
   resource: Resource;
@@ -35,14 +36,14 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
 
     if (resource.category === 'presets') {
       const prefix = resource.subcategory === 'adobe' ? 'a' : 'd';
-      return `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/presets/PREVIEWS/${prefix}${titleLowered}.mp4`;
+      return `${RESOURCES_REPO_RAW_BASE}/presets/PREVIEWS/${prefix}${titleLowered}.mp4`;
     }
 
     if (resource.credit) {
-      return `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
+      return `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
     }
     else {
-      return `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${titleLowered}.${resource.filetype}`;
+      return `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${titleLowered}.${resource.filetype}`;
     }
   };
 
