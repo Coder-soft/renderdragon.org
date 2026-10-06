@@ -9,6 +9,7 @@ import {
 } from "@/lib/api";
 import { getWaveform, cacheAudio, cacheImage } from "@/lib/cache";
 import { downloadFile, DownloadProgress } from "@/lib/download";
+import { buildResourceRepoUrl } from "@/lib/resourcesRepo";
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
@@ -219,7 +220,12 @@ export const useResources = () => {
   ]);
 
   const resolveDownloadUrl = (resource: Resource) => {
-    return resource.download_url || resource.preview_url || resource.image_url;
+    return (
+      resource.download_url ||
+      resource.preview_url ||
+      resource.image_url ||
+      buildResourceRepoUrl(resource)
+    );
   };
 
   const handleDownload = useCallback(

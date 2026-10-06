@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Resource } from "@/types/resources";
+import { RESOURCES_REPO_RAW_BASE } from "@/lib/resourcesRepo";
 
 interface JsonResource {
   id: number;
@@ -107,11 +108,11 @@ export const migrateJsonResourcesToSupabase = async () => {
             resource.software.toLowerCase() === "davinci resolve"
               ? "davinci"
               : "adobe";
-          supabaseResource.download_url = `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${category}/${supabaseResource.subcategory}/${titleLowered}${creditName ? `__${creditName}` : ""}.${filetype}`;
+          supabaseResource.download_url = `${RESOURCES_REPO_RAW_BASE}/${category}/${supabaseResource.subcategory}/${titleLowered}${creditName ? `__${creditName}` : ""}.${filetype}`;
         } else if (resource.credit) {
-          supabaseResource.download_url = `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${category}/${titleLowered}__${creditName}.${filetype}`;
+          supabaseResource.download_url = `${RESOURCES_REPO_RAW_BASE}/${category}/${titleLowered}__${creditName}.${filetype}`;
         } else {
-          supabaseResource.download_url = `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${category}/${titleLowered}.${filetype}`;
+          supabaseResource.download_url = `${RESOURCES_REPO_RAW_BASE}/${category}/${titleLowered}.${filetype}`;
         }
 
         supabaseResources.push(supabaseResource);

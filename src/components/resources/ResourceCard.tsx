@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
 import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
+import { RESOURCES_REPO_RAW_BASE } from "@/lib/resourcesRepo";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -24,7 +25,7 @@ const getPreviewUrl = (resource: Resource) => {
 
   if (!resource.title) return "";
   const titleLowered = resource.title.toLowerCase().replace(/ /g, "%20");
-  const basePath = "https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main";
+  const basePath = RESOURCES_REPO_RAW_BASE;
   const creditPart = resource.credit ? `__${resource.credit.replace(/ /g, "_")}` : "";
   return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
 };
@@ -73,7 +74,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
     }
 
     const fontUrl = resource.download_url || (resource.title
-      ? `https://raw.githubusercontent.com/Yxmura/resources_renderdragon/main/${resource.category}/${resource.title.toLowerCase().replace(/ /g, "%20")}${resource.credit ? `__${resource.credit.replace(/ /g, "_")}` : ""}.${resource.filetype}`
+      ? `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${resource.title.toLowerCase().replace(/ /g, "%20")}${resource.credit ? `__${resource.credit.replace(/ /g, "_")}` : ""}.${resource.filetype}`
       : "");
     if (!fontUrl) {
       return () => { active = false; };
