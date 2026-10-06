@@ -11,6 +11,7 @@ import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
+import HoverVideo from "@/components/HoverVideo";
 import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 import { RESOURCES_REPO_RAW_BASE } from "@/lib/resourcesRepo";
 
@@ -42,9 +43,21 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
   const isFavorite = isFavorited(String(resource.id));
 
   const [isInView, setIsInView] = useState(false);
+  const [isPreviewReady, setIsPreviewReady] = useState(false);
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const [isLinkHovered, setIsLinkHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Debounce preview loading so fast scrolling doesn't fire a burst of
+  // media requests for every card that briefly crosses the viewport.
+  useEffect(() => {
+    if (!isInView) {
+      setIsPreviewReady(false);
+      return;
+    }
+    const timer = setTimeout(() => setIsPreviewReady(true), 150);
+    return () => clearTimeout(timer);
+  }, [isInView]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -243,19 +256,18 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
           >
-            {isInView ? (
-              <video
+            <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+              <IconVideo className="h-8 w-8 text-muted-foreground/30" />
+            </div>
+            {isInView && isPreviewReady && (
+              <HoverVideo
                 src={previewUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
+                poster={resource.image_url}
+                ariaLabel={`Preview of ${resource.title}`}
+                className="absolute inset-0"
+                focusable
+                tapToPlay
               />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
-                <IconVideo className="h-8 w-8 text-muted-foreground/30" />
-              </div>
             )}
           </div>
         );
