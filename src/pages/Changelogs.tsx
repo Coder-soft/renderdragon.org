@@ -40,7 +40,7 @@ export default function Changelogs() {
         <meta name="description" content="See the latest improvements and updates to Renderdragon." />
         <meta property="og:title" content="Changelogs - Renderdragon" />
         <meta property="og:description" content="See the latest improvements and updates to Renderdragon." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/og.png" />
+        <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/changelogs" />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>

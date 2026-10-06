@@ -12,7 +12,7 @@ const Renderbot = () => (
       <meta name="description" content="Renderbot is a Discord bot for content creators. Join the official RenderDragon Discord server to use it." />
       <meta property="og:title" content="Renderbot - Renderdragon" />
       <meta property="og:description" content="Join the official RenderDragon Discord server to use Renderbot." />
-      <meta property="og:image" content="https://renderdragon.org/ogimg/renderbot.png" />
+      <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
     </Helmet>
 
     <main className="flex-grow pt-24 pb-16 cow-grid-bg">

@@ -112,7 +112,6 @@ const TextGenerator = () => {
         title="Minecraft Text Generator - Renderdragon"
         description="Generate custom Minecraft text with pixel fonts, colors, and effects — free, in your browser, no signup."
         path="/text-generator"
-        image="/ogimg/index.png"
         jsonLd={softwareApplicationSchema({
           name: "Minecraft Text Generator",
           description: "Generate custom Minecraft text with pixel fonts, colors, and effects.",

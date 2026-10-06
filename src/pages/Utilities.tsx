@@ -186,11 +186,11 @@ const Utils = () => {
         <meta name="description" content="Discover essential utilities for Minecraft content creators. Find video editing, recording, and streaming software recommendations." />
         <meta property="og:title" content="Useful Utilities - Renderdragon" />
         <meta property="og:description" content="Discover essential utilities for Minecraft content creators. Find video editing, recording, and streaming software recommendations." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/software.png" />
+        <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/utilities" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Useful Utilities - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/software.png" />
+        <meta name="twitter:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
       </Helmet>
       
       <main className="flex-grow cow-grid-bg">

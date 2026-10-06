@@ -149,7 +149,6 @@ const PlayerRenderer = () => {
         title="Player Renderer - Renderdragon"
         description="Generate and download Minecraft player renders using different rendering services."
         path="/player-renderer"
-        image="/ogimg/software.png"
         jsonLd={softwareApplicationSchema({
           name: "Player Renderer",
           description: "Generate and download Minecraft player renders using different rendering services.",

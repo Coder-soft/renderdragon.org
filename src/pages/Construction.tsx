@@ -282,11 +282,11 @@ const Community = () => {
         <meta name="description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
         <meta property="og:title" content="Community - Renderdragon" />
         <meta property="og:description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/community.png" />
+        <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/community" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Community - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/community.png" />
+        <meta name="twitter:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
       </Helmet>
 
 

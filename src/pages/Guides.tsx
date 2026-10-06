@@ -132,14 +132,14 @@ const GuidesPage = () => {
         />
         <meta
           property="og:image"
-          content="https://renderdragon.org/ogimg/guides.png"
+          content="https://i.ibb.co/60Mr2Psf/Document.png"
         />
         <meta property="og:url" content="https://renderdragon.org/guides" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Guides - Renderdragon" />
         <meta
           name="twitter:image"
-          content="https://renderdragon.org/ogimg/guides.png"
+          content="https://i.ibb.co/60Mr2Psf/Document.png"
         />
       </Helmet>
 

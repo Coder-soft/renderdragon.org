@@ -1,8 +1,8 @@
 export const SITE_URL = "https://renderdragon.org";
-export const DEFAULT_OG_IMAGE = "/ogimg.png";
+export const DEFAULT_OG_IMAGE = "https://i.ibb.co/60Mr2Psf/Document.png";
 
 const OG_IMAGE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  "/ogimg.png": { width: 1920, height: 1440 },
+  [DEFAULT_OG_IMAGE]: { width: 640, height: 360 },
   "/renderdragon.png": { width: 900, height: 650 },
 };
 

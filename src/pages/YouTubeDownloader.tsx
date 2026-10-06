@@ -263,7 +263,6 @@ const YouTubeDownloader: React.FC = () => {
         title="YouTube Tools - Download Thumbnails & Stats | Renderdragon"
         description="Inspect YouTube video details and download thumbnails for fair use and educational purposes. View channel, stats, duration, and more."
         path="/youtube-downloader"
-        image="/ogimg/index.png"
         jsonLd={softwareApplicationSchema({
           name: "YouTube Tools",
           description: "Inspect YouTube video details and download thumbnails for fair use and educational purposes.",
