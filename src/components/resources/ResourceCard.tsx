@@ -11,6 +11,7 @@ import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
+import HoverVideo from "@/components/HoverVideo";
 import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 
 interface ResourceCardProps {
@@ -242,19 +243,15 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
           >
-            {isInView ? (
-              <video
+            <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+              <IconVideo className="h-8 w-8 text-muted-foreground/30" />
+            </div>
+            {isInView && (
+              <HoverVideo
                 src={previewUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
+                ariaLabel={`Preview of ${resource.title}`}
+                className="absolute inset-0"
               />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
-                <IconVideo className="h-8 w-8 text-muted-foreground/30" />
-              </div>
             )}
           </div>
         );

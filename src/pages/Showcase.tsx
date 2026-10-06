@@ -23,6 +23,7 @@ import Footer from "@/components/Footer";
 import AuthDialog from "@/components/auth/AuthDialog";
 import AudioPlayer from "@/components/AudioPlayer";
 import VideoPlayer from "@/components/VideoPlayer";
+import HoverVideo from "@/components/HoverVideo";
 
 
 
@@ -55,15 +56,12 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     if (isVideo) {
       return (
         <div className="w-full h-full bg-black relative group/vid">
-          <video
+          <HoverVideo
             src={url}
-            muted
-            loop
-            autoPlay
-            playsInline
+            ariaLabel="Showcase video preview"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/20 group-hover/vid:bg-transparent transition-colors" />
+          <div className="absolute inset-0 bg-black/20 group-hover/vid:bg-transparent transition-colors pointer-events-none" />
         </div>
       );
     }
