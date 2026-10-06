@@ -59,7 +59,6 @@ const FAQ = () => {
         title="FAQ - Renderdragon"
         description="Find answers to frequently asked questions about Renderdragon's tools, services, and resources for Minecraft content creators."
         path="/faq"
-        image="/ogimg/faq.png"
         jsonLd={faqSchema}
       />
 

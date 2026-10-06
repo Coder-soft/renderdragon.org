@@ -415,11 +415,11 @@ const ResourcesHub = () => {
         <meta name="description" content="Explore a vast collection of resources for RenderDragon." />
         <meta property="og:title" content="Resources Hub" />
         <meta property="og:description" content="Explore a vast collection of resources for RenderDragon." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/resources.png" />
+        <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/resources" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Resources Hub" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/resources.png" />
+        <meta name="twitter:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
       </Helmet>
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">

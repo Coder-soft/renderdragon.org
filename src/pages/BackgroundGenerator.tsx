@@ -627,7 +627,6 @@ const BackgroundGenerator = () => {
         title="Background Generator - Renderdragon"
         description="Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art with our background generator tool."
         path="/background-generator"
-        image="/ogimg/background.png"
         jsonLd={softwareApplicationSchema({
           name: "Background Generator",
           description: "Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art.",

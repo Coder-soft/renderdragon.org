@@ -74,7 +74,6 @@ export default function GuideView() {
         title={`${title} - Guides - Renderdragon`}
         description={`Read the ${title} guide on Renderdragon.`}
         path={`/guides/${slug}`}
-        image="/ogimg/guides.png"
         type="article"
         jsonLd={[
           {

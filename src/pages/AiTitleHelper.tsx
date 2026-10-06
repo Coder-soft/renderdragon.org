@@ -79,7 +79,6 @@ const AiTitleHelper = () => {
         title="AI Title Helper - Renderdragon"
         description="Generate engaging, SEO-friendly YouTube video titles with AI. Free for Minecraft creators, no signup required."
         path="/ai-title-helper"
-        image="/ogimg/aititlehelper.png"
         jsonLd={softwareApplicationSchema({
           name: "AI Title Helper",
           description: "Generate engaging, SEO-friendly YouTube video titles with AI.",

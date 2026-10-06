@@ -24,7 +24,6 @@ const Index = () => {
         title="RenderDragon - Free Minecraft Creator Tools & Resources"
         description="Free music, SFX, fonts, presets, and editing tools for Minecraft YouTubers. No signup, no paywalls, no watermarks."
         path="/"
-        image="/ogimg.png"
         jsonLd={softwareApplicationSchema({
           name: "Renderdragon",
           description: "Free music, SFX, fonts, presets, and editing tools for Minecraft YouTubers. No signup, no paywalls, no watermarks.",

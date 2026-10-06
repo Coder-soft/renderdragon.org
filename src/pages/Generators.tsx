@@ -16,11 +16,11 @@ const Generators = () => {
         <meta name="description" content="Generate social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators." />
         <meta property="og:title" content="Content Generators - Renderdragon" />
         <meta property="og:description" content="Generate social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/generators.png" />
+        <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/generators" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Content Generators - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/generators.png" />
+        <meta name="twitter:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
       </Helmet>
 
 

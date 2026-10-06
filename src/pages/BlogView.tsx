@@ -104,7 +104,6 @@ export default function BlogView() {
                 title={`${blog.title} - Renderdragon Blog`}
                 description={`Read ${blog.title} on the Renderdragon blog — free tools and resources for Minecraft content creators.`}
                 path={`/blogs/${slug}`}
-                image="/ogimg.png"
                 type="article"
                 jsonLd={[
                     {

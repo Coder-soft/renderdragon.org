@@ -57,11 +57,11 @@ const NativeApplication = () => {
         <meta name="description" content="Download the Renderdragon native application for seamless asset management. Copy-paste assets into any application with ease." />
         <meta property="og:title" content="Native Application - Renderdragon" />
         <meta property="og:description" content="Download the Renderdragon native application for seamless asset management. Copy-paste assets into any application with ease." />
-        <meta property="og:image" content="https://renderdragon.org/ogimg/native-app.png" />
+        <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/native-application" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Native Application - Renderdragon" />
-        <meta name="twitter:image" content="https://renderdragon.org/ogimg/native-app.png" />
+        <meta name="twitter:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
       </Helmet>
       
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">

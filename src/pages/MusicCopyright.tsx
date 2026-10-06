@@ -22,7 +22,6 @@ const MusicCopyright = () => {
       title="Looney Checks - Music Copyright Checker | Renderdragon"
       description="Research music licensing and copyright signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself."
       path="/gappa"
-      image="/ogimg/copyright.png"
       jsonLd={softwareApplicationSchema({
         name: "Looney Checks",
         description: "Research music licensing and copyright signals before you publish.",
