@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState, useEffect } from "react";
+import { Suspense, lazy, useState, useEffect, useRef } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -90,10 +90,72 @@ const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   </div>
 );
 
+// Marks that a signed-in user has already been auto-redirected from the
+// homepage to /resources during the current browser session. Kept in
+// sessionStorage so the redirect happens once per session.
+const HOME_REDIRECT_FLAG = 'rd_home_redirect_done';
+
+const hasRedirectedHome = () => {
+  try {
+    return sessionStorage.getItem(HOME_REDIRECT_FLAG) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const markHomeRedirected = () => {
+  try {
+    sessionStorage.setItem(HOME_REDIRECT_FLAG, '1');
+  } catch {
+    // sessionStorage can be unavailable; the redirect still works, it just
+    // may repeat within the session.
+  }
+};
+
+const clearHomeRedirect = () => {
+  try {
+    sessionStorage.removeItem(HOME_REDIRECT_FLAG);
+  } catch {
+    // ignore
+  }
+};
+
 const HomeRedirect = () => {
   const { user, loading } = useAuth();
+  const [redirect, setRedirect] = useState(false);
+  const [decided, setDecided] = useState(false);
+  const handledUser = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user) {
+      // Signed out: reset so the next signed-in homepage visit redirects again.
+      handledUser.current = null;
+      clearHomeRedirect();
+      setRedirect(false);
+      setDecided(true);
+      return;
+    }
+
+    // Only decide once per signed-in user per mount.
+    if (handledUser.current === user.id) return;
+    handledUser.current = user.id;
+
+    if (hasRedirectedHome()) {
+      setRedirect(false);
+    } else {
+      markHomeRedirected();
+      setRedirect(true);
+    }
+    setDecided(true);
+  }, [user, loading]);
+
   if (loading) return <LoadingFallback />;
-  if (user) return <Navigate to="/resources" replace />;
+  // Wait for the redirect decision before mounting the lazy homepage, so
+  // signed-in users never see a flash of it before landing on /resources.
+  if (user && !decided) return <LoadingFallback />;
+  if (redirect) return <Navigate to="/resources" replace />;
   return <Index />;
 };
 
