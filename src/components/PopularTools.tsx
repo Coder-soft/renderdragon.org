@@ -85,12 +85,25 @@ const PopularTools = () => {
                 to={tool.path}
                 className={`group relative block h-full rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 ${tool.backgroundImage ? 'overflow-hidden' : ''}`}
               >
-                {tool.backgroundImage && <>
-                  <img src={tool.backgroundImage} alt="" aria-hidden="true" width={800} height={450} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                  <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.55)_100%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                </>}
+                {tool.backgroundImage && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 top-0 h-24 overflow-hidden rounded-t-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  >
+                    <img
+                      src={tool.backgroundImage}
+                      alt=""
+                      width={800}
+                      height={450}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card/30 to-card" />
+                  </div>
+                )}
                 <div className="flex items-start justify-between mb-5">
-                  <div className="relative z-10 w-12 h-12 rounded-xl bg-primary/10 border border-border flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                  <div className={`relative z-10 w-12 h-12 rounded-xl bg-primary/10 border border-border flex items-center justify-center transition-all duration-300 group-hover:scale-105 ${tool.backgroundImage ? 'group-hover:bg-card/80 group-hover:backdrop-blur-sm' : ''}`}>
                     <tool.icon className={`h-6 w-6 text-primary transition-opacity duration-150 ${tool.hoverIcon || tool.hoverImage ? 'group-hover:opacity-0' : ''}`} stroke={2} />
                     {'hoverIcon' in tool && tool.hoverIcon && <tool.hoverIcon className="absolute h-6 w-6 text-red-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" stroke={2} />}
                     {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" loading="lazy" decoding="async" className="absolute h-7 w-7 rounded-md object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}
