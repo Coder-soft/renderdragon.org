@@ -74,7 +74,7 @@ const Testimonials = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-foreground"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground"
           >
             What <span className="text-primary">Creators</span> Say
           </motion.h2>

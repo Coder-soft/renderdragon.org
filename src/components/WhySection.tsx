@@ -12,7 +12,7 @@ const WhySection = () => {
     <section className="py-20 md:py-28 bg-background border-y border-border">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14 md:mb-20 max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             Why <span className="text-primary">RenderDragon</span>?
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground">
@@ -30,7 +30,7 @@ const WhySection = () => {
               transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="relative rounded-xl border border-border bg-card p-7 md:p-8"
             >
-              <div className="text-4xl md:text-5xl font-semibold text-primary mb-3 leading-none tracking-tight">
+              <div className="text-4xl md:text-5xl font-bold text-primary mb-3 leading-none tracking-tight">
                 {stat.value}
               </div>
               <div className="text-lg md:text-xl font-medium text-foreground mb-1">

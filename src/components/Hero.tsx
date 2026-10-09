@@ -37,7 +37,7 @@ const Hero = () => {
       >
         <motion.div variants={fadeUp} className="flex items-center gap-4 mb-6">
           <Logo size="xl" />
-          <h1 className="font-minecraftia text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight">
+          <h1 className="font-minecraftia font-normal text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight">
             Render<span className="text-primary">Dragon</span>
           </h1>
         </motion.div>

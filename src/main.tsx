@@ -6,6 +6,8 @@ import './index.css';
 import '@fontsource/geist-sans';
 import '@fontsource/geist-mono';
 import '@fontsource/jetbrains-mono';
+import '@fontsource/montserrat/600.css';
+import '@fontsource/montserrat/700.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

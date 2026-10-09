@@ -64,7 +64,7 @@ const PopularTools = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             Creator <span className="text-primary">Tools</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground">

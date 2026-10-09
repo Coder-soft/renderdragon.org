@@ -88,7 +88,7 @@ const FeaturedResources = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             Featured <span className="text-primary">Resources</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground">

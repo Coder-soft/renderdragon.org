@@ -50,7 +50,7 @@ const Partnership = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-14 md:mb-16 max-w-3xl mx-auto"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             Our <span className="text-primary">Partners</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground">

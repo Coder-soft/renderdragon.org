@@ -22,6 +22,7 @@ export default {
 			fontFamily: {
 				sans: ['Geist Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
 				mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+				heading: ['Montserrat', 'Geist Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
 				geist: ['Geist Sans', 'sans-serif'],
 				'geist-mono': ['Geist Mono', 'monospace'],
 			minecraftia: ['Minecraftia', 'monospace'],

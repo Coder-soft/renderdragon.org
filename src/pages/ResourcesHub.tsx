@@ -429,7 +429,7 @@ const ResourcesHub = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-3 text-center">Resources Hub</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-center">Resources Hub</h1>
             <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto ">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
           </motion.div>
 
