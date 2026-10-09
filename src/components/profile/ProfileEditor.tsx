@@ -344,7 +344,7 @@ const ProfileEditor: React.FC = () => {
             {/* Editor Column */}
             <div className="flex-1 overflow-y-auto pr-1 space-y-6">
                 <div className="flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-20 py-4 border-b rounded-t-lg mb-4">
-                    <h1 className="text-2xl font-jetbrains-mono px-2">Edit Profile</h1>
+                    <h1 className="text-2xl px-2">Edit Profile</h1>
                     <div className="flex gap-2 px-2">
                         <Button variant="ghost" size="icon" onClick={discardDraft} title="Discard Draft">
                             <IconRefresh className="w-4 h-4" />
@@ -353,11 +353,11 @@ const ProfileEditor: React.FC = () => {
                             <IconEye className="w-4 h-4 mr-1" /> Preview
                         </Button>
                         {showShare && (
-                            <Button variant="outline" size="sm" onClick={handleShare} className="pixel-btn-secondary">
+                            <Button variant="outline" size="sm" onClick={handleShare} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent">
                                 <IconShare className="w-4 h-4 mr-2" /> Share
                             </Button>
                         )}
-                        <Button onClick={saveProfile} disabled={saving} className="pixel-btn-primary">
+                        <Button onClick={saveProfile} disabled={saving} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
                             <IconDeviceFloppy className="w-4 h-4 mr-2" />
                             {saving ? 'Publishing...' : 'Publish'}
                         </Button>
@@ -653,7 +653,7 @@ const ProfileEditor: React.FC = () => {
 
             {/* Preview Column */}
             <div className={`
-        flex-1 bg-background/95 backdrop-blur border rounded-xl overflow-hidden shadow-2xl pixel-corners
+        flex-1 bg-background/95 backdrop-blur border rounded-xl overflow-hidden shadow-2xl 
         ${previewMode ? 'fixed inset-0 z-50 md:static md:block' : 'hidden md:block'}
       `}>
                 <div className="bg-muted/80 backdrop-blur px-4 py-2 border-b flex justify-between items-center text-xs text-muted-foreground">

@@ -54,7 +54,7 @@ const CreatorPackPage = () => {
         return (
             <div className="min-h-screen flex flex-col">
                 <div className="flex-grow flex items-center justify-center">
-                    <IconLoader2 className="w-10 h-10 animate-spin text-cow-purple" />
+                    <IconLoader2 className="w-10 h-10 animate-spin text-primary" />
                 </div>
                 <Footer />
             </div>
@@ -67,7 +67,7 @@ const CreatorPackPage = () => {
                 <div className="flex-grow flex flex-col items-center justify-center gap-4">
                     <h1 className="text-3xl font-geist">Pack Not Found</h1>
                     <Link to="/resources?tab=creator-packs">
-                        <Button variant="outline" className="pixel-corners">
+                        <Button variant="outline" className="">
                             <IconArrowLeft className="mr-2 h-4 w-4" /> Back to Creator Packs
                         </Button>
                     </Link>
@@ -136,7 +136,7 @@ const CreatorPackPage = () => {
                             <div className="flex gap-2 flex-shrink-0">
                                 <Button
                                     onClick={() => setIsWarningOpen(true)}
-                                    className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
+                                    className=" bg-primary hover:bg-primary/90/90"
                                 >
                                     <IconExternalLink className="mr-2 h-4 w-4" /> Download
                                 </Button>
@@ -146,7 +146,7 @@ const CreatorPackPage = () => {
                                         size="icon"
                                         onClick={handleDelete}
                                         disabled={isDeleting}
-                                        className="pixel-corners"
+                                        className=""
                                     >
                                         {isDeleting ? <IconLoader2 className="h-4 w-4 animate-spin" /> : <IconTrash className="h-4 w-4" />}
                                     </Button>
@@ -205,7 +205,7 @@ const CreatorPackPage = () => {
                             <Button
                                 size="lg"
                                 onClick={() => setIsWarningOpen(true)}
-                                className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
+                                className=" bg-primary hover:bg-primary/90/90"
                             >
                                 <IconExternalLink className="mr-2 h-5 w-5" /> Download Creator Pack
                             </Button>

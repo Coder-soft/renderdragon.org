@@ -129,7 +129,7 @@ const EditCreatorPackPage = () => {
         return (
             <div className="min-h-screen flex flex-col">
                 <div className="flex-grow flex items-center justify-center">
-                    <IconLoader2 className="w-10 h-10 animate-spin text-cow-purple" />
+                    <IconLoader2 className="w-10 h-10 animate-spin text-primary" />
                 </div>
                 <Footer />
             </div>
@@ -197,7 +197,7 @@ const EditCreatorPackPage = () => {
                                     placeholder="My Awesome Creator Pack"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="pixel-corners"
+                                    className=""
                                     required
                                 />
                             </div>
@@ -210,7 +210,7 @@ const EditCreatorPackPage = () => {
                                     placeholder="A brief tagline for the card preview"
                                     value={smallDescription}
                                     onChange={(e) => setSmallDescription(e.target.value)}
-                                    className="pixel-corners"
+                                    className=""
                                     maxLength={200}
                                 />
                             </div>
@@ -223,7 +223,7 @@ const EditCreatorPackPage = () => {
                                     placeholder="https://drive.google.com/..."
                                     value={externalLink}
                                     onChange={(e) => setExternalLink(e.target.value)}
-                                    className="pixel-corners"
+                                    className=""
                                     type="url"
                                     required
                                 />
@@ -239,7 +239,7 @@ const EditCreatorPackPage = () => {
                                             type="button"
                                             onClick={() => toggleTag(tag)}
                                             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${selectedTags.includes(tag)
-                                                ? 'bg-cow-purple text-white border-cow-purple'
+                                                ? 'bg-primary text-white border-primary'
                                                 : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted font-geist'
                                                 }`}
                                         >
@@ -299,7 +299,7 @@ const EditCreatorPackPage = () => {
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
                                         placeholder={"# My Pack\n\nDescribe your creator pack with full **markdown** support!\n\n- Item 1\n- Item 2"}
-                                        className="font-mono min-h-[300px] pixel-corners"
+                                        className="font-mono min-h-[300px] "
                                     />
                                 )}
                             </div>
@@ -309,14 +309,14 @@ const EditCreatorPackPage = () => {
                                     type="button"
                                     variant="outline"
                                     onClick={() => navigate('/creator-packs/manage')}
-                                    className="pixel-corners"
+                                    className=""
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting || !title.trim() || !externalLink.trim()}
-                                    className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 min-w-[140px]"
+                                    className=" bg-primary hover:bg-primary/90/90 min-w-[140px]"
                                 >
                                     {isSubmitting ? (
                                         <><IconLoader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>

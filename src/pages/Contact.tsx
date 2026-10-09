@@ -141,11 +141,11 @@ const Contact = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-<h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-               <span className="text-cow-purple">Contact</span> Us
+<h1 className="text-4xl md:text-5xl mb-8 text-center">
+               <span className="text-primary">Contact</span> Us
             </h1>
 
-            <div className="bg-card pixel-corners border-2 border-primary/50 p-8 mb-12">
+            <div className="bg-card  border-2 border-primary/50 p-8 mb-12">
               <div className="mb-8">
                  <h2 className="text-2xl font-geist mb-4">Get In Touch</h2>
                 <p className="text-muted-foreground mb-6">
@@ -160,7 +160,7 @@ const Contact = () => {
                     variant="outline"
                     size="sm"
                     onClick={copyToClipboard}
-                    className="flex items-center space-x-1 h-8 text-xs pixel-corners"
+                    className="flex items-center space-x-1 h-8 text-xs "
                   >
                     {copied ? (
                       <>
@@ -178,7 +178,7 @@ const Contact = () => {
               </div>
 
               <div className="mb-8">
-                <h2 className="text-2xl font-jetbrains-mono mb-4">Join Our Community</h2>
+                <h2 className="text-2xl mb-4">Join Our Community</h2>
                 <p className="text-muted-foreground mb-4">
                   Connect with other creators and our team on Discord.
                 </p>
@@ -187,7 +187,7 @@ const Contact = () => {
                   href="https://discord.renderdragon.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="pixel-btn-primary inline-flex items-center space-x-2"
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 inline-flex items-center space-x-2"
                 >
                   <span>join discord</span>
                   <img
@@ -209,7 +209,7 @@ const Contact = () => {
             </div>
 
             <div>
-<h2 className="text-2xl font-minecraftia mb-6 text-center">
+<h2 className="text-2xl mb-6 text-center">
                  Meet The Team
               </h2>
 
@@ -217,12 +217,12 @@ const Contact = () => {
                 {teamMembers.map((member, index) => (
                   <div
                     key={index}
-                    className={`bg-card border border-border hover:border-cow-purple transition-all duration-300 pixel-corners p-4 flex flex-col items-center text-center
-                      ${activeCard === index ? "scale-105 shadow-lg shadow-cow-purple/20" : ""}`}
+                    className={`bg-card border border-border hover:border-primary transition-all duration-300  p-4 flex flex-col items-center text-center
+                      ${activeCard === index ? "scale-105 shadow-lg shadow-primary/20" : ""}`}
                     onMouseEnter={() => setActiveCard(index)}
                     onMouseLeave={() => setActiveCard(null)}
                   >
-                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4 pixel-corners border-2 border-cow-purple">
+                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4  border-2 border-primary">
                       <img
                         src={member.avatar}
                         alt={member.name}
@@ -234,7 +234,7 @@ const Contact = () => {
                       />
                     </div>
                      <h3 className="text-lg font-geist font-medium">{member.name}</h3>
-                    <p className="text-sm text-cow-purple font-semibold mb-2">
+                    <p className="text-sm text-primary font-semibold mb-2">
                       {member.role}
                     </p>
 

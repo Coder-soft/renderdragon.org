@@ -85,7 +85,7 @@ const CreatorPackPage = lazy(() => import("@/pages/CreatorPackPage"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-    <IconLoader2 className="w-12 h-12 animate-spin text-cow-purple" />
+    <IconLoader2 className="w-12 h-12 animate-spin text-primary" />
     <p className="text-white/80">{message}</p>
   </div>
 );

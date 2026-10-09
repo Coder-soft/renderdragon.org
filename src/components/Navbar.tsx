@@ -66,7 +66,7 @@ const mainLinks: (NavLink | NavDropdown)[] = [
 // Small badge for marking new/updated links
 function TagBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-cow-purple text-white text-[10px] leading-none uppercase tracking-wide">
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary text-white text-[10px] leading-none uppercase tracking-wide">
       {label}
     </span>
   );
@@ -180,9 +180,9 @@ const Navbar = () => {
               <Logo size={isMobile ? "sm" : "md"} />
             </div>
             {!isMobile && (
-              <span className="hidden md:inline font-minecraftia leading-none">Render<span className="text-cow-purple">Dragon</span></span>
+              <span className="hidden md:inline font-minecraftia leading-none">Render<span className="text-primary">Dragon</span></span>
             )}
-            {isMobile && <span className="font-minecraftia">R<span className="text-cow-purple">D</span></span>}
+            {isMobile && <span className="font-minecraftia">R<span className="text-primary">D</span></span>}
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
@@ -224,7 +224,7 @@ const Navbar = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="w-56 bg-popover border border-border z-50 pixel-corners"
+                      className="w-56 bg-popover border border-border z-50 "
                       onMouseLeave={() => setActiveDropdown(null)}
                     >
                       <DropdownMenuGroup>
@@ -235,7 +235,7 @@ const Navbar = () => {
                                 href={subLink.path}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm pixel-corners`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm `}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 <span>{subLink.name}</span>
@@ -247,7 +247,7 @@ const Navbar = () => {
                             ) : (
                               <Link
                                 to={subLink.path}
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm pixel-corners ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm  ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 {/* sub link name */}
@@ -277,7 +277,7 @@ const Navbar = () => {
               ) : (
                 <Button
                   onClick={() => setAuthDialogOpen(true)}
-                  className="pixel-btn-primary"
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   Sign In
                 </Button>
@@ -307,7 +307,7 @@ const Navbar = () => {
                       <div className="w-8 h-8 flex items-center justify-center font-bold text-xs">
                         <Logo size="sm" />
                       </div>
-                      <span className="font-sans">Render<span className="text-cow-purple">dragon</span></span>
+                      <span className="font-sans">Render<span className="text-primary">dragon</span></span>
                     </Link>
                   </div>
 
@@ -388,7 +388,7 @@ const Navbar = () => {
                             {safeAvatarUrl && (
                               <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />
                             )}
-                            <AvatarFallback className="bg-cow-purple text-white text-xs">
+                            <AvatarFallback className="bg-primary text-white text-xs">
                               {getInitials(displayName)}
                             </AvatarFallback>
                           </Avatar>
@@ -400,7 +400,7 @@ const Navbar = () => {
                         <Button
                           onClick={() => { handleShowFavorites(); setIsDrawerOpen(false); }}
                           variant="outline"
-                          className="w-full pixel-corners font-sans"
+                          className="w-full  font-sans"
                         >
                           My Favorites
                         </Button>
@@ -410,7 +410,7 @@ const Navbar = () => {
                             setIsDrawerOpen(false);
                           }}
                           variant="outline"
-                          className="w-full pixel-corners font-sans"
+                          className="w-full  font-sans"
                         >
                           Sign Out
                         </Button>
@@ -421,7 +421,7 @@ const Navbar = () => {
                           setAuthDialogOpen(true);
                           setIsDrawerOpen(false); // Close drawer when opening auth dialog
                         }}
-                        className="w-full pixel-btn-primary font-sans"
+                        className="w-full inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 font-sans"
                       >
                         Sign In
                       </Button>
