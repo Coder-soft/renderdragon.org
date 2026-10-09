@@ -27,7 +27,6 @@ export default {
 				'geist-mono': ['Geist Mono', 'monospace'],
 			minecraftia: ['Minecraftia', 'monospace'],
 			minecraft: ['Minecraft', 'sans-serif'],
-			'jetbrains-mono': ['JetBrains Mono', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -62,15 +61,6 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
-				},
-				cow: {
-					dark: '#0A0C0F',
-					darker: '#070809',
-					purple: '#9b87f5',
-					'purple-dark': '#7E69AB',
-					blue: '#1EAEDB',
-					'neon-pink': '#FF00FF',
-					'neon-blue': '#00FFFF'
 				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',

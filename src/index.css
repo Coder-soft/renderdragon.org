@@ -26,7 +26,7 @@
    * Single dark-only palette. The app no longer ships a light theme, so the
    * tokens live at :root and there is intentionally no `.dark` override.
    * Base surfaces are cool near-black, ink is near-white, and the one brand
-   * colour is a pink-leaning purple used sparingly for emphasis and actions.
+   * colour is the RenderDragon purple used sparingly for emphasis and actions.
    */
   :root {
     --background: 222 18% 5%;
@@ -70,11 +70,6 @@
     --sidebar-border: 220 12% 16%;
     --sidebar-ring: 251 85% 75%;
 
-    /* Legacy alias kept so existing cow-* utilities resolve to the brand. */
-    --cow-purple: 251 85% 75%;
-    --cow-purple-dark: 251 70% 65%;
-    --cow-dark: 222 18% 5%;
-
     --chart-1: 251 85% 75%;
     --chart-2: 199 76% 55%;
     --chart-3: 265 70% 66%;
@@ -106,56 +101,17 @@
     @apply font-heading font-bold tracking-tight;
   }
 
-  .pixel-corners {
-    clip-path: polygon(0 4px, 4px 4px, 4px 0, calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
-        100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
-        4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px));
-  }
-
   .pixelated {
     image-rendering: pixelated;
   }
 }
 
 @layer components {
-  .pixel-btn {
-    @apply relative px-6 py-2 text-lg uppercase tracking-wider border-2 bg-opacity-90 rounded-full transition-all duration-300;
-  }
-
-  .pixel-btn-primary {
-    @apply pixel-btn bg-cow-purple hover:bg-cow-purple-dark text-primary-foreground font-medium px-4 py-2 rounded-full transition-colors;
-  }
-
-  .pixel-btn-secondary {
-    @apply pixel-btn border-cow-purple text-cow-purple hover:bg-cow-purple hover:text-primary-foreground;
-  }
-
-  .pixel-card {
-    @apply bg-card border-2 border-primary/50 pixel-corners p-4 shadow-lg transition-all duration-300 hover:shadow-xl;
-  }
-
-  .pixel-input {
-    @apply bg-input border-2 border-primary/50 pixel-corners p-2 focus:outline-none focus:ring-2 focus:ring-primary;
-  }
-
   .cow-grid-bg {
     background-image: linear-gradient(hsl(var(--foreground) / 0.035) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
     background-size: 32px 32px;
   }
-
-  .parallax-hero {
-    @apply relative overflow-hidden;
-  }
-
-  .parallax-layer {
-    @apply absolute w-full h-full top-0 left-0;
-    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-}
-
-.font-pixel {
-  font-family: 'Press Start 2P', cursive;
 }
 
 .font-minecraftia {
@@ -170,51 +126,8 @@
   font-family: 'Minecraft Five Bold', monospace;
 }
 
-.tool-planks-hover {
-  background-color: #8b5a35;
-  background-image: linear-gradient(90deg, rgba(48, 25, 12, 0.22) 1px, transparent 1px), linear-gradient(rgba(255, 210, 150, 0.16) 1px, transparent 1px);
-  background-size: 144px 100%, 100% 34px;
-}
-
-.font-jetbrains-mono {
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.font-chakra {
-  font-family: 'Chakra Petch', sans-serif;
-}
-
 .font-geist {
   font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-.bg-cow-purple {
-  background-color: hsl(var(--cow-purple));
-}
-
-.bg-cow-purple-dark {
-  background-color: hsl(var(--cow-purple-dark));
-}
-
-.bg-cow-dark {
-  background-color: hsl(var(--cow-dark));
-}
-
-.text-cow-purple {
-  color: hsl(var(--primary));
-}
-
-/* Define hover variants */
-.hover\:bg-cow-purple:hover {
-  background-color: hsl(var(--cow-purple));
-}
-
-.hover\:bg-cow-purple-dark:hover {
-  background-color: hsl(var(--cow-purple-dark));
-}
-
-.hover\:text-cow-purple:hover {
-  color: hsl(var(--primary));
 }
 
 /* ---------------------------------------------------------------------------

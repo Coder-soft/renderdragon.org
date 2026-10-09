@@ -5,7 +5,6 @@ import App from './App.tsx';
 import './index.css';
 import '@fontsource/geist-sans';
 import '@fontsource/geist-mono';
-import '@fontsource/jetbrains-mono';
 import '@fontsource/montserrat/600.css';
 import '@fontsource/montserrat/700.css';
 
