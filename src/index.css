@@ -137,7 +137,7 @@ html,
 body {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.2);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .custom-scrollbar::-webkit-scrollbar,
