@@ -158,8 +158,8 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
         </div>
 
         {/* Controls and Info */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <Button
               variant="ghost"
               size="icon"
@@ -179,7 +179,7 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
               {isPlaying ? (
                 <IconPlayerPause size={24} fill="currentColor" />
               ) : (
-                <IconPlayerPlay size={24} fill="currentColor" className="ml-1" />
+                <IconPlayerPlay size={24} fill="currentColor" className="translate-x-[1px]" />
               )}
             </Button>
 
@@ -194,12 +194,10 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
             </Button>
           </div>
 
-          <div className="flex flex-col items-center flex-grow">
-            <div className="flex items-center gap-1.5 font-geist-mono text-[13px] font-medium tracking-tight text-muted-foreground">
-              <span className="text-foreground">{formatTime(currentTime)}</span>
-              <span className="opacity-30">/</span>
-              <span>{formatTime(duration)}</span>
-            </div>
+          <div className="flex items-center gap-1.5 font-geist-mono text-[13px] font-medium tracking-tight text-muted-foreground">
+            <span className="text-foreground">{formatTime(currentTime)}</span>
+            <span className="opacity-30">/</span>
+            <span>{formatTime(duration)}</span>
           </div>
         </div>
       </div>

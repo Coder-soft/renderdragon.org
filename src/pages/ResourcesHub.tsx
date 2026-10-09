@@ -23,7 +23,7 @@ import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
-import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter, IconPlayerPlay, IconAlbum } from '@tabler/icons-react';
+import { IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter, IconPlayerPlay, IconAlbum } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 
 
@@ -37,7 +37,6 @@ const LoadingSpinner = () => (
 );
 
 const ResourcesHub = () => {
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
@@ -132,24 +131,13 @@ const ResourcesHub = () => {
   }, [resources, isMcIconsView]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop =
-        window.scrollY ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0;
-      setShowScrollTop(scrollTop > 400);
-    };
-
     const handleShowFavorites = () => {
       setActiveTab('favorites');
     };
 
-    window.addEventListener('scroll', handleScroll, true);
     window.addEventListener('showFavorites', handleShowFavorites);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll, true);
       window.removeEventListener('showFavorites', handleShowFavorites);
     };
   }, []);
@@ -206,13 +194,6 @@ const ResourcesHub = () => {
     ['track', 'cat', 'file', 'url'].forEach((key) => cleanUrl.searchParams.delete(key));
     window.history.replaceState({}, '', `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
   }, [resources, isLoading, setSelectedResource, handleCategoryChange]);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
 
   const handleSearchWrapped = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearch(e);
@@ -506,7 +487,7 @@ const ResourcesHub = () => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="max-w-7xl mx-auto"
+                  className="w-full"
                 >
                   <FavoritesTab onSelectResource={setSelectedResource} />
                 </motion.div>
@@ -539,7 +520,7 @@ const ResourcesHub = () => {
                   transition={{ duration: 0.3 }}
                 >
                   {(isMcSoundsView || isMcIconsView || isMusicView) && !isMobile ? (
-                    <div className="flex gap-6 max-w-7xl mx-auto">
+                    <div className="flex gap-6 w-full">
                       {isMusicView && !isMinecraftMusicView && (
                         <div className="w-64 flex-shrink-0">
                           <div className="sticky top-28 h-[calc(100vh-8rem)]">
@@ -626,29 +607,6 @@ const ResourcesHub = () => {
         link={musicLink?.link ?? ''}
         onClose={() => setMusicLink(null)}
       />
-
-
-
-
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.4, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.4, y: 16 }}
-            transition={{ type: "spring", stiffness: 420, damping: 26 }}
-          >
-            <Button
-              onClick={scrollToTop}
-              className="fixed bottom-8 right-8 z-[9999] h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-colors text-white"
-              size="icon"
-              aria-label="Scroll to top"
-            >
-              <IconArrowUp className="h-5 w-5" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

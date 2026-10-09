@@ -143,7 +143,7 @@ const CategoryItem = ({
         <span className="text-sm truncate flex-grow">{formatCategoryName(node.name)}</span>
         
         {node.count !== undefined && (
-          <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded">
+          <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded">
             {node.count}
           </span>
         )}
@@ -372,7 +372,7 @@ const McSoundsBrowser = ({
             <div className="w-3.5" />
             <IconFolderOpen className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">All Sounds</span>
-            <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+            <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
               {subcategories.length} categories
             </span>
           </motion.div>
