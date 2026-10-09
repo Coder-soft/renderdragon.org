@@ -67,7 +67,7 @@ const ManageCreatorPacksPage = () => {
                             <p className="text-muted-foreground mt-1">View, edit, or delete creator packs you have published.</p>
                         </div>
                         <Link to="/creator-packs/new">
-                            <Button className=" bg-primary hover:bg-primary/90/90 font-geist">
+                            <Button className=" bg-primary hover:bg-primary/90 font-geist">
                                 Upload New Pack
                             </Button>
                         </Link>
@@ -83,7 +83,7 @@ const ManageCreatorPacksPage = () => {
                             <h3 className="text-xl font-geist font-medium mb-2">No packs published yet</h3>
                             <p className="text-muted-foreground mb-6">You haven't uploaded any creator packs.</p>
                             <Link to="/creator-packs/new">
-                                <Button className=" bg-primary hover:bg-primary/90/90">
+                                <Button className=" bg-primary hover:bg-primary/90">
                                     Create Your First Pack
                                 </Button>
                             </Link>

@@ -428,7 +428,7 @@ const ShowcasePage: React.FC = () => {
                     />
                     <Button
                       variant="outline"
-                      className="w-full  border-dashed border-2 h-20 hover:bg-primary/90/10 hover:border-primary/50 transition-colors"
+                      className="w-full  border-dashed border-2 h-20 hover:bg-primary/10 hover:border-primary/50 transition-colors"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <div className="flex flex-col items-center gap-1">

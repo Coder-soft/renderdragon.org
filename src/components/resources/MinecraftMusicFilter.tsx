@@ -109,7 +109,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 text-[10px] text-primary hover:text-primary/80 hover:bg-primary/90/10 flex-shrink-0 px-2"
+              className="h-6 text-[10px] text-primary hover:text-primary/80 hover:bg-primary/10 flex-shrink-0 px-2"
               onClick={() => onAlbumChange(null)}
             >
               Clear

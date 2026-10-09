@@ -62,7 +62,7 @@ export default function AdminBlogsManager() {
                     <h2 className="text-2xl mb-2">Blog Posts</h2>
                     <p className="text-muted-foreground text-sm">Manage your blog content.</p>
                 </div>
-                <Button asChild className="bg-primary hover:bg-primary/90/90 ">
+                <Button asChild className="bg-primary hover:bg-primary/90 ">
                     <Link to="/admin/blogs/new">
                         <IconPlus className="mr-2 h-4 w-4" /> New Post
                     </Link>

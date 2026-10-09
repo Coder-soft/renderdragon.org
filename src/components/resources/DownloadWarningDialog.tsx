@@ -54,13 +54,13 @@ const DownloadWarningDialog: React.FC<DownloadWarningDialogProps> = ({ isOpen, o
                     </Button>
                     {isValid ? (
                         <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto" onClick={onClose}>
-                            <Button className=" bg-primary hover:bg-primary/90/90 w-full sm:w-auto">
+                            <Button className=" bg-primary hover:bg-primary/90 w-full sm:w-auto">
                                 <IconExternalLink className="mr-2 h-4 w-4" />
                                 Continue to Download
                             </Button>
                         </a>
                     ) : (
-                        <Button disabled className=" bg-primary hover:bg-primary/90/90 w-full sm:w-auto">
+                        <Button disabled className=" bg-primary hover:bg-primary/90 w-full sm:w-auto">
                             <IconExternalLink className="mr-2 h-4 w-4" />
                             Invalid URL
                         </Button>

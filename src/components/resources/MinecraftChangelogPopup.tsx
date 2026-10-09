@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { IconX, IconBrandSpotify, IconApi, IconMusic, IconAlbum, IconVinyl } from '@tabler/icons-react';
@@ -27,6 +28,7 @@ const MinecraftChangelogPopup = () => {
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) dismiss(); }}>
       <DialogContent className="sm:max-w-lg  bg-gradient-to-b from-card/95 to-card/70 border-primary/20 max-h-[90vh] overflow-y-auto">
+        <DialogTitle className="sr-only">Minecraft Creator Playlist integration</DialogTitle>
         <div className="space-y-5">
           <h1 className="text-2xl font-bold text-center leading-tight">
             Minecraft Creator Playlist Integration
@@ -90,7 +92,7 @@ const MinecraftChangelogPopup = () => {
 
           <Button
             onClick={dismiss}
-            className="w-full  bg-primary hover:bg-primary/90/80"
+            className="w-full  bg-primary hover:bg-primary/90"
           >
             Got it!
           </Button>

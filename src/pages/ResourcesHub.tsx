@@ -22,7 +22,7 @@ import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter, IconPlayerPlay, IconAlbum } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 
@@ -320,6 +320,7 @@ const ResourcesHub = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[70vh] ">
+              <SheetTitle className="sr-only">Filter Minecraft music</SheetTitle>
               <div className="h-full py-2">
                 <h3 className="text-lg mb-4 flex items-center gap-2">
                   <IconAlbum className="h-5 w-5 text-primary" />
@@ -357,6 +358,7 @@ const ResourcesHub = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[70vh] ">
+              <SheetTitle className="sr-only">Filter music by mood</SheetTitle>
               <div className="h-full py-2">
                 <h3 className="text-lg mb-4 flex items-center gap-2">
                   <IconMoodHappy className="h-5 w-5 text-primary" />

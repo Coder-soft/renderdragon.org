@@ -231,7 +231,7 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
             aria-label="Choose an audio file to check"
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleDrop}
-            className=" cursor-pointer border-2 border-dashed border-primary/50 bg-primary/5 p-8 text-center transition-colors hover:border-primary hover:bg-primary/90/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className=" cursor-pointer border-2 border-dashed border-primary/50 bg-primary/5 p-8 text-center transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <IconUpload className="mx-auto h-8 w-8 text-primary" />
             <p className="mt-3 text-sm font-semibold">{file ? file.name : 'Drop an audio file here or browse'}</p>

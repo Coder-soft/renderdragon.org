@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 
 type ResourceFiltersProps = {
   searchQuery: string;
@@ -116,6 +116,7 @@ const MobileFilters = ({
         </Button>
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[80vh] ">
+        <SheetTitle className="sr-only">Filter resources</SheetTitle>
         <div className="h-full py-4 space-y-4">
           <h3 className="text-lg mb-2">
             Filter by Category

@@ -124,7 +124,7 @@ export default function BlogEditor() {
                     <Button variant="outline" onClick={() => setPreview(!preview)}>
                         <IconEye className="mr-2 h-4 w-4" /> {preview ? "Edit" : "Preview"}
                     </Button>
-                    <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90/90">
+                    <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90">
                         {saving ? <IconLoader2 className="mr-2 h-4 w-4 animate-spin" /> : <IconDeviceFloppy className="mr-2 h-4 w-4" />}
                         Save
                     </Button>

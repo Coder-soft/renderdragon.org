@@ -136,7 +136,7 @@ const CreatorPackPage = () => {
                             <div className="flex gap-2 flex-shrink-0">
                                 <Button
                                     onClick={() => setIsWarningOpen(true)}
-                                    className=" bg-primary hover:bg-primary/90/90"
+                                    className=" bg-primary hover:bg-primary/90"
                                 >
                                     <IconExternalLink className="mr-2 h-4 w-4" /> Download
                                 </Button>
@@ -205,7 +205,7 @@ const CreatorPackPage = () => {
                             <Button
                                 size="lg"
                                 onClick={() => setIsWarningOpen(true)}
-                                className=" bg-primary hover:bg-primary/90/90"
+                                className=" bg-primary hover:bg-primary/90"
                             >
                                 <IconExternalLink className="mr-2 h-5 w-5" /> Download Creator Pack
                             </Button>

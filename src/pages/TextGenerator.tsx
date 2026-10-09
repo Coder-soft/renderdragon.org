@@ -496,7 +496,7 @@ const TextGenerator = () => {
 
                 {/* Download Button */}
                 <Button
-                  className="w-full  bg-primary hover:bg-primary/90/80"
+                  className="w-full  bg-primary hover:bg-primary/90"
                   onClick={handleDownload}
                 >
                   <IconDownload className="h-4 w-4 mr-2" />

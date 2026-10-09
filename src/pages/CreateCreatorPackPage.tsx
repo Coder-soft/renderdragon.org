@@ -239,7 +239,7 @@ const CreateCreatorPackPage = () => {
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting || !title.trim() || !externalLink.trim()}
-                                    className=" bg-primary hover:bg-primary/90/90 min-w-[140px]"
+                                    className=" bg-primary hover:bg-primary/90 min-w-[140px]"
                                 >
                                     {isSubmitting ? (
                                         <><IconLoader2 className="mr-2 h-4 w-4 animate-spin" /> Publishing...</>

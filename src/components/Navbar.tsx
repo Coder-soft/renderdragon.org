@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/collapsible";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Keep for now in case it's a dependency of drawer
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import Logo from './Logo';
 import AuthDialog from './auth/AuthDialog'; // Added for auth
 import UserMenu from './auth/UserMenu'; // Added for auth
@@ -297,6 +297,8 @@ const Navbar = () => {
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="h-[90vh] rounded-t-xl bg-background border-t border-border">
+                <DrawerTitle className="sr-only">Navigation menu</DrawerTitle>
+                <DrawerDescription className="sr-only">Browse RenderDragon pages and tools</DrawerDescription>
                 <div className="px-4 py-6 max-h-[calc(100%-60px)] overflow-auto">
                   <div className="flex items-center justify-between mb-6">
                     <Link
