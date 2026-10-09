@@ -133,19 +133,23 @@ const ResourcesHub = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrolled = window.pageYOffset > 400;
-      setShowScrollTop(scrolled);
+      const scrollTop =
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0;
+      setShowScrollTop(scrollTop > 400);
     };
 
     const handleShowFavorites = () => {
       setActiveTab('favorites');
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, true);
     window.addEventListener('showFavorites', handleShowFavorites);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll, true);
       window.removeEventListener('showFavorites', handleShowFavorites);
     };
   }, []);
@@ -629,14 +633,14 @@ const ResourcesHub = () => {
       <AnimatePresence>
         {showScrollTop && (
           <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, scale: 0.4, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.4, y: 16 }}
+            transition={{ type: "spring", stiffness: 420, damping: 26 }}
           >
             <Button
               onClick={scrollToTop}
-              className="fixed bottom-8 right-8 z-[9999] h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-all duration-300 opacity-90 hover:opacity-100 text-primary-foreground"
+              className="fixed bottom-8 right-8 z-[9999] h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-colors text-white"
               size="icon"
               aria-label="Scroll to top"
             >

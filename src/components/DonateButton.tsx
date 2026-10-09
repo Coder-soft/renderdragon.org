@@ -40,8 +40,12 @@ const DonateButton = () => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       initial={false}
-      animate={{ opacity: isNearBottom ? 0 : 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      animate={
+        isNearBottom
+          ? { opacity: 0, scale: 0.5, y: 16 }
+          : { opacity: 1, scale: 1, y: 0 }
+      }
+      transition={{ type: "spring", stiffness: 420, damping: 28 }}
       style={{ pointerEvents: isNearBottom ? "none" : "auto" }}
       aria-hidden={isNearBottom}
     >
