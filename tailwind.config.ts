@@ -65,8 +65,8 @@ export default {
 				cow: {
 					dark: '#0A0C0F',
 					darker: '#070809',
-					purple: '#F199D8',
-					'purple-dark': '#D94FB5',
+					purple: '#9b87f5',
+					'purple-dark': '#7E69AB',
 					blue: '#1EAEDB',
 					'neon-pink': '#FF00FF',
 					'neon-blue': '#00FFFF'

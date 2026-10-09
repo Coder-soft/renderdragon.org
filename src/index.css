@@ -38,8 +38,8 @@
     --popover: 222 16% 8%;
     --popover-foreground: 220 14% 96%;
 
-    /* Brand: #F199D8. Paired with a dark foreground for accessible contrast. */
-    --primary: 317 76% 77%;
+    /* Brand: #9B87F5. Paired with a dark foreground for accessible contrast. */
+    --primary: 251 85% 75%;
     --primary-foreground: 222 18% 5%;
 
     /* White, for high-emphasis secondary actions. */
@@ -57,25 +57,25 @@
 
     --border: 220 12% 16%;
     --input: 220 12% 16%;
-    --ring: 317 76% 77%;
+    --ring: 251 85% 75%;
 
     --radius: 0.625rem;
 
     --sidebar-background: 222 18% 4%;
     --sidebar-foreground: 220 14% 96%;
-    --sidebar-primary: 317 76% 77%;
+    --sidebar-primary: 251 85% 75%;
     --sidebar-primary-foreground: 222 18% 5%;
     --sidebar-accent: 222 14% 15%;
     --sidebar-accent-foreground: 220 14% 96%;
     --sidebar-border: 220 12% 16%;
-    --sidebar-ring: 317 76% 77%;
+    --sidebar-ring: 251 85% 75%;
 
     /* Legacy alias kept so existing cow-* utilities resolve to the brand. */
-    --cow-purple: 317 76% 77%;
-    --cow-purple-dark: 313 64% 62%;
+    --cow-purple: 251 85% 75%;
+    --cow-purple-dark: 251 70% 65%;
     --cow-dark: 222 18% 5%;
 
-    --chart-1: 317 76% 77%;
+    --chart-1: 251 85% 75%;
     --chart-2: 199 76% 55%;
     --chart-3: 265 70% 66%;
     --chart-4: 162 60% 46%;
@@ -123,11 +123,11 @@
   }
 
   .pixel-btn-primary {
-    @apply pixel-btn bg-cow-purple hover:bg-cow-purple-dark text-white font-medium px-4 py-2 rounded-md transition-colors pixel-corners;
+    @apply pixel-btn bg-cow-purple hover:bg-cow-purple-dark text-primary-foreground font-medium px-4 py-2 rounded-md transition-colors pixel-corners;
   }
 
   .pixel-btn-secondary {
-    @apply pixel-btn border-cow-purple text-cow-purple hover:bg-cow-purple hover:text-white;
+    @apply pixel-btn border-cow-purple text-cow-purple hover:bg-cow-purple hover:text-primary-foreground;
   }
 
   .pixel-card {
@@ -225,7 +225,6 @@ body {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.2);
   overflow-x: hidden;
-  height: 100%;
 }
 
 .custom-scrollbar::-webkit-scrollbar,
