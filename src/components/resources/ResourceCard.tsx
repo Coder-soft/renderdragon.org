@@ -7,7 +7,7 @@ import {
   IconHeart,
   IconSunglasses,
 } from "@tabler/icons-react";
-import { Resource } from "@/types/resources";
+import { Resource, getResourceUrl } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
@@ -40,7 +40,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
   }, [resource.id]);
 
   const { toggleFavorite, isFavorited } = useUserFavorites();
-  const isFavorite = isFavorited(String(resource.id));
+  // Key by resource URL to match the Favorites tab, sidebar and DB column.
+  const resourceUrl = getResourceUrl(resource);
+  const isFavorite = isFavorited(resourceUrl);
 
   const [isInView, setIsInView] = useState(false);
   const [isPreviewReady, setIsPreviewReady] = useState(false);
@@ -133,7 +135,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    toggleFavorite(String(resource.id));
+    toggleFavorite(resourceUrl);
   };
 
   const handleCopyrightClick = (e: React.MouseEvent) => {
