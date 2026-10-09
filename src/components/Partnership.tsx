@@ -85,7 +85,7 @@ const Partnership = () => {
                         loading="lazy"
                       />
                     </div>
-                    <div className="absolute -bottom-1 -right-1 rounded-lg bg-primary p-1.5 text-primary-foreground">
+                    <div className="absolute -bottom-1 -right-1 rounded-full bg-primary p-1.5 text-primary-foreground">
                       <IconArrowRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
@@ -110,7 +110,7 @@ const Partnership = () => {
         >
           <a
             href="/contact"
-            className="inline-flex items-center rounded-lg border border-border px-5 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-accent"
+            className="inline-flex items-center rounded-full border border-border px-5 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-accent"
           >
             Become a partner
           </a>

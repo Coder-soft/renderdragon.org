@@ -132,7 +132,7 @@ const FeaturedResources = () => {
         >
           <Link
             to="/resources"
-            className="group inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-accent"
+            className="group inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-accent"
           >
             <span>View all resources</span>
             <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

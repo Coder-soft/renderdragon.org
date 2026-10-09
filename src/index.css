@@ -119,11 +119,11 @@
 
 @layer components {
   .pixel-btn {
-    @apply relative px-6 py-2 text-lg uppercase tracking-wider border-2 bg-opacity-90 pixel-corners transition-all duration-300;
+    @apply relative px-6 py-2 text-lg uppercase tracking-wider border-2 bg-opacity-90 rounded-full transition-all duration-300;
   }
 
   .pixel-btn-primary {
-    @apply pixel-btn bg-cow-purple hover:bg-cow-purple-dark text-primary-foreground font-medium px-4 py-2 rounded-md transition-colors pixel-corners;
+    @apply pixel-btn bg-cow-purple hover:bg-cow-purple-dark text-primary-foreground font-medium px-4 py-2 rounded-full transition-colors;
   }
 
   .pixel-btn-secondary {

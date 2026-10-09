@@ -56,14 +56,14 @@ const Hero = () => {
         >
           <Link
             to="/resources"
-            className="group inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <span>Browse Resources</span>
             <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link
             to={randomTool}
-            className="group inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-3 text-base font-medium text-foreground transition-colors hover:bg-accent"
+            className="group inline-flex items-center justify-center gap-2 rounded-full border border-border px-5 py-3 text-base font-medium text-foreground transition-colors hover:bg-accent"
           >
             <IconBolt className="w-5 h-5" />
             <span>Try a Tool</span>
