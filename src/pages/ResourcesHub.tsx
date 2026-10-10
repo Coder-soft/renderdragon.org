@@ -9,6 +9,7 @@ import { Resource, getResourceUrl } from '@/types/resources';
 import { MusicMood } from '@/types/music';
 import { DownloadProgress } from '@/lib/download';
 import { buildMusicLink } from '@/utils/musicLink';
+import { fetchFromAssetsApi } from '@/lib/assetsApi';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
@@ -88,7 +89,7 @@ const ResourcesHub = () => {
 
   useEffect(() => {
     if (isMusicView && musicMoodsData.length === 0) {
-      fetch('/data/music_moods.json')
+      fetchFromAssetsApi('/music_moods')
         .then(res => res.json())
         .then(data => setMusicMoodsData(data))
         .catch(err => console.error('Failed to load music moods:', err));
