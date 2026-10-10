@@ -295,10 +295,10 @@ const McIconsBrowser = ({
   return (
     <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
       <div className="p-3 border-b border-border">
-        <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+        <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
           <PixelSvgIcon name="icons" className="h-4 w-4 text-primary" />
           MC Icons Browser
-        </h3>
+        </div>
         
         <div className="relative mb-2">
           <IconSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
