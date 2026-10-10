@@ -3,7 +3,7 @@ import type { MouseEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { IconChevronRight, IconChevronDown, IconFolder, IconFolderOpen, IconSearch, IconVolume, IconX } from '@tabler/icons-react';
 
 interface McSoundsBrowserProps {
@@ -355,7 +355,7 @@ const McSoundsBrowser = ({
         </div>
       )}
       
-      <ScrollArea className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
         <div className="p-2">
           <motion.div
             className={`
@@ -395,7 +395,7 @@ const McSoundsBrowser = ({
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 };
