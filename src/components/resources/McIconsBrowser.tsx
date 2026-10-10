@@ -109,7 +109,7 @@ const CategoryItem = ({
           transition-colors duration-150 group
           ${isSelected 
             ? 'bg-primary/20 text-primary' 
-            : 'hover:bg-accent/50'
+            : 'hover:bg-accent'
           }
         `}
         style={{ paddingLeft }}
@@ -293,7 +293,7 @@ const McIconsBrowser = ({
   }, [subcategories, resourceCount]);
   
   return (
-    <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
+    <div className="h-full flex flex-col bg-card border border-border rounded-lg  overflow-hidden">
       <div className="p-3 border-b border-border">
         <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
           <PixelSvgIcon name="icons" className="h-4 w-4 text-primary" />
@@ -364,7 +364,7 @@ const McIconsBrowser = ({
               transition-colors duration-150
               ${!selectedSubcategory 
                 ? 'bg-primary/20 text-primary' 
-                : 'hover:bg-accent/50'
+                : 'hover:bg-accent'
               }
             `}
             onClick={() => handleSelect(null)}

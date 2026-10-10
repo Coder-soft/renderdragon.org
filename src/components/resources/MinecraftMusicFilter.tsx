@@ -21,7 +21,7 @@ const AlbumThumb = ({ album, selected }: { album: string; selected: boolean }) =
   const [errored, setErrored] = useState(false);
   if (errored) {
     return (
-      <div className={`w-10 h-10 rounded-md flex-shrink-0 overflow-hidden flex items-center justify-center ${selected ? 'ring-2 ring-primary/40' : ''} bg-muted/30`}>
+      <div className={`w-10 h-10 rounded-md flex-shrink-0 overflow-hidden flex items-center justify-center ${selected ? 'ring-2 ring-primary/40' : ''} bg-muted`}>
         <IconMusic className="h-5 w-5 text-muted-foreground/60" />
       </div>
     );
@@ -77,7 +77,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
             placeholder="Search albums..."
             value={albumSearch}
             onChange={(e) => setAlbumSearch(e.target.value)}
-            className="pl-8 h-8 text-sm  bg-background/50 border-border/40 focus:border-primary/40"
+            className="pl-8 h-8 text-sm  bg-background border-border/40 focus:border-primary/40"
           />
           {albumSearch && (
             <Button
@@ -126,7 +126,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
               transition-all duration-150 group
               ${!selectedAlbum
                 ? 'bg-primary/15 text-primary border border-primary/20'
-                : 'hover:bg-accent/50 border border-transparent'
+                : 'hover:bg-accent border border-transparent'
               }
             `}
             onClick={() => onAlbumChange(null)}
@@ -134,7 +134,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
           >
             <div className={`
               flex items-center justify-center w-10 h-10 rounded-md flex-shrink-0
-              ${!selectedAlbum ? 'bg-primary/20' : 'bg-muted/30 group-hover:bg-muted/50'}
+              ${!selectedAlbum ? 'bg-primary/20' : 'bg-muted group-hover:bg-muted'}
               transition-colors duration-150
             `}>
               <IconDisc className="h-5 w-5" />
@@ -144,7 +144,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
                 All Albums
               </p>
             </div>
-            <span className="text-[11px] text-muted-foreground/50 bg-background/50 px-2 py-0.5 rounded ml-auto font-mono flex-shrink-0">
+            <span className="text-[11px] text-muted-foreground/50 bg-background px-2 py-0.5 rounded ml-auto font-mono flex-shrink-0">
               {totalTracks}
             </span>
           </motion.div>
@@ -163,7 +163,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
                   transition-all duration-150 group
                   ${selectedAlbum === album
                     ? 'bg-primary/15 text-primary border border-primary/20'
-                    : 'hover:bg-accent/40 border border-transparent'
+                    : 'hover:bg-accent border border-transparent'
                   }
                 `}
                 onClick={() => onAlbumChange(album)}
@@ -181,7 +181,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
                   text-[11px] font-mono flex-shrink-0
                   ${selectedAlbum === album
                     ? 'bg-primary/20 text-primary'
-                    : 'bg-background/40 text-muted-foreground/50'
+                    : 'bg-background text-muted-foreground/50'
                   }
                   px-2 py-0.5 rounded
                 `}>

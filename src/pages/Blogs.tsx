@@ -126,7 +126,7 @@ export default function Blogs() {
 
                                 return (
                                     <Link key={blog.id} to={`/blogs/${blog.slug}`} className="block group h-full">
-                                        <Card className="h-full  bg-card/60 backdrop-blur border-border/50 hover:border-primary/50 transition-colors">
+                                        <Card className="h-full  bg-card backdrop-blur border-border/50 hover:border-primary/50 transition-colors">
                                             <CardHeader>
                                                 <CardTitle className="text-xl leading-snug group-hover:text-primary transition-colors">
                                                     {blog.title}

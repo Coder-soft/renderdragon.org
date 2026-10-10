@@ -79,7 +79,7 @@ const ValueProps = () => {
             <motion.div key={card.title} variants={item}>
               <Link
                 to={card.link}
-                className="group block h-full rounded-xl border border-border bg-card p-4 bg-card hover:bg-card/80 border-2 border-border hover:border-primary p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden"
+                className="group block h-full rounded-xl border border-border bg-card p-4 bg-card hover:bg-card border-2 border-border hover:border-primary p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-0 group-hover:opacity-100 transition-opacity`} />
 

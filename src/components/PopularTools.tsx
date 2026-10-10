@@ -103,7 +103,7 @@ const PopularTools = () => {
                   </div>
                 )}
                 <div className="flex items-start justify-between mb-5">
-                  <div className={`relative z-10 w-12 h-12 rounded-xl bg-primary/10 border border-border flex items-center justify-center transition-all duration-300 group-hover:scale-105 ${tool.backgroundImage ? 'group-hover:bg-card/80 group-hover:backdrop-blur-sm' : ''}`}>
+                  <div className={`relative z-10 w-12 h-12 rounded-xl bg-primary/10 border border-border flex items-center justify-center transition-all duration-300 group-hover:scale-105 ${tool.backgroundImage ? 'group-hover:bg-card group-hover:backdrop-blur-sm' : ''}`}>
                     <tool.icon className={`h-6 w-6 text-primary transition-opacity duration-150 ${tool.hoverIcon || tool.hoverImage ? 'group-hover:opacity-0' : ''}`} stroke={2} />
                     {'hoverIcon' in tool && tool.hoverIcon && <tool.hoverIcon className="absolute h-6 w-6 text-red-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" stroke={2} />}
                     {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" loading="lazy" decoding="async" className="absolute h-7 w-7 rounded-md object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}

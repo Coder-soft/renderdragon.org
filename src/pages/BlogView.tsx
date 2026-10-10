@@ -137,7 +137,7 @@ export default function BlogView() {
                         Back to Blogs
                     </Link>
 
-                    <article className="bg-background/80 backdrop-blur border border-border/50  p-6 md:p-10">
+                    <article className="bg-background backdrop-blur border border-border/50  p-6 md:p-10">
                         <header className="mb-8 border-b border-border/50 pb-8">
                             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground tracking-tight">{blog.title}</h1>
                             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground font-geist-mono">
@@ -162,8 +162,8 @@ export default function BlogView() {
                  [&>h3]:mt-6 [&>h3]:mb-2 [&>h3]:text-xl [&>h3]:font-medium [&>h3]:
                 [&>ul]:my-6 [&>ol]:my-6 [&_li]:mb-2
                 [&_a]:text-primary [&_a]:underline hover:[&_a]:text-primary/80
-                [&_pre]:bg-muted/50 [&_pre]:p-4 [&_pre]:rounded-md [&_pre]:
-                [&_code]:font-geist-mono [&_code]:bg-muted/50 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded
+                [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:rounded-md [&_pre]:
+                [&_code]:font-geist-mono [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded
                 [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground
                 [&_img]:rounded-none [&_img]: [&_img]:border [&_img]:border-white/10
                 "

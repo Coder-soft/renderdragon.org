@@ -191,7 +191,7 @@ const CreatorPackPage = () => {
                                     ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-1">{children}</ol>,
                                     a: ({ children, href }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">{children}</a>,
                                     blockquote: ({ children }) => <blockquote className="border-l-4 border-primary/50 pl-4 italic text-muted-foreground my-4">{children}</blockquote>,
-                                    code: ({ children }) => <code className="bg-muted/30 px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>,
+                                    code: ({ children }) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>,
                                     img: ({ src, alt }) => <img src={src} alt={alt} className="rounded-lg max-w-full my-4" />,
                                     hr: () => <hr className="border-border/50 my-6" />,
                                 }}

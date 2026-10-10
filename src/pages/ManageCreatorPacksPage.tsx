@@ -101,7 +101,7 @@ const ManageCreatorPacksPage = () => {
                                         className="bg-card border border-border/50 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-start sm:items-center shadow-sm hover:border-primary/50 transition-colors"
                                     >
                                         {/* Thumbnail */}
-                                        <div className="w-full sm:w-48 aspect-video bg-muted/20 rounded-md overflow-hidden flex-shrink-0">
+                                        <div className="w-full sm:w-48 aspect-video bg-muted rounded-md overflow-hidden flex-shrink-0">
                                             {pack.cover_image_url ? (
                                                 <img
                                                     src={pack.cover_image_url}

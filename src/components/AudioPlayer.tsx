@@ -135,9 +135,9 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
     )}>
       <div className="flex flex-col space-y-3">
         {/* Waveform Container */}
-        <div className="relative h-12 w-full bg-muted/20 rounded-lg overflow-hidden flex items-center justify-center">
+        <div className="relative h-12 w-full bg-muted rounded-lg overflow-hidden flex items-center justify-center">
           {isLoading && !allowPlayBeforeReady && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/60 backdrop-blur-[1px]">
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-card backdrop-blur-[1px]">
               <IconLoader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="ml-2 text-xs tracking-wider text-muted-foreground">LOADING WAVEFORM...</span>
             </div>
@@ -150,7 +150,7 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
           )}
           <div ref={containerRef} className="w-full" />
           {loadError && (
-            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-card/90 text-sm text-muted-foreground">
+            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-card text-sm text-muted-foreground">
               <span>Audio preview unavailable.</span>
               <Button variant="outline" size="sm" onClick={() => setRetryKey((key) => key + 1)}>Retry</Button>
             </div>

@@ -69,7 +69,7 @@ export default function AdminBlogsManager() {
                 </Button>
             </div>
 
-            <Card className=" bg-card/50">
+            <Card className=" bg-card">
                 <CardContent className="p-0">
                     {loading ? (
                         <div className="p-8 flex justify-center"><IconLoader2 className="animate-spin" /></div>
@@ -87,7 +87,7 @@ export default function AdminBlogsManager() {
                             </TableHeader>
                             <TableBody>
                                 {blogs.map(blog => (
-                                    <TableRow key={blog.id} className="border-border/50 group hover:bg-muted/50">
+                                    <TableRow key={blog.id} className="border-border/50 group hover:bg-muted">
                                         <TableCell className="font-medium">
                                             <Link to={`/admin/blogs/${blog.id}`} className="hover:underline hover:text-primary">
                                                 {blog.title}

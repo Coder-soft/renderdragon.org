@@ -152,7 +152,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/20 rounded-lg overflow-hidden mb-3 cursor-default"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
           >
             <img
               src={previewUrl}
@@ -165,7 +165,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
               loading="lazy"
             />
             {!isImageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             )}
@@ -175,7 +175,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-[4/1] bg-muted/20 rounded-lg overflow-hidden mb-3 cursor-default"
+            className="relative aspect-[4/1] bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
           >
             {isFontLoaded ? (
               <div
@@ -197,7 +197,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
           >
             <AudioPlayer
               src={previewUrl}
@@ -242,7 +242,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
           >
             <AudioPlayer
               src={previewUrl}
@@ -255,9 +255,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/20 rounded-lg overflow-hidden mb-3 cursor-default"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
           >
-            <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted">
               <IconVideo className="h-8 w-8 text-muted-foreground/30" />
             </div>
             {isInView && isPreviewReady && (

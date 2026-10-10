@@ -22,7 +22,7 @@ const CreatorPackCard = ({ pack }: CreatorPackCardProps) => {
                 transition={{ duration: 0.2 }}
             >
                 {/* Cover Image */}
-                <div className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3">
+                <div className="relative aspect-video bg-muted rounded-md overflow-hidden mb-3">
                     {pack.cover_image_url ? (
                         <img
                             src={pack.cover_image_url}

@@ -66,7 +66,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
     if (isAudio) {
       return (
-        <div className="w-full p-4 bg-muted/10">
+        <div className="w-full p-4 bg-muted">
           <AudioPlayer src={url} className="w-full shadow-none border-none bg-transparent" />
         </div>
       );
@@ -74,7 +74,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     if (isFont) {
       const fontName = `font-${a.id}`;
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video relative overflow-hidden group/font">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-muted p-6 aspect-video relative overflow-hidden group/font">
           <style>{`
             @font-face {
               font-family: '${fontName}';
@@ -114,7 +114,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
 
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-muted p-6 aspect-video">
         <IconFileText className="h-12 w-12 text-white/20 mb-4" />
         <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono">
           Document File
@@ -124,7 +124,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
   };
 
   return (
-    <Card className="rounded-xl border border-border bg-card p-4 bg-card/40 backdrop-blur-sm border-white/10 w-full flex flex-col h-full overflow-hidden hover:border-primary/50 transition-all duration-300 group hover:shadow-2xl hover:shadow-primary/10">
+    <Card className="rounded-xl border border-border bg-card p-4 bg-card backdrop-blur-sm border-white/10 w-full flex flex-col h-full overflow-hidden hover:border-primary/50 transition-all duration-300 group hover:shadow-2xl hover:shadow-primary/10">
       <div className="flex-grow flex flex-col">
         {/* Asset Preview at top */}
         <div className="w-full">
@@ -148,7 +148,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                 }}
                 className={cn(
                   "overflow-hidden transition-all duration-200 w-full",
-                  isAudio ? "h-auto" : "aspect-video cursor-zoom-in group-hover:bg-background/40"
+                  isAudio ? "h-auto" : "aspect-video cursor-zoom-in group-hover:bg-background"
                 )}
               >
                 {renderAssetPreview(a)}
@@ -235,7 +235,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className=" border border-white/10 bg-background/40 hover:bg-background/60 text-white text-sm px-3 py-1"
+                  className=" border border-white/10 bg-background hover:bg-background text-white text-sm px-3 py-1"
                   onClick={() => window.open(previewAsset.url, '_blank', 'noopener,noreferrer')}
                 >
                   Open
@@ -390,7 +390,7 @@ const ShowcasePage: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search messages..."
-                className="pl-9 bg-background/60"
+                className="pl-9 bg-background"
               />
             </div>
             <Button variant="secondary" onClick={() => { }} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent">Search</Button>
@@ -439,7 +439,7 @@ const ShowcasePage: React.FC = () => {
 
                     {filePreview && (
                       <div className="mt-4">
-                        <div className="relative w-full aspect-video bg-background/40  border border-white/10 flex items-center justify-center overflow-hidden">
+                        <div className="relative w-full aspect-video bg-background  border border-white/10 flex items-center justify-center overflow-hidden">
                           {selectedFile?.type.startsWith('image/') ? (
                             <img src={filePreview} alt="preview" className="w-full h-full object-contain" />
                           ) : selectedFile?.type.startsWith('video/') ? (

@@ -206,7 +206,7 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {!autoStart && (
-         <div className=" grid grid-cols-2 gap-2 border border-border bg-muted/30 p-1">
+         <div className=" grid grid-cols-2 gap-2 border border-border bg-muted p-1">
             <button type="button" onClick={() => setSourceTab('file')} className={cn(' flex items-center justify-center gap-1 whitespace-nowrap px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'file' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground')}>
              <IconFileMusic className="h-4 w-4 shrink-0" /> Audio file
            </button>

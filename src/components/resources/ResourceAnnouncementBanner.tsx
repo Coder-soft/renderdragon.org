@@ -19,6 +19,6 @@ export default function ResourceAnnouncementBanner({ onExplore }: { onExplore: (
       <p className="truncate text-muted-foreground">Browse 725 creator-friendly tracks and the latest shader tools.</p>
     </div>
     <button type="button" className="inline-flex shrink-0 items-center gap-1 font-medium text-primary" onClick={onExplore}>Explore <IconArrowRight className="h-4 w-4" /></button>
-    <button type="button" aria-label="Dismiss announcement" onClick={dismiss} className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-background/50 hover:text-foreground"><IconX className="h-4 w-4" /></button>
+    <button type="button" aria-label="Dismiss announcement" onClick={dismiss} className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-background hover:text-foreground"><IconX className="h-4 w-4" /></button>
   </aside>;
 }

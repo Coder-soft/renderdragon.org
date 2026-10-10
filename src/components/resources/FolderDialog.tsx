@@ -91,7 +91,7 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
                                 onClick={() => setColor(null)}
                                 className={cn(
                                     "w-6 h-6 rounded-full flex items-center justify-center border-2",
-                                    color === null ? "border-primary" : "border-transparent bg-muted/20"
+                                    color === null ? "border-primary" : "border-transparent bg-muted"
                                 )}
                                 title="Default"
                             >

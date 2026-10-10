@@ -317,7 +317,7 @@ const Community = () => {
                           <Skeleton className="h-8 w-1/2 mb-2" />
                           <Skeleton className="h-4 w-3/4" />
                         </div>
-                        <div className="p-4 bg-background/80">
+                        <div className="p-4 bg-background">
                           <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                             {[...Array(4)].map((_, j) => <VideoCardSkeleton key={j} />)}
                           </div>
@@ -335,7 +335,7 @@ const Community = () => {
                         className="border border-border rounded-md  overflow-hidden"
                       >
                         <CollapsibleTrigger asChild>
-                          <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/50 transition-colors">
+                          <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent transition-colors">
                             <div>
                               <h2 className="text-2xl ">{category.name}</h2>
                               <p className="text-muted-foreground text-sm mt-1">
@@ -347,7 +347,7 @@ const Community = () => {
                           </div>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <div className="p-4 bg-background/80">
+                          <div className="p-4 bg-background">
                             <div className="relative">
                               <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                                 {category.videos.map(video => (

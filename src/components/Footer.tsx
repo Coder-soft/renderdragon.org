@@ -83,7 +83,7 @@ const Footer = () => {
                 href="https://discord.renderdragon.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-accent hover:bg-accent/80 transition-colors"
+                className="p-2 rounded-lg bg-accent hover:bg-accent transition-colors"
                 aria-label="Discord"
               >
                 <img className="w-6 h-6" src="/assets/discord_icon.png" alt="Discord" loading="lazy" />
@@ -93,7 +93,7 @@ const Footer = () => {
                 href="https://x.com/_renderdragon"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-accent hover:bg-accent/80 transition-colors"
+                className="p-2 rounded-lg bg-accent hover:bg-accent transition-colors"
                 aria-label="Twitter"
               >
                 <img className="w-6 h-6" src="/assets/twitter_icon.png" alt="Twitter" loading="lazy" />
@@ -103,7 +103,7 @@ const Footer = () => {
                 href="https://www.youtube.com/channel/UCOheNYpPEHcS2ljttRmllxg"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-accent hover:bg-accent/80 transition-colors"
+                className="p-2 rounded-lg bg-accent hover:bg-accent transition-colors"
                 aria-label="YouTube"
               >
                 <img className="w-6 h-6" src="/assets/youtube_icon.png" alt="YouTube" loading="lazy" />
@@ -229,7 +229,7 @@ const Footer = () => {
             <button
               ref={cartButtonRef}
               onClick={handleCartClick}
-              className="ml-4 p-2 rounded-lg bg-accent hover:bg-accent/80 transition-all duration-1000"
+              className="ml-4 p-2 rounded-lg bg-accent hover:bg-accent transition-all duration-1000"
               disabled={cartClicked}
             >
               <IconShoppingCart className="h-5 w-5" />

@@ -295,7 +295,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
   if (isLoading) {
     return (
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-64 flex-shrink-0 animate-pulse bg-muted/20 h-96 rounded-xl" />
+        <div className="w-full md:w-64 flex-shrink-0 animate-pulse bg-muted h-96 rounded-xl" />
         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, idx) => (
             <ResourceCardSkeleton key={`fav-skel-${idx}`} />
@@ -332,7 +332,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
 
           <div className="flex-1 min-w-0 z-0">
             {zipProgress && (
-              <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-muted/10">
+              <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-muted">
                 <div className="flex-1">
                   <Progress
                     value={(zipProgress.completed / zipProgress.total) * 100}
@@ -356,7 +356,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center py-20 bg-muted/5 rounded-xl border border-border/50"
+                className="text-center py-20 bg-muted rounded-xl border border-border/50"
               >
                 <IconHeart className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-50" />
                 <h3 className="text-xl mb-2 font-medium">No resources found</h3>

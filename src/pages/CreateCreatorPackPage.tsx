@@ -166,7 +166,7 @@ const CreateCreatorPackPage = () => {
                                             onClick={() => toggleTag(tag)}
                                             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors border ${selectedTags.includes(tag)
                                                 ? 'bg-primary text-white border-primary'
-                                                : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted'
+                                                : 'bg-muted text-muted-foreground border-border hover:bg-muted'
                                                 }`}
                                         >
                                             {tag}
@@ -182,7 +182,7 @@ const CreateCreatorPackPage = () => {
                                     {coverPreview && (
                                         <img src={coverPreview} alt="Cover preview" className="w-32 h-20 object-cover rounded-md border border-border/50" />
                                     )}
-                                    <label className="flex items-center gap-2 px-4 py-3 rounded-md border border-dashed border-border/60 cursor-pointer hover:bg-muted/30 transition-colors text-sm">
+                                    <label className="flex items-center gap-2 px-4 py-3 rounded-md border border-dashed border-border/60 cursor-pointer hover:bg-muted transition-colors text-sm">
                                         <IconUpload size={18} className="text-muted-foreground" />
                                         <span>{coverFile ? coverFile.name : 'Choose cover image'}</span>
                                         <input type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
@@ -199,7 +199,7 @@ const CreateCreatorPackPage = () => {
                                     </Button>
                                 </div>
                                 {showPreview ? (
-                                    <div className="border border-border/50 p-4 rounded-md bg-muted/10 min-h-[300px]">
+                                    <div className="border border-border/50 p-4 rounded-md bg-muted min-h-[300px]">
                                         <div className="max-w-none font-geist text-sm text-foreground/90 leading-relaxed">
                                             <ReactMarkdown
                                                 remarkPlugins={[remarkGfm]}
@@ -209,7 +209,7 @@ const CreateCreatorPackPage = () => {
                                                     h3: ({ children }) => <h3 className="text-lg font-semibold mt-4 mb-2 font-geist">{children}</h3>,
                                                     p: ({ children }) => <p className="mb-3">{children}</p>,
                                                     ul: ({ children }) => <ul className="list-disc pl-5 mb-3 space-y-1">{children}</ul>,
-                                                    code: ({ children }) => <code className="bg-muted/30 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
+                                                    code: ({ children }) => <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
                                                 }}
                                             >
                                                 {description || '*Nothing to preview yet.*'}

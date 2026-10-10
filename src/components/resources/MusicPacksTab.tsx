@@ -270,10 +270,10 @@ const MusicPacksTab = () => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
-        <div className="h-[70vh] rounded-lg border border-border bg-card/40 animate-pulse" />
+        <div className="h-[70vh] rounded-lg border border-border bg-card animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {Array.from({ length: 8 }).map((_, idx) => (
-            <div key={`music-links-skeleton-${idx}`} className="aspect-video rounded-lg border border-border bg-card/40 animate-pulse" />
+            <div key={`music-links-skeleton-${idx}`} className="aspect-video rounded-lg border border-border bg-card animate-pulse" />
           ))}
         </div>
       </div>
@@ -284,7 +284,7 @@ const MusicPacksTab = () => {
     <div className="flex gap-6 max-w-7xl mx-auto">
       <div className="w-full md:w-80 flex-shrink-0">
         <div className="sticky top-28 h-[calc(100vh-8rem)]">
-          <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
+          <div className="h-full flex flex-col bg-card border border-border rounded-lg  overflow-hidden">
             <div className="p-3 border-b border-border">
               <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
                 <PixelSvgIcon name="music" className="h-4 w-4 text-primary" />
@@ -319,7 +319,7 @@ const MusicPacksTab = () => {
                     setSelectedChannel(null);
                   }}
                   whileHover={{ x: 2 }}
-                  className={`w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${!selectedCategory && !selectedChannel ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
+                  className={`w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${!selectedCategory && !selectedChannel ? 'bg-primary/20 text-primary' : 'hover:bg-accent'}`}
                 >
                   <IconFolderOpen className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">All Music Links</span>
@@ -336,7 +336,7 @@ const MusicPacksTab = () => {
                     <div key={category.name} className="mt-1">
                       <button
                         onClick={() => toggleCategory(category.name)}
-                        className="w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50 transition-colors"
+                        className="w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent transition-colors"
                       >
                         {isExpanded ? <IconChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <IconChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
                         {isExpanded ? <IconFolderOpen className="h-4 w-4 text-yellow-500" /> : <IconFolder className="h-4 w-4 text-yellow-500/80" />}
@@ -356,7 +356,7 @@ const MusicPacksTab = () => {
                           >
                             <button
                               onClick={() => handleSelectCategory(category.name)}
-                              className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
+                              className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent'}`}
                             >
                               <IconFolder className="h-4 w-4 text-yellow-500/80" />
                               <span className="text-sm truncate">All in {normalizeLabel(category.name)}</span>
@@ -370,7 +370,7 @@ const MusicPacksTab = () => {
                                 <button
                                   key={`${category.name}-${channel.name}`}
                                   onClick={() => handleSelectChannel(category.name, channel.name)}
-                                  className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
+                                  className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent'}`}
                                 >
                                   <IconFolder className="h-4 w-4 text-yellow-500/80" />
                                   <span className="text-sm truncate">{normalizeLabel(channel.name)}</span>
@@ -412,7 +412,7 @@ const MusicPacksTab = () => {
         </div>
 
         {displayedLinks.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card/40 p-8 text-center text-muted-foreground">
+          <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground">
             No links found for this selection.
           </div>
         ) : (
@@ -426,9 +426,9 @@ const MusicPacksTab = () => {
                   key={item.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="group block rounded-lg border border-border bg-card/50 p-3 hover:border-primary/50 transition-colors "
+                  className="group block rounded-lg border border-border bg-card p-3 hover:border-primary/50 transition-colors "
                 >
-                  <div className="aspect-video rounded-md overflow-hidden border border-border/70 bg-muted/30 mb-3">
+                  <div className="aspect-video rounded-md overflow-hidden border border-border/70 bg-muted mb-3">
                     {embedInfo.isYoutube && embedInfo.embedUrl && isEmbedActive ? (
                       <iframe
                         src={embedInfo.embedUrl}

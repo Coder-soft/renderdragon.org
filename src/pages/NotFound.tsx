@@ -176,7 +176,7 @@ const NotFound = () => {
           </motion.div>
 
           <motion.div
-            className="mt-6 rounded-xl border border-border bg-card p-4 border-dashed border-primary/30 bg-background/50 px-6 py-4 relative"
+            className="mt-6 rounded-xl border border-border bg-card p-4 border-dashed border-primary/30 bg-background px-6 py-4 relative"
             variants={itemVariants}
             whileHover={{
               boxShadow: "0 0 15px rgba(147, 51, 234, 0.3)",

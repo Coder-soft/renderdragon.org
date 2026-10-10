@@ -98,7 +98,7 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
         <div className="min-w-0">
            <h3 className="mb-3 flex items-center gap-2 text-sm"><IconActivity className="inline-flex h-4 w-4 shrink-0 text-primary" /> Running checks</h3>
           {runningRecords.length === 0 ? (
-            <p className=" border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">No checks are currently running.</p>
+            <p className=" border border-border/70 bg-muted p-4 text-sm text-muted-foreground">No checks are currently running.</p>
           ) : (
             <div className="space-y-2">
               {runningRecords.map((record) => (
@@ -117,7 +117,7 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
         <div className="min-w-0">
            <h3 className="mb-3 flex items-center gap-2 text-sm"><IconClock className="inline-flex h-4 w-4 shrink-0 text-primary" /> Previous checks</h3>
           {historyRecords.length === 0 ? (
-            <p className=" border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">Your completed checks will appear here.</p>
+            <p className=" border border-border/70 bg-muted p-4 text-sm text-muted-foreground">Your completed checks will appear here.</p>
           ) : (
             <div className="space-y-2">
               {historyRecords.map((record) => (
@@ -126,7 +126,7 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
                   type="button"
                   onClick={() => { if (!record.result) return; onSelectRecord?.(record); }}
                   disabled={!record.result}
-                  className=" w-full border border-border/70 bg-muted/20 p-3 text-left transition-colors hover:border-primary/50 disabled:cursor-default disabled:hover:border-border/70"
+                  className=" w-full border border-border/70 bg-muted p-3 text-left transition-colors hover:border-primary/50 disabled:cursor-default disabled:hover:border-border/70"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium">{record.sourceLabel}</span>

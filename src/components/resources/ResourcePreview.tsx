@@ -68,7 +68,7 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
 
   if (resource.category === 'images' || resource.category === 'minecraft-icons') {
     return (
-      <div className="rounded-md overflow-hidden bg-muted/20 border border-border">
+      <div className="rounded-md overflow-hidden bg-muted border border-border">
         <img
           src={resource.image_url || downloadURL}
           alt={resource.title}
@@ -103,7 +103,7 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
   if (resource.category === 'presets') {
     if (hasError) {
       return (
-        <div className="p-4 text-center rounded-md bg-muted/20 border border-border">
+        <div className="p-4 text-center rounded-md bg-muted border border-border">
           <p>Sorry, there's no preview for this preset.</p>
           <p className="text-sm text-muted-foreground mt-2">
             You can help out creating previews for presets by joining our Discord!

@@ -78,7 +78,7 @@ const SortableLinkItem: React.FC<SortableLinkItemProps> = ({ link, updateLink, r
         <div
             ref={setNodeRef}
             style={style}
-            className="flex flex-col gap-3 p-4 border rounded-lg bg-card/50"
+            className="flex flex-col gap-3 p-4 border rounded-lg bg-card"
         >
             <div className="flex items-center gap-2">
                 <button
@@ -343,7 +343,7 @@ const ProfileEditor: React.FC = () => {
         <div className="flex flex-col md:flex-row gap-6 h-[calc(100vh-100px)]">
             {/* Editor Column */}
             <div className="flex-1 overflow-y-auto pr-1 space-y-6">
-                <div className="flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-20 py-4 border-b rounded-t-lg mb-4">
+                <div className="flex items-center justify-between sticky top-0 bg-background backdrop-blur z-20 py-4 border-b rounded-t-lg mb-4">
                     <h1 className="text-2xl px-2">Edit Profile</h1>
                     <div className="flex gap-2 px-2">
                         <Button variant="ghost" size="icon" onClick={discardDraft} title="Discard Draft">
@@ -653,10 +653,10 @@ const ProfileEditor: React.FC = () => {
 
             {/* Preview Column */}
             <div className={`
-        flex-1 bg-background/95 backdrop-blur border rounded-xl overflow-hidden shadow-2xl 
+        flex-1 bg-background backdrop-blur border rounded-xl overflow-hidden shadow-2xl 
         ${previewMode ? 'fixed inset-0 z-50 md:static md:block' : 'hidden md:block'}
       `}>
-                <div className="bg-muted/80 backdrop-blur px-4 py-2 border-b flex justify-between items-center text-xs text-muted-foreground">
+                <div className="bg-muted backdrop-blur px-4 py-2 border-b flex justify-between items-center text-xs text-muted-foreground">
                     <span>Live Preview</span>
                     {previewMode && <Button size="sm" variant="ghost" onClick={() => setPreviewMode(false)}><IconX className="w-4 h-4" /></Button>}
                 </div>

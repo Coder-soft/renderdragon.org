@@ -247,7 +247,7 @@ const Navbar = () => {
                             ) : (
                               <Link
                                 to={subLink.path}
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm  ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm  ${isLinkActive(subLink.path) ? 'text-primary bg-accent' : ''}`}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 {/* sub link name */}

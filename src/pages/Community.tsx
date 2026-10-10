@@ -360,7 +360,7 @@ const Community = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <Tabs defaultValue="videos" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-12 bg-background/80 backdrop-blur-sm border border-border p-1 rounded-lg">
+              <TabsList className="grid w-full grid-cols-2 mb-12 bg-background backdrop-blur-sm border border-border p-1 rounded-lg">
                 <TabsTrigger
                   value="videos"
                   className="text-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
@@ -383,13 +383,13 @@ const Community = () => {
                     {[1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className=" border border-border rounded-lg overflow-hidden bg-card/50 backdrop-blur-sm"
+                        className=" border border-border rounded-lg overflow-hidden bg-card backdrop-blur-sm"
                       >
                         <div className="bg-card p-6">
                           <Skeleton className="h-10 w-1/3 mb-3" />
                           <Skeleton className="h-5 w-2/3" />
                         </div>
-                        <div className="p-6 bg-background/60">
+                        <div className="p-6 bg-background">
                           <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                             {[...Array(4)].map((_, j) => (
                               <VideoCardSkeleton key={j} />
@@ -404,14 +404,14 @@ const Community = () => {
                     {videoCategories.map((category) => (
                       <div
                         key={category.id}
-                        className="border border-border rounded-lg overflow-hidden bg-card/50 backdrop-blur-sm"
+                        className="border border-border rounded-lg overflow-hidden bg-card backdrop-blur-sm"
                       >
                         <Collapsible
                           open={openCategories.includes(category.id)}
                           onOpenChange={() => toggleCategory(category.id)}
                         >
                           <CollapsibleTrigger asChild>
-                            <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/30 transition-colors">
+                            <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent transition-colors">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
                                    <h2 className="font-geist text-2xl">
@@ -437,7 +437,7 @@ const Community = () => {
                             </div>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
-                            <div className="p-4 bg-background/60">
+                            <div className="p-4 bg-background">
                               <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                                 {category.videos.map((video) => (
                                   <div
@@ -575,7 +575,7 @@ const Community = () => {
         open={!!selectedVideo}
         onOpenChange={(open) => !open && setSelectedVideo(null)}
       >
-        <DialogContent className="sm:max-w-5xl  overflow-hidden max-h-[90vh] custom-scrollbar bg-background/95 backdrop-blur-sm">
+        <DialogContent className="sm:max-w-5xl  overflow-hidden max-h-[90vh] custom-scrollbar bg-background backdrop-blur-sm">
           <DialogHeader className="pb-4 border-b border-border/50">
             <DialogTitle className="text-2xl text-primary">
               {selectedVideo?.title}

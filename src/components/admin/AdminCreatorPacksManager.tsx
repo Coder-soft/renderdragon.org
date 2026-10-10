@@ -65,13 +65,13 @@ const AdminCreatorPacksManager = () => {
 
     if (isLoading) {
         return <div className="animate-pulse space-y-4">
-            <div className="h-20 bg-muted/20 rounded-xl" />
-            <div className="h-20 bg-muted/20 rounded-xl" />
+            <div className="h-20 bg-muted rounded-xl" />
+            <div className="h-20 bg-muted rounded-xl" />
         </div>;
     }
 
     return (
-        <section className="mt-12 bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 relative overflow-hidden">
+        <section className="mt-12 bg-card backdrop-blur-sm border border-border/50 rounded-xl p-6 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10 transform translate-x-1/2 -translate-y-1/2" />
 
             <div className="flex items-center justify-between mb-6">
@@ -85,7 +85,7 @@ const AdminCreatorPacksManager = () => {
             </div>
 
             {pendingPacks.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground bg-muted/10 rounded-lg border border-dashed border-border/50">
+                <div className="text-center py-12 text-muted-foreground bg-muted rounded-lg border border-dashed border-border/50">
                     <IconPackage className="mx-auto h-8 w-8 mb-2 opacity-50" />
                     <p>No creator packs are pending review.</p>
                 </div>
