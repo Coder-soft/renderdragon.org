@@ -255,12 +255,6 @@ const ResourcesHub = () => {
         inputRef={inputRef}
       />
 
-      {(selectedCategory === 'minecraft-icons' || selectedCategory === 'mcsounds') && (
-        <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
-          Powered by Hamburger API
-        </p>
-      )}
-
       {isMusicView && (
         <div className="flex items-center justify-center gap-2 mb-6">
           <Button
@@ -282,12 +276,6 @@ const ResourcesHub = () => {
             Minecraft Music
           </Button>
         </div>
-      )}
-
-      {isMinecraftMusicView && (
-        <p className="text-xs text-center text-muted-foreground mb-6 -mt-2 opacity-50 hover:opacity-100 transition-opacity">
-          Powered by Minecraft Creator-Safe Playlist API
-        </p>
       )}
 
       {isMinecraftMusicView && isMobile && (
