@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
 import HoverVideo from "@/components/HoverVideo";
-import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 import { RESOURCES_REPO_RAW_BASE } from "@/lib/resourcesRepo";
 
 interface ResourceCardProps {
@@ -292,21 +291,17 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
     >
       {renderPreview()}
 
-      <div className="flex justify-between items-start mb-3">
-        <motion.div
-          className={`inline-flex items-center px-2 py-1 rounded-md text-xs ${getCategoryColor(resource.category)}`}
-          whileHover={{ scale: 1.05 }}
-        >
-          {getCategoryIcon(resource.category)}
-          <span className="ml-1 capitalize">
+      <div className="flex justify-between items-start mb-3 gap-2">
+        <div className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+          <span className="capitalize">
             {resource.category === "minecraft-icons"
               ? "Mcicons"
               : resource.category}
           </span>
           {resource.subcategory && (
-            <span className="ml-1">({resource.subcategory})</span>
+            <span className="text-muted-foreground/70"> · {resource.subcategory.replace(/\//g, " / ")}</span>
           )}
-        </motion.div>
+        </div>
 
         <motion.button
           onClick={handleFavoriteClick}
