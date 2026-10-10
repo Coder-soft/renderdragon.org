@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import PixelSvgIcon from '@/components/PixelSvgIcon';
 import { IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconPlayerPlayFilled, IconSearch, IconX } from '@tabler/icons-react';
 
 interface MusicLinksMessage {
@@ -286,10 +286,10 @@ const MusicPacksTab = () => {
         <div className="sticky top-28 h-[calc(100vh-8rem)]">
           <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
             <div className="p-3 border-b border-border">
-              <h3 className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
-                <IconMusic className="h-4 w-4 text-primary" />
+              <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+                <PixelSvgIcon name="music" className="h-4 w-4 text-primary" />
                 Music Packs Browser
-              </h3>
+              </div>
               <div className="relative">
                 <IconSearch className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -311,7 +311,7 @@ const MusicPacksTab = () => {
               </div>
             </div>
 
-            <ScrollArea className="flex-1">
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
               <div className="p-2">
                 <motion.button
                   onClick={() => {
@@ -323,7 +323,7 @@ const MusicPacksTab = () => {
                 >
                   <IconFolderOpen className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">All Music Links</span>
-                  <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+                  <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
                     {allLinks.length}
                   </span>
                 </motion.button>
@@ -341,7 +341,7 @@ const MusicPacksTab = () => {
                         {isExpanded ? <IconChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <IconChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
                         {isExpanded ? <IconFolderOpen className="h-4 w-4 text-yellow-500" /> : <IconFolder className="h-4 w-4 text-yellow-500/80" />}
                         <span className="text-sm truncate">{normalizeLabel(category.name)}</span>
-                        <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+                        <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
                           {categoryCounts[category.name] || 0}
                         </span>
                       </button>
@@ -356,7 +356,7 @@ const MusicPacksTab = () => {
                           >
                             <button
                               onClick={() => handleSelectCategory(category.name)}
-                              className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
+                              className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
                             >
                               <IconFolder className="h-4 w-4 text-yellow-500/80" />
                               <span className="text-sm truncate">All in {normalizeLabel(category.name)}</span>
@@ -370,11 +370,11 @@ const MusicPacksTab = () => {
                                 <button
                                   key={`${category.name}-${channel.name}`}
                                   onClick={() => handleSelectChannel(category.name, channel.name)}
-                                  className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
+                                  className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
                                 >
                                   <IconFolder className="h-4 w-4 text-yellow-500/80" />
                                   <span className="text-sm truncate">{normalizeLabel(channel.name)}</span>
-                                  <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+                                  <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
                                     {channelCounts[countKey] || 0}
                                   </span>
                                 </button>
@@ -387,7 +387,7 @@ const MusicPacksTab = () => {
                   );
                 })}
               </div>
-            </ScrollArea>
+            </div>
           </div>
         </div>
       </div>
