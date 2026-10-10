@@ -9,6 +9,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+const AUDIO_PLAY_EVENT = 'rd:audio-play';
+
 interface AudioPlayerProps {
   src: string;
   className?: string;
@@ -27,6 +29,23 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
 
   const containerRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<import('wavesurfer.js').default | null>(null);
+  const instanceId = useRef<string>(
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
+
+  // Only one audio preview may play at a time: when a player starts, the others
+  // pause themselves.
+  useEffect(() => {
+    const handleOtherPlay = (event: Event) => {
+      if ((event as CustomEvent).detail === instanceId.current) return;
+      const ws = wavesurfer.current;
+      if (ws && ws.isPlaying()) ws.pause();
+    };
+    window.addEventListener(AUDIO_PLAY_EVENT, handleOtherPlay);
+    return () => window.removeEventListener(AUDIO_PLAY_EVENT, handleOtherPlay);
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -78,7 +97,11 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
       setCurrentTime(ws.getCurrentTime());
       });
 
-      ws.on('play', () => isMounted && setIsPlaying(true));
+      ws.on('play', () => {
+        if (!isMounted) return;
+        setIsPlaying(true);
+        window.dispatchEvent(new CustomEvent(AUDIO_PLAY_EVENT, { detail: instanceId.current }));
+      });
       ws.on('pause', () => isMounted && setIsPlaying(false));
       ws.on('finish', () => isMounted && setIsPlaying(false));
     }).catch((error: unknown) => {
