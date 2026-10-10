@@ -8,10 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import ResourcePreview from './ResourcePreview';
-import { getCategoryIcon, getCategoryColor } from '@/utils/resourceCategories';
 import { DownloadProgress } from '@/lib/download';
 import { RESOURCES_REPO_RAW_BASE, RESOURCES_REPO_BLOB_BASE } from '@/lib/resourcesRepo';
 import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
@@ -155,18 +153,14 @@ const ResourceDetailDialog = ({
           <DialogTitle className="text-2xl font-bold">
             {resource.title}
           </DialogTitle>
-          <DialogDescription asChild className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <Badge
-                variant="outline"
-                className={getCategoryColor(resource.category || '')}
-              >
-                {getCategoryIcon(resource.category || '')}
-                <span className="ml-1 capitalize">{resource.category}</span>
-                {resource.subcategory && (
-                  <span className="ml-1">({resource.subcategory})</span>
-                )}
-              </Badge>
+          <DialogDescription asChild>
+            <div className="min-w-0 truncate text-sm text-muted-foreground">
+              <span className="capitalize">
+                {resource.category === 'minecraft-icons' ? 'Mcicons' : resource.category}
+              </span>
+              {resource.subcategory && (
+                <span className="text-muted-foreground/70"> · {resource.subcategory.replace(/\//g, ' / ')}</span>
+              )}
             </div>
           </DialogDescription>
         </DialogHeader>

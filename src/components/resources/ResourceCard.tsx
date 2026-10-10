@@ -30,6 +30,12 @@ const getPreviewUrl = (resource: Resource) => {
   return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
 };
 
+// Track which font families we've actually loaded. `document.fonts.check()`
+// can't be used for this: it returns true for any family (even a bogus one),
+// which previously made the preview skip loading and fall back to a default.
+const loadedFontNames = new Set<string>();
+const pendingFontLoads = new Map<string, Promise<void>>();
+
 const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -97,25 +103,27 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
     const fontName = resource.title;
 
     const maybeLoadFont = () => {
-      if (document.fonts.check(`12px "${fontName}"`)) {
+      if (loadedFontNames.has(fontName)) {
         if (active) setIsFontLoaded(true);
         return;
       }
-      let fontFace: FontFace;
-      try {
-        const safeFontName = fontName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-        const safeFontUrl = encodeURI(fontUrl).replace(/"/g, '%22');
-        fontFace = new FontFace(safeFontName, `url("${safeFontUrl}")`);
-      } catch (error) {
-        if (active) console.error(`Invalid font descriptor for "${fontName}":`, error);
-        return;
+
+      let pending = pendingFontLoads.get(fontName);
+      if (!pending) {
+        pending = (async () => {
+          const safeFontName = fontName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+          const safeFontUrl = fontUrl.replace(/ /g, '%20').replace(/"/g, '%22');
+          const fontFace = new FontFace(safeFontName, `url("${safeFontUrl}")`);
+          const loadedFont = await fontFace.load();
+          document.fonts.add(loadedFont);
+          loadedFontNames.add(fontName);
+        })().finally(() => pendingFontLoads.delete(fontName));
+        pendingFontLoads.set(fontName, pending);
       }
-      fontFace.load().then((loadedFont) => {
-        document.fonts.add(loadedFont);
-        if (active) setIsFontLoaded(true);
-      }).catch((error) => {
-        if (active) console.error(`Failed to load font "${fontName}":`, error);
-      });
+
+      pending
+        .then(() => { if (active) setIsFontLoaded(true); })
+        .catch((error) => { if (active) console.error(`Failed to load font "${fontName}":`, error); });
     };
 
     if (isInView) {
