@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PixelSvgIcon from '@/components/PixelSvgIcon';
-import { IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconPlayerPlayFilled, IconSearch, IconX } from '@tabler/icons-react';
+import { IconBrandYoutube, IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconPlayerPlayFilled, IconSearch, IconX } from '@tabler/icons-react';
 
 interface MusicLinksMessage {
   links?: string[];
@@ -87,6 +87,71 @@ const getEmbedInfo = (link: string) => {
     thumbnailUrl: null,
     embedUrl: null,
   };
+};
+
+// YouTube titles via oEmbed (through noembed for CORS). Cached per video id so
+// repeated views don't refetch.
+const youtubeTitleCache = new Map<string, string | null>();
+const youtubeTitlePending = new Map<string, Promise<string | null>>();
+
+const fetchYoutubeTitle = (videoId: string): Promise<string | null> => {
+  if (youtubeTitleCache.has(videoId)) return Promise.resolve(youtubeTitleCache.get(videoId) ?? null);
+  const pending = youtubeTitlePending.get(videoId);
+  if (pending) return pending;
+
+  const request = (async () => {
+    try {
+      const res = await fetch(
+        `https://noembed.com/embed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`,
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      const data: { title?: unknown } = await res.json();
+      const title = typeof data?.title === 'string' && data.title ? data.title : null;
+      youtubeTitleCache.set(videoId, title);
+      return title;
+    } catch {
+      youtubeTitleCache.set(videoId, null);
+      return null;
+    } finally {
+      youtubeTitlePending.delete(videoId);
+    }
+  })();
+
+  youtubeTitlePending.set(videoId, request);
+  return request;
+};
+
+const YoutubeLinkLabel = ({ item }: { item: MusicLinkItem }) => {
+  const videoId = extractYoutubeVideoId(item.link);
+  const [title, setTitle] = useState<string | null>(
+    videoId ? youtubeTitleCache.get(videoId) ?? null : null,
+  );
+
+  useEffect(() => {
+    if (!videoId) return;
+    let active = true;
+    fetchYoutubeTitle(videoId).then((resolved) => {
+      if (active) setTitle(resolved);
+    });
+    return () => {
+      active = false;
+    };
+  }, [videoId]);
+
+  const label = title ?? (videoId ? 'YouTube video' : item.link);
+
+  return (
+    <a
+      href={item.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex min-w-0 items-center gap-2 text-sm text-foreground transition-colors hover:text-primary"
+      title={item.link}
+    >
+      <IconBrandYoutube className="h-4 w-4 flex-shrink-0 text-red-500" />
+      <span className="truncate">{label}</span>
+    </a>
+  );
 };
 
 const MusicPacksTab = () => {
@@ -464,14 +529,7 @@ const MusicPacksTab = () => {
                   </div>
 
                   <div className="flex items-start justify-between gap-3">
-                    <a
-                      href={item.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground break-all line-clamp-2 hover:text-primary transition-colors"
-                    >
-                      {item.link}
-                    </a>
+                    <YoutubeLinkLabel item={item} />
                     <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex-shrink-0">
                       <IconExternalLink className="h-4 w-4 text-primary" />
                     </a>
