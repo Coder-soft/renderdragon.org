@@ -42,7 +42,7 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
       waveColor: 'rgba(139, 92, 246, 0.2)', // Soft cow-purple
       progressColor: '#8b5cf6', // Solid cow-purple
       cursorColor: '#8b5cf6',
-      cursorWidth: 2,
+      cursorWidth: 0,
       barWidth: 2,
       barRadius: 4,
       height: 48,
