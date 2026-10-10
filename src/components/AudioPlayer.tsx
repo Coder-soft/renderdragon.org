@@ -45,7 +45,7 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
       cursorWidth: 2,
       barWidth: 2,
       barRadius: 4,
-      height: 60,
+      height: 48,
       barGap: 3,
       normalize: true,
       hideScrollbar: true,
@@ -133,9 +133,9 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
       "w-full rounded-xl bg-card border border-border p-5 shadow-lg group/player transition-all duration-300 hover:border-primary/30",
       className
     )}>
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-3">
         {/* Waveform Container */}
-        <div className="relative h-[60px] w-full bg-muted/20 rounded-lg overflow-hidden flex items-center justify-center">
+        <div className="relative h-12 w-full bg-muted/20 rounded-lg overflow-hidden flex items-center justify-center">
           {isLoading && !allowPlayBeforeReady && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/60 backdrop-blur-[1px]">
               <IconLoader2 className="h-6 w-6 animate-spin text-primary" />
@@ -158,43 +158,43 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
         </div>
 
         {/* Controls and Info */}
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-2">
           <div className="flex items-center justify-center gap-3">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
+              className="h-7 w-7 text-muted-foreground hover:text-primary transition-colors"
               onClick={skipBackward}
               disabled={!isReady && !allowPlayBeforeReady}
             >
-              <IconPlayerSkipBack size={18} fill="currentColor" className="opacity-70" />
+              <IconPlayerSkipBack size={16} fill="currentColor" className="opacity-70" />
             </Button>
 
             <Button
               size="icon"
-              className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:scale-105 transition-all duration-200"
+              className="h-11 w-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:scale-105 transition-all duration-200"
               onClick={togglePlay}
               disabled={!isReady && !allowPlayBeforeReady}
             >
               {isPlaying ? (
-                <IconPlayerPause size={24} fill="currentColor" />
+                <IconPlayerPause size={22} fill="currentColor" />
               ) : (
-                <IconPlayerPlay size={24} fill="currentColor" className="translate-x-[1px]" />
+                <IconPlayerPlay size={22} fill="currentColor" className="translate-x-[1px]" />
               )}
             </Button>
 
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
+              className="h-7 w-7 text-muted-foreground hover:text-primary transition-colors"
               onClick={skipForward}
               disabled={!isReady && !allowPlayBeforeReady}
             >
-              <IconPlayerSkipForward size={18} fill="currentColor" className="opacity-70" />
+              <IconPlayerSkipForward size={16} fill="currentColor" className="opacity-70" />
             </Button>
           </div>
 
-          <div className="flex items-center gap-1.5 font-geist-mono text-[13px] font-medium tracking-tight text-muted-foreground">
+          <div className="flex items-center gap-1.5 font-geist-mono text-xs font-medium tracking-tight text-muted-foreground">
             <span className="text-foreground">{formatTime(currentTime)}</span>
             <span className="opacity-30">/</span>
             <span>{formatTime(duration)}</span>

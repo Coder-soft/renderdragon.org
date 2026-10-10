@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import { IconChevronRight, IconChevronDown, IconFolder, IconFolderOpen, IconSearch, IconVolume, IconX } from '@tabler/icons-react';
+import PixelSvgIcon from '@/components/PixelSvgIcon';
 
 interface McSoundsBrowserProps {
   subcategories: string[];
@@ -294,8 +295,8 @@ const McSoundsBrowser = ({
   return (
     <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
       <div className="p-3 border-b border-border">
-        <h3 className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
-          <IconVolume className="h-4 w-4 text-primary" />
+        <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+          <PixelSvgIcon name="sound" className="h-4 w-4 text-primary" />
           MC Sounds Browser
         </h3>
         
