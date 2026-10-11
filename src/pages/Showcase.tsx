@@ -245,7 +245,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                   download
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 text-sm px-3 py-1"
+                  className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 text-sm px-3 py-1"
                 >
                   Download
                 </a>
@@ -393,10 +393,10 @@ const ShowcasePage: React.FC = () => {
                 className="pl-9 bg-background"
               />
             </div>
-            <Button variant="secondary" onClick={() => { }} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent">Search</Button>
+            <Button variant="secondary" onClick={() => { }} className="inline-flex items-center justify-center chamfer border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent">Search</Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <Button
-                className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 onClick={() => {
                   if (!user) {
                     setAuthOpen(true);
@@ -459,7 +459,7 @@ const ShowcasePage: React.FC = () => {
                     <Button
                       onClick={onCreate}
                       disabled={submitting || !selectedFile}
-                      className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                      className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                       {submitting ? (
                         <>

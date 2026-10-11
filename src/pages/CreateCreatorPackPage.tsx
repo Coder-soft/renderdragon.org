@@ -164,7 +164,7 @@ const CreateCreatorPackPage = () => {
                                             key={tag}
                                             type="button"
                                             onClick={() => toggleTag(tag)}
-                                            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors border ${selectedTags.includes(tag)
+                                            className={`px-3 py-1 chamfer text-sm font-medium transition-colors border ${selectedTags.includes(tag)
                                                 ? 'bg-primary text-white border-primary'
                                                 : 'bg-muted text-muted-foreground border-border hover:bg-muted'
                                                 }`}

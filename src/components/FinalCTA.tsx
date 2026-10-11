@@ -29,7 +29,7 @@ const FinalCTA = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               to="/resources"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 group flex items-center gap-2 text-base md:text-lg"
+              className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 group flex items-center gap-2 text-base md:text-lg"
             >
               <span>Browse Resources</span>
               <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -38,7 +38,7 @@ const FinalCTA = () => {
               href="https://discord.renderdragon.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent group flex items-center gap-2 text-base md:text-lg"
+              className="inline-flex items-center justify-center chamfer border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent group flex items-center gap-2 text-base md:text-lg"
             >
               <IconBrandDiscord className="w-5 h-5" />
               <span>Join Discord</span>

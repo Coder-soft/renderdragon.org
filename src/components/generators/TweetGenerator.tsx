@@ -171,10 +171,10 @@ const TweetGenerator = () => {
           </div>
         </div>
         <div className="flex gap-4 mt-4">
-          <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+          <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Toggle Theme
           </Button>
-          <Button onClick={exportAsPNG} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+          <Button onClick={exportAsPNG} className="flex-1 inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Export as PNG
           </Button>
         </div>

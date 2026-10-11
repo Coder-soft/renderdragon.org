@@ -353,11 +353,11 @@ const ProfileEditor: React.FC = () => {
                             <IconEye className="w-4 h-4 mr-1" /> Preview
                         </Button>
                         {showShare && (
-                            <Button variant="outline" size="sm" onClick={handleShare} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent">
+                            <Button variant="outline" size="sm" onClick={handleShare} className="inline-flex items-center justify-center chamfer border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent">
                                 <IconShare className="w-4 h-4 mr-2" /> Share
                             </Button>
                         )}
-                        <Button onClick={saveProfile} disabled={saving} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+                        <Button onClick={saveProfile} disabled={saving} className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
                             <IconDeviceFloppy className="w-4 h-4 mr-2" />
                             {saving ? 'Publishing...' : 'Publish'}
                         </Button>

@@ -146,7 +146,7 @@ const AdminResourcesManager = () => {
             setEditingResource(undefined);
             setDialogOpen(true);
           }}
-          className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <IconPlus className="h-4 w-4 mr-2" />
           Add Resource

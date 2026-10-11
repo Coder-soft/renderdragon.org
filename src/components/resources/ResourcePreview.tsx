@@ -113,7 +113,7 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
               href="https://discord.renderdragon.org"
               target="_blank"
               rel="noopener"
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-primary text-primary-foreground chamfer font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
             >
               <img className='w-5 h-5' src="/assets/discord_icon.png" alt="Discord"></img>
               Join our Discord

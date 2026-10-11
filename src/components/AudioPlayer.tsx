@@ -195,7 +195,7 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
 
             <Button
               size="icon"
-              className="h-11 w-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:scale-105 transition-all duration-200"
+              className="h-11 w-11 chamfer bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:scale-105 transition-all duration-200"
               onClick={togglePlay}
               disabled={!isReady && !allowPlayBeforeReady}
             >

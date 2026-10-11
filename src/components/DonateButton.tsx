@@ -53,7 +53,7 @@ const DonateButton = () => {
         href="https://www.buymeacoffee.com/renderdragon"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center bg-primary rounded-full h-12 shadow-lg border-2 border-black/20 overflow-hidden cursor-pointer"
+        className="flex items-center bg-primary chamfer h-12 shadow-lg border-2 border-black/20 overflow-hidden cursor-pointer"
         initial={false}
         animate={{
           width: isHovered ? "200px" : "64px",

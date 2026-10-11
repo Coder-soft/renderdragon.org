@@ -40,7 +40,7 @@ const Renderbot = () => (
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 inline-flex items-center space-x-2"
+              className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 inline-flex items-center space-x-2"
             >
               <span>join the discord</span>
               <img className="w-4 h-4" src="/assets/discord_icon.png" alt="" aria-hidden="true" />

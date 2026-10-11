@@ -125,7 +125,7 @@ const CreatorPackPage = () => {
                                 {pack.tags && pack.tags.length > 0 && (
                                     <div className="flex flex-wrap gap-2">
                                         {pack.tags.map(tag => (
-                                            <span key={tag} className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                            <span key={tag} className="text-sm px-3 py-1 chamfer bg-primary/10 text-primary border border-primary/20">
                                                 {tag}
                                             </span>
                                         ))}

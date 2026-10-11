@@ -144,7 +144,7 @@ const AiTitleHelper = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 {loading ? 'Generating…' : 'Generate Titles'}
               </Button>

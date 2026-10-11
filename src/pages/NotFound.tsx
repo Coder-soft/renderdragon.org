@@ -157,7 +157,7 @@ const NotFound = () => {
             <motion.div whileHover={blockHover} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/"
-                className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
+                className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
                 <IconHome className="h-5 w-5" />
                 <span>Return to Home</span>
@@ -167,7 +167,7 @@ const NotFound = () => {
             <motion.div whileHover={blockHover} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/resources"
-                className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
+                className="inline-flex items-center justify-center chamfer border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
                 <IconCompass className="h-5 w-5" />
                 <span>Explore Resources</span>

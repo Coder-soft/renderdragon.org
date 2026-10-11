@@ -59,7 +59,7 @@ const CreatorPacksTab = () => {
             <div className="flex flex-wrap gap-2 mb-6">
                 <button
                     onClick={() => setSelectedTag(null)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${selectedTag === null
+                    className={`px-3 py-1.5 chamfer text-sm font-medium transition-colors border ${selectedTag === null
                         ? 'bg-primary text-primary-foreground border-primary'
                         : 'bg-muted text-muted-foreground border-border hover:bg-muted font-geist'
                         }`}
@@ -70,7 +70,7 @@ const CreatorPacksTab = () => {
                     <button
                         key={tag}
                         onClick={() => setSelectedTag(tag)}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${selectedTag === tag
+                        className={`px-3 py-1.5 chamfer text-sm font-medium transition-colors border ${selectedTag === tag
                             ? 'bg-primary text-primary-foreground border-primary'
                             : 'bg-muted text-muted-foreground border-border hover:bg-muted font-geist'
                             }`}

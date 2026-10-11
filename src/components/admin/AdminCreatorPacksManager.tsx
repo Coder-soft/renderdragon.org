@@ -79,7 +79,7 @@ const AdminCreatorPacksManager = () => {
                     <IconPackage className="h-6 w-6 text-primary" />
                     <h2 className="text-2xl ">Pending Creator Packs</h2>
                 </div>
-                <div className="bg-muted px-3 py-1 rounded-full text-sm font-medium">
+                <div className="bg-muted px-3 py-1 chamfer text-sm font-medium">
                     {pendingPacks.length} Pending
                 </div>
             </div>

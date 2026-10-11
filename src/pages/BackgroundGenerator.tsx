@@ -739,7 +739,7 @@ const BackgroundGenerator = () => {
                                        className="w-full h-full object-contain pixelated"
                                      />
                                      {selectedImages.some((image) => image.id === `library-${texture.id}`) && (
-                                       <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">✓</span>
+                                       <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center chamfer bg-primary text-[10px] font-bold text-white">✓</span>
                                      )}
                                    </button>
                                  ))}
@@ -781,7 +781,7 @@ const BackgroundGenerator = () => {
                               onClick={() => {
                                 fileInputRef.current?.click();
                               }}
-                              className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex-grow flex items-center justify-center space-x-2"
+                              className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex-grow flex items-center justify-center space-x-2"
                             >
                               <IconUpload className="h-5 w-5" />
                               <span>Add Images</span>
@@ -1123,7 +1123,7 @@ const BackgroundGenerator = () => {
                        <Button
                          onClick={handleCreateVideo}
                          disabled={!selectedImages.length || isRecording}
-                         className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex flex-1 items-center justify-center gap-2"
+                         className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex flex-1 items-center justify-center gap-2"
                        >
                          <IconPlayerPlay className="h-5 w-5" />
                          {isRecording ? "Rendering..." : "Create Animated Video"}
@@ -1139,7 +1139,7 @@ const BackgroundGenerator = () => {
                  ) : generatedImage && (
                    <Button
                      onClick={handleDownload}
-                     className="mt-4 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center space-x-2"
+                     className="mt-4 inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center space-x-2"
                   >
                     <IconDownload className="h-5 w-5" />
                     <span>Download Background</span>

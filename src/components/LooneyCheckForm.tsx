@@ -255,7 +255,7 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
       )}
 
       {!autoStart && (
-        <Button type="submit" disabled={isLoading} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 w-full">
+        <Button type="submit" disabled={isLoading} className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 w-full">
           {isLoading ? <><IconLoader2 className="mr-2 h-4 w-4 animate-spin" /> {progressMessage || 'Researching track...'}</> : <><IconFileMusic className="mr-2 h-4 w-4" /> Check for copyright</>}
         </Button>
       )}

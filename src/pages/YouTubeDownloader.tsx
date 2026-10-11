@@ -301,7 +301,7 @@ const YouTubeDownloader: React.FC = () => {
                   onChange={handleUrlChange}
                   className={` flex-grow ${urlError ? 'border-red-500' : ''}`}
                 />
-                <Button onClick={handleFetchInfo} disabled={isLoadingInfo} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center">
+                <Button onClick={handleFetchInfo} disabled={isLoadingInfo} className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center">
                   {isLoadingInfo ? (
                     <>
                       <IconRefresh className="h-4 w-4 mr-2 animate-spin" /> <span>Processing...</span>
@@ -352,7 +352,7 @@ const YouTubeDownloader: React.FC = () => {
                       )}
                     </div>
 
-                    <Button onClick={handleDownloadThumbnail} disabled={isDownloadingThumb} className="w-full inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center">
+                    <Button onClick={handleDownloadThumbnail} disabled={isDownloadingThumb} className="w-full inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center">
                       {isDownloadingThumb ? (
                         <>
                           <IconRefresh className="h-5 w-5 mr-2 animate-spin" /> <span>Downloading...</span>

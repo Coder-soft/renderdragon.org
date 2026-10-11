@@ -51,7 +51,7 @@ const CreatorPackCard = ({ pack }: CreatorPackCardProps) => {
                 {pack.tags && pack.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
                         {pack.tags.slice(0, 3).map((tag) => (
-                            <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                            <span key={tag} className="text-xs px-2 py-0.5 chamfer bg-primary/10 text-primary border border-primary/20">
                                 {tag}
                             </span>
                         ))}

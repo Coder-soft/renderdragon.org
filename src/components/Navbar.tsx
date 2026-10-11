@@ -277,7 +277,7 @@ const Navbar = () => {
               ) : (
                 <Button
                   onClick={() => setAuthDialogOpen(true)}
-                  className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   Sign In
                 </Button>
@@ -423,7 +423,7 @@ const Navbar = () => {
                           setAuthDialogOpen(true);
                           setIsDrawerOpen(false); // Close drawer when opening auth dialog
                         }}
-                        className="w-full inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 font-sans"
+                        className="w-full inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 font-sans"
                       >
                         Sign In
                       </Button>

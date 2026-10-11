@@ -516,7 +516,7 @@ const MusicPacksTab = () => {
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-black/35 transition-colors flex items-center justify-center">
-                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary/90 text-primary-foreground">
+                          <span className="inline-flex items-center justify-center h-12 w-12 chamfer bg-primary/90 text-primary-foreground">
                             <IconPlayerPlayFilled className="h-6 w-6 ml-0.5" />
                           </span>
                         </div>

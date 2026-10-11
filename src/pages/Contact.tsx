@@ -202,7 +202,7 @@ const Contact = () => {
                   href="https://discord.renderdragon.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="mt-auto inline-flex items-center justify-center gap-2 chamfer bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   <span>Join Discord</span>
                   <img className="h-4 w-4" src="/assets/discord_icon.png" alt="" loading="lazy" />
