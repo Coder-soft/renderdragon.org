@@ -27,6 +27,7 @@ interface ResourcesListProps {
   hasCategoryResources: boolean;
   filteredResources: Resource[];
   onMusicLink?: (resource: Resource) => void;
+  onAnimate?: (resource: Resource) => void;
 }
 
 const ResourcesList = ({
@@ -40,6 +41,7 @@ const ResourcesList = ({
   hasCategoryResources,
   filteredResources,
   onMusicLink,
+  onAnimate,
 }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 12;
@@ -184,6 +186,7 @@ const ResourcesList = ({
                 resource={resource}
                 onClick={onSelectResource}
                 onMusicLink={onMusicLink}
+                onAnimate={onAnimate}
               />
           </motion.div>
         ))}

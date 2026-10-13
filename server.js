@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import { Readable } from 'stream';
@@ -14,6 +14,9 @@ import { handler as statsHandler } from './api/stats.js';
 import { isAllowedOrigin } from './api/cors.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
+
+// Match Vite's precedence: .env.local overrides .env.
+dotenv.config({ path: ['.env.local', '.env'] });
 
 const app = express();
 const port = 3000;
