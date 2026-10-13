@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PixelSvgIcon from '@/components/PixelSvgIcon';
-import { IconBrandYoutube, IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconPlayerPlayFilled, IconSearch, IconX } from '@tabler/icons-react';
+import { cn } from '@/lib/utils';
+import { IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconSearch, IconSunglasses, IconX } from '@tabler/icons-react';
+import MusicLinkDialog from '@/components/resources/MusicLinkDialog';
 
 interface MusicLinksMessage {
   links?: string[];
@@ -121,6 +123,35 @@ const fetchYoutubeTitle = (videoId: string): Promise<string | null> => {
   return request;
 };
 
+const YoutubeEmbed = ({ embedUrl, title, thumbnailUrl }: { embedUrl: string; title: string; thumbnailUrl?: string | null }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <div className="relative h-full w-full bg-muted">
+      {!loaded && (
+        <div className="absolute inset-0 overflow-hidden">
+          {thumbnailUrl && (
+            <img src={thumbnailUrl} alt="" className="h-full w-full object-cover opacity-40" loading="lazy" />
+          )}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <span className="text-xs">Loading video…</span>
+          </div>
+        </div>
+      )}
+      <iframe
+        src={embedUrl}
+        title={title}
+        onLoad={() => setLoaded(true)}
+        className={cn('h-full w-full transition-opacity duration-300', loaded ? 'opacity-100' : 'opacity-0')}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
+};
+
 const YoutubeLinkLabel = ({ item }: { item: MusicLinkItem }) => {
   const videoId = extractYoutubeVideoId(item.link);
   const [title, setTitle] = useState<string | null>(
@@ -148,7 +179,7 @@ const YoutubeLinkLabel = ({ item }: { item: MusicLinkItem }) => {
       className="flex min-w-0 items-center gap-2 text-sm text-foreground transition-colors hover:text-primary"
       title={item.link}
     >
-      <IconBrandYoutube className="h-4 w-4 flex-shrink-0 text-red-500" />
+      <img src="/assets/youtube_icon.png" alt="" className="h-4 w-4 flex-shrink-0" />
       <span className="truncate">{label}</span>
     </a>
   );
@@ -162,7 +193,7 @@ const MusicPacksTab = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [activeEmbeds, setActiveEmbeds] = useState<Set<string>>(new Set());
+  const [copyrightLink, setCopyrightLink] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -278,10 +309,6 @@ const MusicPacksTab = () => {
   }, [selectedCategory, selectedChannel]);
 
   useEffect(() => {
-    setActiveEmbeds(new Set());
-  }, [selectedCategory, selectedChannel]);
-
-  useEffect(() => {
     const target = loadMoreRef.current;
     if (!target || visibleCount >= filteredLinks.length) return;
 
@@ -324,14 +351,6 @@ const MusicPacksTab = () => {
     setExpandedCategories(prev => new Set(prev).add(categoryName));
   }, []);
 
-  const handleActivateEmbed = useCallback((itemId: string) => {
-    setActiveEmbeds(prev => {
-      const next = new Set(prev);
-      next.add(itemId);
-      return next;
-    });
-  }, []);
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
@@ -346,10 +365,10 @@ const MusicPacksTab = () => {
   }
 
   return (
-    <div className="flex gap-6 max-w-7xl mx-auto">
+    <div className="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto">
       <div className="w-full md:w-80 flex-shrink-0">
-        <div className="sticky top-28 h-[calc(100vh-8rem)]">
-          <div className="h-full flex flex-col bg-card border border-border rounded-lg  overflow-hidden">
+        <div className="md:sticky md:top-28 md:h-[calc(100vh-8rem)]">
+          <div className="md:h-full flex flex-col bg-card border border-border rounded-lg  overflow-hidden">
             <div className="p-3 border-b border-border">
               <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
                 <PixelSvgIcon name="music" className="h-4 w-4 text-primary" />
@@ -484,45 +503,23 @@ const MusicPacksTab = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {displayedLinks.map(item => {
               const embedInfo = getEmbedInfo(item.link);
-              const isEmbedActive = activeEmbeds.has(item.id);
 
               return (
                 <motion.div
                   key={item.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="group block rounded-lg border border-border bg-card p-3 hover:border-primary/50 transition-colors "
+                  className="group flex flex-col border border-border bg-card p-3 transition-colors hover:border-primary/50"
                 >
-                  <div className="aspect-video rounded-md overflow-hidden border border-border/70 bg-muted mb-3">
-                    {embedInfo.isYoutube && embedInfo.embedUrl && isEmbedActive ? (
-                      <iframe
-                        src={embedInfo.embedUrl}
+                  <div className="mb-3 aspect-video overflow-hidden border border-border/70 bg-muted">
+                    {embedInfo.isYoutube && embedInfo.embedUrl ? (
+                      <YoutubeEmbed
+                        embedUrl={embedInfo.embedUrl}
                         title={item.link}
-                        className="w-full h-full"
-                        loading="lazy"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
+                        thumbnailUrl={embedInfo.thumbnailUrl}
                       />
-                    ) : embedInfo.isYoutube && embedInfo.thumbnailUrl ? (
-                      <button
-                        type="button"
-                        className="relative w-full h-full group/thumb"
-                        onClick={() => handleActivateEmbed(item.id)}
-                      >
-                        <img
-                          src={embedInfo.thumbnailUrl}
-                          alt={item.link}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-black/35 transition-colors flex items-center justify-center">
-                          <span className="inline-flex items-center justify-center h-12 w-12 chamfer bg-primary/90 text-primary-foreground">
-                            <IconPlayerPlayFilled className="h-6 w-6 ml-0.5" />
-                          </span>
-                        </div>
-                      </button>
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
                         <IconMusic className="h-10 w-10 opacity-50" />
                       </div>
                     )}
@@ -530,9 +527,25 @@ const MusicPacksTab = () => {
 
                   <div className="flex items-start justify-between gap-3">
                     <YoutubeLinkLabel item={item} />
-                    <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex-shrink-0">
-                      <IconExternalLink className="h-4 w-4 text-primary" />
-                    </a>
+                    <div className="flex flex-shrink-0 items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setCopyrightLink(item.link)}
+                        className="inline-flex items-center gap-1.5 border border-primary/40 bg-primary/10 px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <IconSunglasses className="h-3.5 w-3.5" />
+                        Check copyright
+                      </button>
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-7 w-7 items-center justify-center text-primary transition-colors hover:text-primary/80"
+                        aria-label="Open on YouTube"
+                      >
+                        <IconExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
                   </div>
 
                   <div className="mt-2 text-xs text-muted-foreground/80">
@@ -549,6 +562,12 @@ const MusicPacksTab = () => {
             Loading more embeds...
           </div>
         )}
+
+        <MusicLinkDialog
+          link={copyrightLink ?? ''}
+          open={!!copyrightLink}
+          onClose={() => setCopyrightLink(null)}
+        />
       </div>
     </div>
   );

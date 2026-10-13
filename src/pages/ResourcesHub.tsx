@@ -30,6 +30,7 @@ import { Helmet } from "react-helmet-async";
 
 
 const ResourceDetailDialog = lazy(() => import('@/components/resources/ResourceDetailDialog'));
+const McIconAnimationDialog = lazy(() => import('@/components/resources/McIconAnimationDialog'));
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center p-8">
@@ -39,6 +40,7 @@ const LoadingSpinner = () => (
 
 const ResourcesHub = () => {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [animatingResource, setAnimatingResource] = useState<Resource | null>(null);
   const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
@@ -379,6 +381,7 @@ const ResourcesHub = () => {
           onClearFilters={handleClearSearch}
           hasCategoryResources={hasCategoryResources}
             onMusicLink={onMusicLink}
+            onAnimate={setAnimatingResource}
           />
       )}
     </>
@@ -583,6 +586,13 @@ const ResourcesHub = () => {
           filteredResources={filteredResources}
           onSelectResource={setSelectedResource}
           isFavoritesView={activeTab === 'favorites'}
+        />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <McIconAnimationDialog
+          resource={animatingResource}
+          onClose={() => setAnimatingResource(null)}
         />
       </Suspense>
 

@@ -6,6 +6,7 @@ import {
   IconCheck,
   IconHeart,
   IconSunglasses,
+  IconWand,
 } from "@tabler/icons-react";
 import { Resource, getResourceUrl } from "@/types/resources";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ interface ResourceCardProps {
   resource: Resource;
   onClick: (resource: Resource) => void;
   onMusicLink?: (resource: Resource) => void;
+  onAnimate?: (resource: Resource) => void;
 }
 
 const getPreviewUrl = (resource: Resource) => {
@@ -36,7 +38,7 @@ const getPreviewUrl = (resource: Resource) => {
 const loadedFontNames = new Set<string>();
 const pendingFontLoads = new Map<string, Promise<void>>();
 
-const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => {
+const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   // Reset image loaded state when resource changes
@@ -151,11 +153,39 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
     onMusicLink?.(resource);
   };
 
+  const handleAnimateClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onAnimate?.(resource);
+  };
+
   const renderPreview = () => {
     const previewUrl = getPreviewUrl(resource);
 
     switch (resource.category) {
       case "images":
+        return (
+          <div
+            onClick={handlePreviewClick}
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
+          >
+            <img
+              src={previewUrl}
+              alt={resource.title}
+              className={cn(
+                "w-full h-full object-cover transition-opacity duration-300",
+                isImageLoaded ? "opacity-100" : "opacity-0",
+              )}
+              onLoad={() => setIsImageLoaded(true)}
+              loading="lazy"
+            />
+            {!isImageLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+          </div>
+        );
       case "minecraft-icons":
         return (
           <div
@@ -176,6 +206,19 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
               <div className="absolute inset-0 flex items-center justify-center bg-muted">
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
+            )}
+            {onAnimate && (
+              <motion.button
+                type="button"
+                onClick={handleAnimateClick}
+                aria-label={`Animate ${resource.title}`}
+                className="absolute bottom-2 right-2 z-10 inline-flex h-8 items-center gap-1.5 chamfer border border-primary/60 bg-primary px-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <IconWand className="h-4 w-4" aria-hidden="true" />
+                Animate
+              </motion.button>
             )}
           </div>
         );

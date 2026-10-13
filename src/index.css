@@ -248,30 +248,16 @@ select::-webkit-scrollbar-thumb:hover,
 }
 
 /* ---------------------------------------------------------------------------
- * "Render panel" corner language — a 45° chamfer on the top-left and
- * bottom-right corners, used on panels, buttons and inputs. `chamfer` and the
- * panel radius utilities all resolve to the same shape; circles (avatars,
- * spinners) use rounded-full and are intentionally untouched.
+ * Corner language — every non-circular surface has sharp 90° corners. Circles
+ * (avatars, spinners, pills) use rounded-full and are intentionally untouched.
  * ------------------------------------------------------------------------- */
-:root {
-  --chamfer: 10px;
-}
-
 .chamfer,
 .chamfer-sm,
+.rounded,
+.rounded-sm,
+.rounded-md,
+.rounded-lg,
 .rounded-xl,
 .rounded-2xl {
   border-radius: 0 !important;
-  clip-path: polygon(
-    var(--chamfer) 0,
-    100% 0,
-    100% calc(100% - var(--chamfer)),
-    calc(100% - var(--chamfer)) 100%,
-    0 100%,
-    0 var(--chamfer)
-  );
-}
-
-.chamfer-sm {
-  --chamfer: 6px;
 }

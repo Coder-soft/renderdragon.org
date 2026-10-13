@@ -196,7 +196,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 mt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-4 mb-4 md:mb-0">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 md:mb-0">
             <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors text-sm relative">
               FAQ
             </Link>

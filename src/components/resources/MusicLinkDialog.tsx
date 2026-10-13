@@ -7,13 +7,16 @@ import { Input } from '@/components/ui/input';
 import { IconCheck, IconCopy, IconExternalLink, IconLink } from '@tabler/icons-react';
 
 interface MusicLinkDialogProps {
-  resource: Resource | null;
+  resource?: Resource | null;
   link: string;
   onClose: () => void;
+  open?: boolean;
 }
 
-const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
+const MusicLinkDialog = ({ resource = null, link, onClose, open }: MusicLinkDialogProps) => {
   const [copied, setCopied] = useState(false);
+
+  const isOpen = open ?? !!resource;
 
   useEffect(() => {
     setCopied(false);
@@ -37,7 +40,7 @@ const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
   };
 
   return (
-    <Dialog open={!!resource} onOpenChange={(open) => { if (!open) onClose(); }}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className=" border border-border sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
