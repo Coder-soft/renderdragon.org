@@ -217,7 +217,7 @@ select::-webkit-scrollbar-thumb:hover,
 /* Video.js player theme */
 .video-js.vjs-custom-skin {
   border: 1px solid hsl(var(--border)) !important;
-  border-radius: var(--radius) !important;
+  border-radius: 0 !important;
 }
 
 .video-js .vjs-big-play-button {
@@ -250,14 +250,14 @@ select::-webkit-scrollbar-thumb:hover,
 /* ---------------------------------------------------------------------------
  * Corner language — every non-circular surface has sharp 90° corners. Circles
  * (avatars, spinners, pills) use rounded-full and are intentionally untouched.
+ *
+ * The attribute selector catches every radius utility, including directional
+ * (rounded-t-xl, first:rounded-l-md, …) and arbitrary (rounded-[2px]) forms, so
+ * new usages can't drift back to rounded corners. `rounded-full` is excluded.
  * ------------------------------------------------------------------------- */
 .chamfer,
 .chamfer-sm,
 .rounded,
-.rounded-sm,
-.rounded-md,
-.rounded-lg,
-.rounded-xl,
-.rounded-2xl {
+[class*="rounded-"]:not(.rounded-full) {
   border-radius: 0 !important;
 }

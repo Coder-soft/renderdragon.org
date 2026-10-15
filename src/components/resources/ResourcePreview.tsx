@@ -89,7 +89,7 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
           padding: '1rem',
           color: 'white',
           backgroundColor: '#374151',
-          borderRadius: '0.5rem',
+          borderRadius: 0,
         }}
       >
         The quick brown fox jumps over the lazy dog.
