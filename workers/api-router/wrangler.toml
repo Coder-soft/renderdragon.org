@@ -1,0 +1,48 @@
+name = "codersoft-api-router"
+main = "src/index.ts"
+compatibility_date = "2026-09-23"
+
+# api.codersoft.xyz is bound to this Worker as a custom domain.
+# DNS for the apex zone (codersoft.xyz) must already live in this Cloudflare account.
+routes = [
+  { pattern = "api.codersoft.xyz", custom_domain = true }
+]
+
+# Durable Object holding the client/secret registry and the anti-replay nonce cache.
+# SQLite-backed, so it works on the Workers Free plan.
+[[durable_objects.bindings]]
+name = "AUTH_STORE"
+class_name = "AuthStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AuthStore"]
+
+[vars]
+# e3 primary origin, reached through the Cloudflare Tunnel hostname.
+E3_ORIGIN = "https://e3.codersoft.xyz"
+# Optional separate primary for the resources group (categories/fonts/mcicons).
+# Defaults to E3_ORIGIN when omitted.
+# E3_RESOURCES_ORIGIN = "https://e3.codersoft.xyz"
+# Cloudflare Worker backups, used when e3 is unreachable (e.g. the 03:00-05:00 PKT off window).
+ASSETS_FALLBACK_ORIGIN = "https://assets-api-worker.powernplant101-c6b.workers.dev"
+RESOURCES_FALLBACK_ORIGIN = "https://hamburger-api.powernplant101-c6b.workers.dev"
+# How long to wait on e3 before failing over to the worker backup.
+PRIMARY_TIMEOUT_MS = "2500"
+# Once e3 is seen as down, skip it for this long to avoid the timeout on every request.
+FAILOVER_COOLDOWN_MS = "30000"
+# Anti-replay for signed requests: "writes" (default), "all", or "off". See src/auth.ts.
+REPLAY_PROTECTION = "writes"
+# Upstream paths hashed into the public /__version value, and how long that value is cached.
+VERSION_SOURCES = "/all,/api/assets"
+VERSION_CACHE_TTL_SECONDS = "300"
+# Comma-separated browser origins allowed through CORS. Localhost origins are always allowed.
+# ALLOWED_ORIGINS = "https://renderdragon.org,https://www.renderdragon.org"
+
+# Secrets (NOT set here). Provision with `wrangler secret put <NAME>`:
+#   E3_SHARED_SECRET  - shared with the e3 assets API; signs router -> e3 requests.
+#   ADMIN_KEY         - master key for the /__admin/* client-management API.
+# See README.md.
+
+[observability]
+enabled = true
