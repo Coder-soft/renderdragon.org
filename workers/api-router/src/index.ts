@@ -73,23 +73,6 @@ const PARTNER_READ_PREFIXES = ["/all", "/categories", "/category", "/mcicons", "
 const isPartnerReadPath = (pathname: string): boolean =>
   PARTNER_READ_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 
-const isLocalOrigin = (origin: string): boolean => {
-  try {
-    const { hostname } = new URL(origin);
-    return (
-      hostname === "localhost" ||
-      hostname === "127.0.0.1" ||
-      hostname === "[::1]" ||
-      hostname.endsWith(".local") ||
-      /^10\./.test(hostname) ||
-      /^192\.168\./.test(hostname) ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname)
-    );
-  } catch {
-    return false;
-  }
-};
-
 const buildCorsHeaders = (request: Request, env: Env): Record<string, string> => {
   const allowed = (env.ALLOWED_ORIGINS ?? DEFAULT_ALLOWED_ORIGINS.join(","))
     .split(",")
@@ -104,7 +87,7 @@ const buildCorsHeaders = (request: Request, env: Env): Record<string, string> =>
     "Access-Control-Max-Age": "86400",
   };
 
-  if (origin && (allowed.includes(origin) || isLocalOrigin(origin))) {
+  if (origin && allowed.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
     headers["Access-Control-Allow-Credentials"] = "true";
   } else {

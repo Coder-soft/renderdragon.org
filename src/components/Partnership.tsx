@@ -73,11 +73,11 @@ const Partnership = () => {
                 href={partner.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block h-full rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60"
+                className="block h-full chamfer border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60"
               >
                 <div className="flex flex-col items-center text-center h-full">
                   <div className="relative mb-5">
-                    <div className="w-24 h-24 rounded-xl border border-border overflow-hidden group-hover:scale-105 transition-transform">
+                    <div className="w-24 h-24 chamfer border border-border overflow-hidden group-hover:scale-105 transition-transform">
                       <img
                         src={partner.logo}
                         alt={`${partner.name} logo`}

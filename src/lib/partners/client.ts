@@ -108,22 +108,6 @@ export async function getPartnerContext(): Promise<PartnerContext | null> {
   };
 }
 
-export interface PartnerRequestInput {  org_name: string;
-  contact_email: string;
-  website?: string;
-  use_case?: string;
-}
-
-export async function submitPartnerRequest(input: PartnerRequestInput): Promise<void> {
-  const { error } = await sb.from("partner_requests").insert({
-    org_name: input.org_name.trim(),
-    contact_email: input.contact_email.trim(),
-    website: input.website?.trim() || null,
-    use_case: input.use_case?.trim() || null,
-  });
-  if (error) throw new Error(error.message);
-}
-
 export async function updatePartnerApp(
   appId: string,
   patch: Partial<Pick<PartnerApp, "name" | "description" | "logo_url" | "redirect_uris" | "permissions">>,
@@ -183,11 +167,7 @@ export async function getMyConnectedApps(): Promise<ConnectedApp[]> {
 
 /** The signed-in user revoking their own access to an app. */
 export async function revokeMyConsent(consentId: string): Promise<void> {
-  const { error } = await sb
-    .from("partner_consents")
-    .update({ revoked_at: new Date().toISOString() })
-    .eq("id", consentId);
-  if (error) throw new Error(error.message);
+  await revokePartnerConsent(consentId);
 }
 
 export async function listPartnerKeys(orgId: string): Promise<PartnerApiKey[]> {
@@ -267,6 +247,7 @@ export function summarizeUsage(
 export interface PublicPartnerApp {
   id: string;
   name: string;
+  description: string | null;
   logo_url: string | null;
   permissions: PartnerPermissionId[];
 }
@@ -276,10 +257,16 @@ export async function getPublicPartnerApp(clientId: string): Promise<PublicPartn
   const { data, error } = await sb.rpc("partner_app_public", { p_client_id: clientId });
   if (error) return null;
   const row = (Array.isArray(data) ? data[0] : data) as
-    | { id: string; name: string; logo_url: string | null; permissions: string[] }
+    | { id: string; name: string; description: string | null; logo_url: string | null; permissions: string[] }
     | undefined;
   if (!row) return null;
-  return { id: row.id, name: row.name, logo_url: row.logo_url, permissions: (row.permissions ?? []) as PartnerPermissionId[] };
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description ?? null,
+    logo_url: row.logo_url,
+    permissions: (row.permissions ?? []) as PartnerPermissionId[],
+  };
 }
 
 export interface ConsentSnapshot {

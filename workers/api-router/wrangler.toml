@@ -19,11 +19,12 @@ tag = "v1"
 new_sqlite_classes = ["AuthStore"]
 
 [vars]
-# e3 primary origin, reached through the Cloudflare Tunnel hostname.
-E3_ORIGIN = "https://e3.codersoft.xyz"
-# Optional separate primary for the resources group (categories/fonts/mcicons).
-# Defaults to E3_ORIGIN when omitted.
-# E3_RESOURCES_ORIGIN = "https://e3.codersoft.xyz"
+# Assets (uploads) group primary. e3 hosts the catalog/files, not the uploads API, so this
+# group's primary stays on its Cloudflare worker (fallback is the same origin).
+E3_ORIGIN = "https://assets-api-worker.powernplant101-c6b.workers.dev"
+# Resources (categories/fonts/mcicons/all) group primary — e3 over the Cloudflare Tunnel,
+# serving the catalog + files from the box instead of GitHub.
+E3_RESOURCES_ORIGIN = "https://hamburger.codersoft.xyz"
 # Cloudflare Worker backups, used when e3 is unreachable (e.g. the 03:00-05:00 PKT off window).
 ASSETS_FALLBACK_ORIGIN = "https://assets-api-worker.powernplant101-c6b.workers.dev"
 RESOURCES_FALLBACK_ORIGIN = "https://hamburger-api.powernplant101-c6b.workers.dev"

@@ -4,7 +4,7 @@ import type { PartnerStats } from "@/lib/partners/client";
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-[var(--radius)] border border-border bg-card p-5">
+    <div className="chamfer border border-border bg-card p-5">
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className="mt-2 font-heading text-3xl font-bold tabular-nums">{value}</p>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
@@ -47,7 +47,7 @@ export function PartnerStatsPanel({ stats }: { stats: PartnerStats }) {
                 <div
                   key={day.date}
                   className={cn(
-                    "flex-1 rounded-t-sm bg-primary/70 transition-colors hover:bg-primary",
+                    "flex-1 chamfer bg-primary/70 transition-colors hover:bg-primary",
                     day.calls === 0 && "bg-muted",
                   )}
                   style={{ height: `${Math.max(2, (day.calls / max) * 100)}%` }}

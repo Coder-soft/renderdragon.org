@@ -55,6 +55,8 @@ Deno.serve(async (request) => {
     .eq("user_id", userData.user.id)
     .maybeSingle();
   if (!membership) return json({ error: "not_a_partner" }, 403);
+  // Key management is owner-only (see docs/partner-program/data-model.md / api-security.md).
+  if (membership.role !== "owner") return json({ error: "forbidden_owner_only" }, 403);
 
   const orgId = membership.org_id as string;
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;

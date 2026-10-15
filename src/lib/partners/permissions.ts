@@ -92,10 +92,3 @@ export function standardScopesFor(requested: readonly string[]): string[] {
   }
   return [...scopes];
 }
-
-/** Read-only Asset API scopes implied by a permission set. Partners always get
- * `assets:read`; this exists so the registry stays the one place that answers
- * "what can a partner key do". */
-export function apiScopesFor(_requested: readonly string[]): string[] {
-  return ["assets:read"];
-}

@@ -215,7 +215,8 @@ async function verifyTurnstile(env: Env, token: string, ip: string | null): Prom
     const data = (await response.json()) as { success?: boolean; hostname?: string };
     if (!data.success) return false;
     const allowed = listEnv(env.TURNSTILE_HOSTNAMES, DEFAULT_TURNSTILE_HOSTNAMES);
-    return !data.hostname || allowed.includes(data.hostname);
+    // Require a hostname and enforce the allow-list (an absent hostname must not pass).
+    return Boolean(data.hostname) && allowed.includes(data.hostname as string);
   } catch {
     return false;
   }

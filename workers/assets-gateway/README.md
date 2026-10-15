@@ -24,7 +24,7 @@ The gateway only signs requests for a caller that proves it is a real renderdrag
      Supabase; skips the challenge), or
    - `{ "turnstileToken": "<token>" }` for an anonymous visitor (verified server-side against
      Cloudflare Turnstile, including the hostname).
-   On success the gateway returns `Set-Cookie: rdgw=…; HttpOnly; Secure; SameSite=Strict;
+   On success the gateway returns `Set-Cookie: rdgw=…; HttpOnly; Secure; SameSite=None`
    Path=/api/assets-gw` — a short-lived HMAC-signed session.
 3. Any other `/api/assets-gw/<path>` request must carry that cookie. The gateway signs it
    (HMAC-SHA256, same canonical string as the router) with `GATEWAY_SECRET` and proxies to
@@ -36,8 +36,8 @@ changed, so returning visitors are not challenged.
 
 Spoofed `Origin`, `Referer`, or `X-Auth-*` headers cannot mint a session: the cookie requires a
 server-verified Turnstile result (or a Supabase login), and the router independently verifies
-the gateway's signature. Cookies are `HttpOnly` (no JS access), `Secure`, and `SameSite=Strict`
-(no cross-site sending), which also blocks CSRF to the upload endpoint.
+the gateway's signature. Cookies are `HttpOnly` (no JS access), `Secure`, and `SameSite=None`
+(cross-site; `Lax` in local dev), which also blocks CSRF to the upload endpoint.
 
 ## Config (`wrangler.toml` `[vars]`)
 

@@ -23,13 +23,6 @@ import {
 } from "@/lib/partners/client";
 import type { PartnerPermissionId } from "@/lib/partners/permissions";
 
-const scopesToPermissions = (scopes: string[]): PartnerPermissionId[] => {
-  const result: PartnerPermissionId[] = [];
-  if (scopes.includes("profile")) result.push("profile");
-  if (scopes.includes("email")) result.push("email");
-  return result;
-};
-
 type Screen = "loading" | "ready" | "error" | "done";
 
 export default function OAuthConsent() {
@@ -62,10 +55,16 @@ export default function OAuthConsent() {
           window.location.assign(details.redirectUrl);
           return;
         }
-        setAuthorization(details);
-        if (details.clientId) {
-          setPublicApp(await getPublicPartnerApp(details.clientId));
+        // Only registered, active partner apps may be authorized (unknown/disabled →
+        // error, never fall through to approval). See docs/partner-program/oauth-consent.md.
+        const app = details.clientId ? await getPublicPartnerApp(details.clientId) : null;
+        if (!app) {
+          setError("This app isn't a registered RenderDragon partner, so access can't be granted.");
+          setScreen("error");
+          return;
         }
+        setAuthorization(details);
+        setPublicApp(app);
         setScreen("ready");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -74,10 +73,16 @@ export default function OAuthConsent() {
     })();
   }, [authLoading, user, authorizationId]);
 
-  const requested: PartnerPermissionId[] =
-    publicApp?.permissions && publicApp.permissions.length > 0
-      ? publicApp.permissions
-      : scopesToPermissions(authorization?.scopes ?? []);
+  // The app's requested permissions come from the registry (the source of truth).
+  const requested: PartnerPermissionId[] = publicApp?.permissions ?? [];
+
+  const redirectHost = (() => {
+    try {
+      return authorization?.redirectUri ? new URL(authorization.redirectUri).host : null;
+    } catch {
+      return null;
+    }
+  })();
 
   const decide = async (approve: boolean) => {
     if (!authorizationId || !authorization) return;
@@ -93,7 +98,7 @@ export default function OAuthConsent() {
               display_name: profile?.display_name ?? user.user_metadata?.full_name ?? null,
               username: profile?.username ?? null,
               avatar_url: profile?.avatar_url ?? user.user_metadata?.avatar_url ?? null,
-              email: user.email ?? null,
+              email: requested.includes("email") ? user.email ?? null : null,
             },
           });
         } catch (recordError) {
@@ -177,7 +182,9 @@ export default function OAuthConsent() {
                       <TwitterVerifiedIcon className="size-3.5 text-[#1D9BF0]" /> Verified partner
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">wants to use your RenderDragon account</p>
+                  <p className="text-xs text-muted-foreground">
+                    {publicApp?.description || "wants to use your RenderDragon account"}
+                  </p>
                 </div>
               </div>
 
@@ -187,6 +194,12 @@ export default function OAuthConsent() {
               <ConsentFieldList requested={requested} />
 
               <Separator className="my-5" />
+
+              {redirectHost && (
+                <p className="mb-4 text-xs text-muted-foreground">
+                  You'll return to <span className="font-mono text-foreground">{redirectHost}</span> after approving.
+                </p>
+              )}
 
               <div className="flex gap-3">
                 <Button className="flex-1" onClick={() => decide(true)} disabled={deciding}>
@@ -201,6 +214,11 @@ export default function OAuthConsent() {
               <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
                 <IconLock className="size-3.5" aria-hidden />
                 Signed in as {user?.email}. You can revoke access any time.
+              </p>
+              <p className="mt-2 text-center text-xs text-muted-foreground">
+                By approving you agree to our{" "}
+                <a href="/tos" className="text-primary hover:underline">Terms</a> and{" "}
+                <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>.
               </p>
             </div>
           )}

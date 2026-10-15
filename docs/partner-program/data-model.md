@@ -65,7 +65,7 @@ only the fields those users consented to.
 | `created_at` / `revoked_at` | timestamptz | |
 
 The **secret** is never stored here — it is registered in the router's Durable Object
-(`workers/api-router`), and only a hash/label lives in Postgres.
+(`workers/api-router`), and Postgres stores only the key id + label — no secret or hash.
 
 ### `partner_requests` (invite/application queue)
 | Column | Type | Notes |
