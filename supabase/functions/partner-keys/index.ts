@@ -79,15 +79,19 @@ Deno.serve(async (request) => {
     });
 
   if (body.action === "create") {
-    if (!adminKey) return json({ error: "key_provisioning_not_configured" }, 503);
-
     const keyId = `rdk_${hex(12)}`;
     const secret = hex(32);
     const label = typeof body.label === "string" && body.label.trim() ? body.label.trim().slice(0, 80) : null;
 
-    const registration = await registerInRouter(keyId, secret);
-    if (!registration.ok) {
-      return json({ error: "router_registration_failed", status: registration.status }, 502);
+    // Register with the router only when it's configured. If it isn't yet, still issue
+    // the key so onboarding works; it activates once the API infrastructure is deployed.
+    let routerRegistered = false;
+    if (adminKey) {
+      const registration = await registerInRouter(keyId, secret);
+      if (!registration.ok) {
+        return json({ error: "router_registration_failed", status: registration.status }, 502);
+      }
+      routerRegistered = true;
     }
 
     const { error: insertError } = await admin.from("partner_api_keys").insert({
@@ -100,7 +104,7 @@ Deno.serve(async (request) => {
     });
 
     if (insertError) {
-      await removeFromRouter(keyId);
+      if (routerRegistered) await removeFromRouter(keyId);
       return json({ error: insertError.message }, 500);
     }
 
@@ -110,6 +114,7 @@ Deno.serve(async (request) => {
       label,
       scopes: DEFAULT_SCOPES,
       rate_limit_per_min: DEFAULT_RATE_LIMIT,
+      router_registered: routerRegistered,
     });
   }
 

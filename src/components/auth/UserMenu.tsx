@@ -13,8 +13,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { useAuth } from '@/hooks/useAuth';
-import { IconLogout, IconHeart, IconUser, IconSettings } from '@tabler/icons-react';
+import { IconLogout, IconHeart, IconUser, IconSettings, IconBuilding } from '@tabler/icons-react';
 import { useProfile } from '@/hooks/useProfile';
+import { toDisplayAvatarUrl } from '@/lib/avatar';
+import { usePartnerMembership } from '@/hooks/usePartnerMembership';
 
 interface UserMenuProps {
   onShowFavorites: () => void;
@@ -23,6 +25,7 @@ interface UserMenuProps {
 const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
+  const isPartner = usePartnerMembership();
 
   if (!user) return null;
 
@@ -36,6 +39,8 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
     avatar_url?: string;
     picture?: string;
     display_name?: string;
+    full_name?: string;
+    name?: string;
   };
   const identities = (user.identities ?? []) as Array<{
     identity_data?: Record<string, unknown> | null;
@@ -48,7 +53,7 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
     .map((d) => (d?.avatar_url as string) || (d?.picture as string) || (d?.avatar as string) || '')
     .find((u) => !!u);
 
-  const displayName = (profile?.display_name as string | undefined) || meta.display_name || user.email || '';
+  const displayName = (profile?.display_name as string | undefined) || meta.display_name || meta.full_name || meta.name || user.email || '';
 
   // Validate URL is http/https or data: to avoid trying to load invalid strings like CIDs or tokens
   const toSafeHttpUrl = (url?: string | null) => {
@@ -62,9 +67,11 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
     }
   };
 
-  // Choose the first safe candidate among profile, metadata, identities
+  // Choose the first safe candidate among profile, metadata, identities, then serve it
+  // through our own origin so third-party blockers can't blank it out.
   const candidates = [profile?.avatar_url, meta.avatar_url, meta.picture, identityAvatar].filter(Boolean) as string[];
-  const safeAvatarUrl = candidates.map(toSafeHttpUrl).find((u) => !!u);
+  const remoteAvatarUrl = candidates.map(toSafeHttpUrl).find((u) => !!u);
+  const safeAvatarUrl = toDisplayAvatarUrl(remoteAvatarUrl);
 
   return (
     <DropdownMenu>
@@ -75,7 +82,7 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
             whileTap={{ scale: 0.95 }}
           >
             <Avatar className="h-8 w-8">
-              {safeAvatarUrl && <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />}
+              {safeAvatarUrl && <AvatarImage key={safeAvatarUrl} src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />}
               <AvatarFallback className="bg-primary text-white text-xs">
                 {getInitials(displayName)}
               </AvatarFallback>
@@ -109,6 +116,14 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
           <IconHeart className="mr-2 h-4 w-4" />
           <span>My Favorites</span>
         </DropdownMenuItem>
+        {isPartner && (
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link to="/partners/dashboard">
+              <IconBuilding className="mr-2 h-4 w-4" />
+              <span>Partner dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
           <IconLogout className="mr-2 h-4 w-4" />

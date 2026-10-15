@@ -63,8 +63,6 @@ with icons, not vague scope names:
 | Basic profile (`profile`) | always (part of sign-in) | **Avatar/icon**, **display name**, **username** |
 | Email (`email`) | if requested | **Email address** and whether it's verified |
 | Favourites (`favourites:read`) | if requested | The user's **favourited assets** (list) |
-| Own uploads (`uploads:read`) | if requested | The user's **uploaded assets/showcases** |
-| Account stats (`stats:read`) | if requested | The user's **account/usage statistics** |
 
 Rules:
 - **Default sign-in** shows at least avatar + name + username; email/others appear only if the

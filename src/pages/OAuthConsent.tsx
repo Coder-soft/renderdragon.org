@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSearchParams } from "react-router-dom";
-import { IconLoader2, IconShieldCheck, IconLock } from "@tabler/icons-react";
+import { IconLoader2, IconLock } from "@tabler/icons-react";
+import { TwitterVerifiedIcon } from "@/components/partners/TwitterVerifiedIcon";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -44,29 +45,33 @@ export default function OAuthConsent() {
   const [deciding, setDeciding] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
 
+  // Guards against React StrictMode double-invoking the effect: an authorization
+  // request can only be read once, so a second call would 400.
+  const startedRef = useRef(false);
+
   useEffect(() => {
-    if (authLoading || !user || !authorizationId) return;
-    let alive = true;
+    if (authLoading || !user || !authorizationId || startedRef.current) return;
+    startedRef.current = true;
     setScreen("loading");
     (async () => {
       try {
         const details = await loadAuthorization(authorizationId);
-        if (!alive) return;
+        // Already consented: Supabase hands back a redirect (with the code) instead
+        // of a pending consent request — just send the user back to the app.
+        if (details.redirectUrl) {
+          window.location.assign(details.redirectUrl);
+          return;
+        }
         setAuthorization(details);
         if (details.clientId) {
-          const app = await getPublicPartnerApp(details.clientId);
-          if (alive) setPublicApp(app);
+          setPublicApp(await getPublicPartnerApp(details.clientId));
         }
         setScreen("ready");
       } catch (err) {
-        if (!alive) return;
         setError(err instanceof Error ? err.message : "Something went wrong.");
         setScreen("error");
       }
     })();
-    return () => {
-      alive = false;
-    };
   }, [authLoading, user, authorizationId]);
 
   const requested: PartnerPermissionId[] =
@@ -169,7 +174,7 @@ export default function OAuthConsent() {
                   <div className="flex items-center gap-2">
                     <span className="truncate font-heading text-base font-semibold">{appName}</span>
                     <Badge variant="secondary" className="gap-1 text-[10px]">
-                      <IconShieldCheck className="size-3" /> Verified partner
+                      <TwitterVerifiedIcon className="size-3.5 text-[#1D9BF0]" /> Verified partner
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">wants to use your RenderDragon account</p>

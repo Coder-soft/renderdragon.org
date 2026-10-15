@@ -26,6 +26,9 @@ export interface ConsentAuthorization {
   clientLogoUrl: string | null;
   redirectUri: string | null;
   scopes: string[];
+  /** Present when the user has already consented: Supabase auto-approves and hands
+   * back a redirect (with the code) instead of a pending consent request. */
+  redirectUrl: string | null;
 }
 
 const asRecord = (value: unknown): Record<string, unknown> =>
@@ -49,6 +52,7 @@ function normalize(authorizationId: string, data: unknown): ConsentAuthorization
     clientName: pickString(client, "name", "client_name") ?? "A partner application",
     clientLogoUrl: pickString(client, "logo_uri", "logo_url", "logo"),
     redirectUri: pickString(client, "redirect_uri", "redirectUri") ?? pickString(root, "redirect_uri"),
+    redirectUrl: pickString(root, "redirect_url", "redirectUrl"),
     scopes: scope ? scope.split(/\s+/).filter(Boolean) : [],
   };
 }
@@ -105,7 +109,7 @@ export async function decideAuthorization(
     {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ decision: approve ? "approve" : "deny" }),
+      body: JSON.stringify({ action: approve ? "approve" : "deny" }),
     },
   );
   if (!response.ok) throw new Error(`Could not record your decision (${response.status}).`);

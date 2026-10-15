@@ -21,7 +21,6 @@ export interface Env {
   ALLOWED_ORIGINS?: string;
 }
 
-const GATEWAY_PREFIX = "/api/assets-gw";
 const COOKIE_NAME = "rdgw";
 const DEFAULT_ALLOWED_ORIGINS = ["https://renderdragon.org", "https://www.renderdragon.org"];
 const DEFAULT_TURNSTILE_HOSTNAMES = ["renderdragon.org", "www.renderdragon.org", "localhost"];
@@ -143,7 +142,39 @@ const getCookie = (request: Request, name: string): string | null => {
 };
 
 const sessionCookie = (value: string, maxAge: number, secure: boolean): string =>
-  `${COOKIE_NAME}=${value}; Path=${GATEWAY_PREFIX}; HttpOnly;${secure ? " Secure;" : ""} SameSite=Strict; Max-Age=${maxAge}`;
+  `${COOKIE_NAME}=${value}; Path=/; HttpOnly;${secure ? " Secure;" : ""} SameSite=${secure ? "None" : "Lax"}; Max-Age=${maxAge}`;
+
+// CORS: in production the gateway is cross-origin (renderdragon.org → gateway.codersoft.xyz),
+// so credentialed requests need an explicit allow-origin + allow-credentials.
+const buildCors = (request: Request, env: Env): Record<string, string> => {
+  const origin = request.headers.get("Origin") ?? "";
+  const headers: Record<string, string> = {
+    Vary: "Origin",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400",
+  };
+  if (origin && originAllowed(origin, env)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+    headers["Access-Control-Allow-Credentials"] = "true";
+  }
+  return headers;
+};
+
+const withCors = (response: Response, cors: Record<string, string>): Response => {
+  const headers = new Headers(response.headers);
+  const setCookies =
+    (response.headers as { getSetCookie?: () => string[] }).getSetCookie?.() ?? [];
+  headers.delete("Set-Cookie");
+  for (const [key, value] of Object.entries(cors)) headers.set(key, value);
+  const merged = new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+  for (const cookie of setCookies) merged.headers.append("Set-Cookie", cookie);
+  return merged;
+};
 
 // ---- responses ----
 
@@ -293,30 +324,39 @@ async function proxy(request: Request, env: Env, url: URL, relativePath: string)
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    if (!url.pathname.startsWith(GATEWAY_PREFIX)) {
-      return new Response("Not found", { status: 404 });
+    const cors = buildCors(request, env);
+    const relativePath = url.pathname || "/";
+
+    if (request.method === "OPTIONS") {
+      if (request.headers.get("Origin") && !cors["Access-Control-Allow-Origin"]) {
+        return new Response(null, { status: 403 });
+      }
+      return new Response(null, { status: 204, headers: cors });
     }
 
-    const relativePath = url.pathname.slice(GATEWAY_PREFIX.length) || "/";
+    let response: Response;
 
     // Public: lets a visitor with a valid cached catalog skip the challenge entirely.
     if (relativePath === "/__version") {
-      if (request.method !== "GET") return jsonResponse({ error: "method_not_allowed" }, 405);
-      const upstream = await fetch(`${stripTrailingSlash(env.ROUTER_ORIGIN)}/__version`, {
-        headers: { accept: "application/json" },
-      });
-      const responseHeaders = new Headers(upstream.headers);
-      for (const key of STRIP_FROM_RESPONSE) responseHeaders.delete(key);
-      responseHeaders.set("cache-control", "no-store");
-      return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
+      if (request.method !== "GET") {
+        response = jsonResponse({ error: "method_not_allowed" }, 405);
+      } else {
+        const upstream = await fetch(`${stripTrailingSlash(env.ROUTER_ORIGIN)}/__version`, {
+          headers: { accept: "application/json" },
+        });
+        const responseHeaders = new Headers(upstream.headers);
+        for (const key of STRIP_FROM_RESPONSE) responseHeaders.delete(key);
+        responseHeaders.set("cache-control", "no-store");
+        response = new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
+      }
+    } else if (relativePath === "/__session") {
+      if (request.method === "POST") response = await establishSession(request, env);
+      else if (request.method === "GET") response = await sessionStatus(request, env);
+      else response = jsonResponse({ error: "method_not_allowed" }, 405);
+    } else {
+      response = await proxy(request, env, url, relativePath);
     }
 
-    if (relativePath === "/__session") {
-      if (request.method === "POST") return establishSession(request, env);
-      if (request.method === "GET") return sessionStatus(request, env);
-      return jsonResponse({ error: "method_not_allowed" }, 405);
-    }
-
-    return proxy(request, env, url, relativePath);
+    return withCors(response, cors);
   },
 };

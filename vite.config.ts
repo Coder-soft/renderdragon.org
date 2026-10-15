@@ -9,13 +9,19 @@ export default defineConfig(() => {
       host: "::",
       port: 8080,
       proxy: {
-        // Assets gateway (workers/assets-gateway) is a same-origin Worker route in
-        // production. In dev, proxy to the deployed gateway, or set ASSETS_GW_DEV_ORIGIN
-        // to a local `wrangler dev` (e.g. http://localhost:8788).
-        '/api/assets-gw': {
-          target: process.env.ASSETS_GW_DEV_ORIGIN || 'https://renderdragon.org',
+        // In dev, the assets gateway/router aren't deployed, so proxy /api/assets-gw/*
+        // straight to the public upstreams. More specific path first.
+        '/api/assets-gw/api/assets': {
+          target: 'https://assets-api-worker.powernplant101-c6b.workers.dev',
           changeOrigin: true,
           secure: true,
+          rewrite: (path) => path.replace(/^\/api\/assets-gw/, ''),
+        },
+        '/api/assets-gw': {
+          target: 'https://assets.codersoft.xyz',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/api\/assets-gw/, ''),
         },
         '/api/stats': {
           target: 'https://analytics.codersoft.xyz',
@@ -51,6 +57,7 @@ export default defineConfig(() => {
     optimizeDeps: {
       include: [
         'html2canvas',
+        '@supabase/supabase-js',
         '@radix-ui/react-primitive',
         '@radix-ui/react-use-callback-ref',
         '@radix-ui/react-use-controllable-state',

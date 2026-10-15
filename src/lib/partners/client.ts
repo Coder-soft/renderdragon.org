@@ -164,6 +164,32 @@ export async function revokePartnerConsent(consentId: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export interface ConnectedApp {
+  consent_id: string;
+  app_id: string;
+  app_name: string;
+  app_logo: string | null;
+  granted_permissions: PartnerPermissionId[];
+  granted_at: string;
+  revoked_at: string | null;
+}
+
+/** Partner apps the signed-in user has connected (their own consents only). */
+export async function getMyConnectedApps(): Promise<ConnectedApp[]> {
+  const { data, error } = await sb.rpc("get_my_connected_apps");
+  if (error) return [];
+  return (data as ConnectedApp[]) ?? [];
+}
+
+/** The signed-in user revoking their own access to an app. */
+export async function revokeMyConsent(consentId: string): Promise<void> {
+  const { error } = await sb
+    .from("partner_consents")
+    .update({ revoked_at: new Date().toISOString() })
+    .eq("id", consentId);
+  if (error) throw new Error(error.message);
+}
+
 export async function listPartnerKeys(orgId: string): Promise<PartnerApiKey[]> {
   const { data, error } = await sb
     .from("partner_api_keys")

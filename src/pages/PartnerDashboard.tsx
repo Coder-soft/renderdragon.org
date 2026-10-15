@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { IconLoader2, IconShieldCheck, IconArrowRight, IconKey } from "@tabler/icons-react";
+import { IconLoader2, IconArrowRight, IconKey } from "@tabler/icons-react";
+import { TwitterVerifiedIcon } from "@/components/partners/TwitterVerifiedIcon";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -71,6 +72,19 @@ export default function PartnerDashboard() {
     if (!authLoading && !user) setLoading(false);
   }, [authLoading, user, load]);
 
+  // First-time setup takes over the whole screen — no dashboard chrome.
+  if (!authLoading && !loading && user && context?.app && !context.app.onboarded_at) {
+    return (
+      <>
+        <Helmet>
+          <title>Partner setup | RenderDragon</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <PartnerOnboarding app={context.app} org={context.org} onComplete={load} />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col cow-grid-bg bg-background text-foreground">
       <Helmet>
@@ -99,11 +113,11 @@ export default function PartnerDashboard() {
           ) : !context ? (
             <EmptyState
               title="You're not a partner yet"
-              body="RenderDragon's partner program is invite-only. Request an invite and we'll review it by hand."
+              body="The partner program is invite-only. Reach out through our contact page and we'll take it from there."
               action={
                 <Button asChild>
-                  <Link to="/partners#apply">
-                    Request an invite
+                  <Link to="/contact">
+                    Contact us
                     <IconArrowRight data-icon="inline-end" />
                   </Link>
                 </Button>
@@ -132,7 +146,7 @@ export default function PartnerDashboard() {
                       </h1>
                       {context.org.verified && (
                         <Badge variant="secondary" className="gap-1">
-                          <IconShieldCheck className="size-3" /> Verified
+                          <TwitterVerifiedIcon className="size-3.5 text-[#1D9BF0]" /> Verified
                         </Badge>
                       )}
                     </div>
@@ -154,8 +168,6 @@ export default function PartnerDashboard() {
                   body="Your organization is approved but the OAuth app hasn't been created. We'll set it up shortly."
                   action={null}
                 />
-              ) : !context.app.onboarded_at ? (
-                <PartnerOnboarding app={context.app} org={context.org} onComplete={load} />
               ) : (
                 <Tabs defaultValue="overview">
                   <TabsList>
@@ -188,10 +200,10 @@ export default function PartnerDashboard() {
                         </div>
                         <div className="rounded-[var(--radius)] border border-border bg-card p-6">
                           <h3 className="flex items-center gap-2 font-heading text-base font-semibold">
-                            <IconKey className="size-4 text-primary" /> Read-only API
+                            <IconKey className="size-4 text-primary" /> API
                           </h3>
                           <p className="mt-2 text-sm text-muted-foreground">
-                            Sign requests with your key. Reads only, always.
+                            Sign your requests with this key.
                           </p>
                           <code className="mt-4 block truncate rounded-[var(--radius)] border border-border bg-muted px-3 py-2 font-mono text-xs">
                             GET https://api.codersoft.xyz/__version

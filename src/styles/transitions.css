@@ -135,6 +135,39 @@
   .t-page-slide .t-page { transition: none !important; }
 }
 
+/* ---------------------- N-step extension (reuses the page-* tokens) ---------------------- */
+/* Same timing/easing/blur as the page side-by-side snippet, generalised to any number of
+   steps. A step's --t-step-from is set to -distance (before the active step), +distance
+   (after), or 0, so moving forward the outgoing step slides left and the incoming one
+   enters from the right — direction falls out of the step order. */
+
+.t-steps {
+  position: relative;
+}
+.t-steps .t-step {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(calc(var(--t-step-from, 0px) * var(--page-exit-enabled)));
+  filter: blur(calc(var(--page-blur) * var(--page-exit-enabled)));
+  transition:
+    opacity   var(--page-fade-dur)  var(--page-fade-ease),
+    transform var(--page-slide-dur) var(--page-slide-ease),
+    filter    var(--page-slide-dur) var(--page-slide-ease);
+  will-change: opacity, transform, filter;
+}
+.t-steps .t-step[data-active="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-steps .t-step { transition: none !important; }
+}
+
 /* ---------------------------------- Text states swap (04) ---------------------------------- */
 
 .t-text-swap {

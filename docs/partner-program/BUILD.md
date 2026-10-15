@@ -16,8 +16,10 @@ provisioning are in place. Remaining items are deployment/secrets (below).
   secret in the router's Durable Object.
 
 ### Frontend
-- `/partners` — public page: hero with a live consent preview, benefits, how-it-works,
-  read-only API reference, FAQ, invite request form.
+- There is **no public `/partners` page**; partners are handled through contacts, not a
+  self-serve page. `/partners` does not exist (404). The private `/partners/dashboard`
+  remains and is reachable only via a "Partner dashboard" link in the account menu for
+  users who belong to a partner org.
 - `/partners/dashboard` — Overview / App / Users / Keys / Stats.
 - **First-time onboarding wizard** on the dashboard (shown until `partner_apps.onboarded_at`
   is set): 2 steps (app setup → permissions & first key). Motion comes from the

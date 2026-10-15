@@ -6,9 +6,7 @@
 export type PartnerPermissionId =
   | "profile"
   | "email"
-  | "favourites:read"
-  | "uploads:read"
-  | "stats:read";
+  | "favourites:read";
 
 export interface PartnerPermissionField {
   label: string;
@@ -55,22 +53,6 @@ export const PARTNER_PERMISSIONS: readonly PartnerPermission[] = [
     summary: "The assets you have favourited on RenderDragon",
     fields: [
       { label: "Your favourited assets", detail: "Names and links only" },
-    ],
-  },
-  {
-    id: "uploads:read",
-    label: "Your uploads",
-    summary: "The assets you have uploaded to RenderDragon",
-    fields: [
-      { label: "Your uploaded assets and showcases" },
-    ],
-  },
-  {
-    id: "stats:read",
-    label: "Account statistics",
-    summary: "Your RenderDragon usage and account statistics",
-    fields: [
-      { label: "Your usage statistics" },
     ],
   },
 ] as const;

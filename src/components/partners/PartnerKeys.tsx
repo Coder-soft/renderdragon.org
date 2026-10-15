@@ -79,9 +79,9 @@ export function PartnerKeys({
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h3 className="font-heading text-base font-semibold">Read-only API keys</h3>
+          <h3 className="font-heading text-base font-semibold">API keys</h3>
           <p className="text-sm text-muted-foreground">
-            Scope <code className="font-mono text-xs">assets:read</code>. Reads only — never writes.
+            Scope <code className="font-mono text-xs">assets:read</code>.
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
@@ -159,7 +159,7 @@ export function PartnerKeys({
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create a read-only key</DialogTitle>
+            <DialogTitle>Create a key</DialogTitle>
             <DialogDescription>
               Name it so you can tell keys apart later. The secret is shown once.
             </DialogDescription>

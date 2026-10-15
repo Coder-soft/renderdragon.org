@@ -2,8 +2,6 @@ import {
   IconUser,
   IconMail,
   IconHeart,
-  IconUpload,
-  IconChartBar,
   IconCheck,
   type Icon,
 } from "@tabler/icons-react";
@@ -17,8 +15,6 @@ const ICONS: Record<PartnerPermissionId, Icon> = {
   profile: IconUser,
   email: IconMail,
   "favourites:read": IconHeart,
-  "uploads:read": IconUpload,
-  "stats:read": IconChartBar,
 };
 
 interface ConsentFieldListProps {

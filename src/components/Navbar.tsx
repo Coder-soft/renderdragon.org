@@ -23,6 +23,7 @@ import UserMenu from './auth/UserMenu'; // Added for auth
 import { useAuth } from '@/hooks/useAuth'; // Added for auth
 import { useProfile } from '@/hooks/useProfile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { toDisplayAvatarUrl } from '@/lib/avatar';
 
 interface NavLink {
   name: string;
@@ -41,7 +42,6 @@ const mainLinks: (NavLink | NavDropdown)[] = [
   { name: 'Home', path: '/', icon: 'home' },
   { name: 'Blogs', path: '/blogs', icon: 'text' },
   { name: 'Contact', path: '/contact', icon: 'contact' },
-  { name: 'Partners', path: '/partners', icon: 'partners', tag: 'NEW' },
   {
     name: 'Resources',
     icon: 'resources',
@@ -124,7 +124,7 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const displayName = profile?.username || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
-  const safeAvatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url;
+  const safeAvatarUrl = toDisplayAvatarUrl(profile?.avatar_url || user?.user_metadata?.avatar_url);
 
   const getInitials = (name: string) => {
     return name
@@ -402,7 +402,7 @@ const Navbar = () => {
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
                             {safeAvatarUrl && (
-                              <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />
+                              <AvatarImage key={safeAvatarUrl} src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />
                             )}
                             <AvatarFallback className="bg-primary text-white text-xs">
                               {getInitials(displayName)}

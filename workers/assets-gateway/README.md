@@ -1,13 +1,16 @@
 # codersoft-assets-gateway
 
-Cloudflare Worker routed at `renderdragon.org/api/assets-gw/*` (and the `www` variant). It is
-the **server-side** component that the browser talks to, so no signing secret ever ships to
-the browser. Cloudflare Workers have no request-body size limit, so large asset uploads are
-fine — nothing is compromised by proxying.
+Cloudflare Worker hosted at **`gateway.codersoft.xyz`** (custom domain). It is the
+**server-side** component the browser talks to, so no signing secret ever ships to the
+browser. Cloudflare Workers have no request-body size limit, so large asset uploads are fine.
+
+`renderdragon.org` lives in a **different Cloudflare account**, so the gateway is hosted on
+its own domain and the site calls it **cross-origin** (CORS + `SameSite=None; Secure`
+cookies). Paths are served at the root (`/__session`, `/all`, `/__version`, …).
 
 ```
-browser ──> renderdragon.org/api/assets-gw/*   (this Worker; holds GATEWAY_SECRET)
-        ──> api.codersoft.xyz                   (codersoft-api-router; verifies the signature)
+browser ──> gateway.codersoft.xyz            (this Worker; holds GATEWAY_SECRET)
+        ──> api.codersoft.xyz                 (codersoft-api-router; verifies the signature)
         ──> e3 / fallback workers
 ```
 

@@ -14,6 +14,7 @@ import { IconUser, IconMail, IconCalendar, IconLogout } from '@tabler/icons-reac
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import AccountPageSkeleton from '@/components/skeletons/AccountPageSkeleton';
+import { ConnectedApps } from '@/components/partners/ConnectedApps';
 
 const Account = () => {
   const { user, loading, signOut } = useAuth();
@@ -226,9 +227,11 @@ const Account = () => {
 
                   <div className="space-y-4">
                     <h3 className="text-lg text-primary">Preferences</h3>
-
-
                   </div>
+
+                  <Separator />
+
+                  <ConnectedApps />
 
                   <div className="flex flex-col sm:flex-row justify-between gap-4 pt-6">
                     <Button

@@ -10,12 +10,13 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { PARTNER_PERMISSIONS, type PartnerPermissionId } from "@/lib/partners/permissions";
 import { updatePartnerApp, type PartnerApp } from "@/lib/partners/client";
+import { RedirectUriField } from "@/components/partners/RedirectUriField";
 
 export function PartnerAppForm({ app, onSaved }: { app: PartnerApp; onSaved: () => void }) {
   const [name, setName] = useState(app.name);
   const [description, setDescription] = useState(app.description ?? "");
   const [logoUrl, setLogoUrl] = useState(app.logo_url ?? "");
-  const [redirectUris, setRedirectUris] = useState(app.redirect_uris.join("\n"));
+  const [redirectUris, setRedirectUris] = useState<string[]>(app.redirect_uris ?? []);
   const [permissions, setPermissions] = useState<PartnerPermissionId[]>(app.permissions);
   const [saving, setSaving] = useState(false);
 
@@ -32,7 +33,7 @@ export function PartnerAppForm({ app, onSaved }: { app: PartnerApp; onSaved: () 
         name: name.trim() || app.name,
         description: description.trim() || null,
         logo_url: logoUrl.trim() || null,
-        redirect_uris: redirectUris.split("\n").map((line) => line.trim()).filter(Boolean),
+        redirect_uris: redirectUris,
         permissions,
       });
       toast.success("App updated");
@@ -73,18 +74,12 @@ export function PartnerAppForm({ app, onSaved }: { app: PartnerApp; onSaved: () 
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="app-redirects">Redirect URIs</Label>
-        <Textarea
-          id="app-redirects"
-          value={redirectUris}
-          onChange={(event) => setRedirectUris(event.target.value)}
-          rows={3}
-          placeholder="https://yourapp.com/auth/callback"
-          className="font-mono text-sm"
-        />
-        <p className="text-xs text-muted-foreground">One per line. Coordinate changes with us — they're mirrored to your OAuth client.</p>
-      </div>
+      <RedirectUriField
+        inputId="app-redirects"
+        value={redirectUris}
+        onChange={setRedirectUris}
+        hint="Coordinate changes with us — they're mirrored to your OAuth client."
+      />
 
       <Separator />
 

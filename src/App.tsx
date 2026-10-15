@@ -82,7 +82,6 @@ const CreateCreatorPackPage = lazy(() => import("@/pages/CreateCreatorPackPage")
 const ManageCreatorPacksPage = lazy(() => import("@/pages/ManageCreatorPacksPage"));
 const EditCreatorPackPage = lazy(() => import("@/pages/EditCreatorPackPage"));
 const CreatorPackPage = lazy(() => import("@/pages/CreatorPackPage"));
-const Partners = lazy(() => import("@/pages/Partners"));
 const PartnerDashboard = lazy(() => import("@/pages/PartnerDashboard"));
 const OAuthConsent = lazy(() => import("@/pages/OAuthConsent"));
 
@@ -245,7 +244,6 @@ const App = () => {
                     <Route path="/creator-packs/manage" element={<ManageCreatorPacksPage />} />
                     <Route path="/creator-packs/:slug/edit" element={<EditCreatorPackPage />} />
                     <Route path="/creator-packs/:slug" element={<CreatorPackPage />} />
-                    <Route path="/partners" element={<Partners />} />
                     <Route path="/partners/dashboard" element={<PartnerDashboard />} />
                     <Route path="/oauth/consent" element={<OAuthConsent />} />
                     <Route path="*" element={<NotFound />} />

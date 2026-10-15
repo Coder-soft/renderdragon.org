@@ -1,10 +1,16 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getTurnstileToken } from "@/lib/turnstile";
 
-// Every asset call goes to the same-origin assets gateway
-// (workers/assets-gateway, routed at /api/assets-gw/*). The gateway holds the signing
-// secret and authenticates the request to the router, so the browser never needs a key.
-export const ASSETS_API_BASE_URL = "/api/assets-gw";
+// In local dev the gateway isn't reached directly: the Vite dev server proxies
+// /api/assets-gw/* straight to the public upstreams (see vite.config.ts) and we skip the
+// session/version handshake. Production goes through the signed gateway, which lives on
+// its own domain (renderdragon.org is in a different Cloudflare account), so calls are
+// cross-origin with credentials.
+const DEV_MODE = import.meta.env.DEV;
+
+export const ASSETS_API_BASE_URL = DEV_MODE
+  ? "/api/assets-gw"
+  : "https://gateway.codersoft.xyz";
 
 export function assetsApiUrl(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
@@ -14,6 +20,7 @@ export function assetsApiUrl(path: string): string {
 // Public, no session required: the catalog version. A visitor whose cached copy
 // matches this never triggers a Turnstile challenge.
 export async function fetchAssetsVersion(): Promise<string | null> {
+  if (DEV_MODE) return null; // upstreams have no version endpoint; skip the sync
   try {
     const response = await fetch(`${ASSETS_API_BASE_URL}/__version`, { credentials: "omit" });
     if (!response.ok) return null;
@@ -69,6 +76,14 @@ export async function ensureAssetsSession(): Promise<void> {
 }
 
 export async function fetchFromAssetsApi(path: string, init?: RequestInit): Promise<Response> {
+  if (DEV_MODE) {
+    const response = await fetch(assetsApiUrl(path), init);
+    if (!response.ok) {
+      throw new Error(`Assets API error ${response.status} ${response.statusText} for ${path}`);
+    }
+    return response;
+  }
+
   await ensureAssetsSession();
 
   const send = () => fetch(assetsApiUrl(path), { ...init, credentials: "include" });
