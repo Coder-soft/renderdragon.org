@@ -118,7 +118,7 @@ export default function Partners() {
               asChild
               variant="ghost"
               size="sm"
-              className="mb-6 h-auto rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
+              className="mb-6 h-auto border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
             >
               <a href="#apply">
                 <span className="mr-2 inline-block size-1.5 rounded-full bg-primary" />
@@ -133,13 +133,13 @@ export default function Partners() {
               read-only API. Everything users share is listed before they approve it.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="rounded-full">
+              <Button asChild size="lg">
                 <a href="#apply">
                   Request an invite
                   <IconArrowRight data-icon="inline-end" />
                 </a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-full">
+              <Button asChild size="lg" variant="outline">
                 <a href="#api">See the API</a>
               </Button>
             </div>
