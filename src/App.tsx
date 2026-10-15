@@ -17,7 +17,7 @@ import Navbar from "@/components/Navbar";
 import Seo from "@/components/Seo";
 
 // Routes that should never be indexed by search engines.
-const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/manage'];
+const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/manage', '/partners/dashboard', '/oauth/consent'];
 
 // Subset of private routes that also hide the global Donate button.
 const DONATE_HIDDEN_ROUTE_PREFIXES = ['/admin', '/account'];
@@ -82,6 +82,9 @@ const CreateCreatorPackPage = lazy(() => import("@/pages/CreateCreatorPackPage")
 const ManageCreatorPacksPage = lazy(() => import("@/pages/ManageCreatorPacksPage"));
 const EditCreatorPackPage = lazy(() => import("@/pages/EditCreatorPackPage"));
 const CreatorPackPage = lazy(() => import("@/pages/CreatorPackPage"));
+const Partners = lazy(() => import("@/pages/Partners"));
+const PartnerDashboard = lazy(() => import("@/pages/PartnerDashboard"));
+const OAuthConsent = lazy(() => import("@/pages/OAuthConsent"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
@@ -241,6 +244,9 @@ const App = () => {
                     <Route path="/creator-packs/manage" element={<ManageCreatorPacksPage />} />
                     <Route path="/creator-packs/:slug/edit" element={<EditCreatorPackPage />} />
                     <Route path="/creator-packs/:slug" element={<CreatorPackPage />} />
+                    <Route path="/partners" element={<Partners />} />
+                    <Route path="/partners/dashboard" element={<PartnerDashboard />} />
+                    <Route path="/oauth/consent" element={<OAuthConsent />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

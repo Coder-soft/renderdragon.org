@@ -9,6 +9,14 @@ export default defineConfig(() => {
       host: "::",
       port: 8080,
       proxy: {
+        // Assets gateway (workers/assets-gateway) is a same-origin Worker route in
+        // production. In dev, proxy to the deployed gateway, or set ASSETS_GW_DEV_ORIGIN
+        // to a local `wrangler dev` (e.g. http://localhost:8788).
+        '/api/assets-gw': {
+          target: process.env.ASSETS_GW_DEV_ORIGIN || 'https://renderdragon.org',
+          changeOrigin: true,
+          secure: true,
+        },
         '/api/stats': {
           target: 'https://analytics.codersoft.xyz',
           changeOrigin: true,
