@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { IconChevronDown, IconMenu2, IconExternalLink } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
@@ -77,6 +77,8 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Kept, but managed by Drawer now
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [openMobileCollapsible, setOpenMobileCollapsible] = useState<string | null>(null);
   const isMobile = useIsMobile();
@@ -93,6 +95,17 @@ const Navbar = () => {
           const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
           setScrolled(scrollY > 50);
           setScrollProgress(maxScroll > 0 ? Math.min(scrollY / maxScroll, 1) : 0);
+
+          // Auto-hide: slide the bar away when scrolling down, reveal it on
+          // scroll up (or when back near the top).
+          const previous = lastScrollYRef.current;
+          if (scrollY > previous + 4 && scrollY > 96) {
+            setHidden(true);
+          } else if (scrollY < previous - 4 || scrollY <= 96) {
+            setHidden(false);
+          }
+          lastScrollYRef.current = scrollY;
+
           ticking = false;
         });
         ticking = true;
@@ -161,7 +174,7 @@ const Navbar = () => {
     <>
       <header
         className={`fixed w-full z-50 transition-all duration-300 py-4 ${scrolled ? 'shadow-lg' : ''
-          }`}
+          } ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
         style={{ top: 0 }}
       >
         <div
