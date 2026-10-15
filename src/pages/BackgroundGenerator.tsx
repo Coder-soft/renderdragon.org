@@ -638,16 +638,17 @@ const BackgroundGenerator = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl md:text-5xl mb-8 text-center">
-              <span className="text-primary">Background</span> Generator
-            </h1>
+            <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <h1 className="text-2xl md:text-3xl">
+                  Background <span className="text-primary">Generator</span>
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Generate Minecraft-themed backgrounds for thumbnails, overlays, and channel art.
+                </p>
+              </div>
 
-             <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
-               Generate custom Minecraft-themed backgrounds for your content.
-               Perfect for thumbnails, stream overlays, and channel art.
-             </p>
-
-             <Tabs
+              <Tabs
                 value={outputMode}
                 onValueChange={(value) => {
                   const nextMode = value as OutputMode;
@@ -656,26 +657,26 @@ const BackgroundGenerator = () => {
                     setSize("3840x2160");
                   }
                 }}
-               className="mb-8"
-             >
-               <TabsList className="mx-auto grid h-14 w-full max-w-md grid-cols-2  bg-black/20 p-1">
-                 <TabsTrigger value="image" className="gap-2  text-sm">
-                   <IconPhoto className="h-4 w-4" />
-                   Image
-                 </TabsTrigger>
-                  <TabsTrigger value="video" className="gap-2  text-sm">
+              >
+                <TabsList className="grid h-10 w-full grid-cols-2 bg-black/20 p-1 sm:w-64">
+                  <TabsTrigger value="image" className="gap-2 text-sm">
+                    <IconPhoto className="h-4 w-4" />
+                    Image
+                  </TabsTrigger>
+                  <TabsTrigger value="video" className="gap-2 text-sm">
                     <IconPlayerPlay className="h-4 w-4" />
-                    Video (WebM)
-                 </TabsTrigger>
-               </TabsList>
-             </Tabs>
+                    Video
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
-              <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
-                <div
-                  className="rounded-xl border border-border bg-card p-4 relative flex flex-col space-y-6 border-l-2 border-l-primary/60 shadow-2xl shadow-primary/10 md:sticky md:top-24 md:col-span-1 md:h-[var(--preview-card-height)] md:max-h-[calc(100vh-7rem)] md:overflow-y-auto md:overscroll-contain md:custom-scrollbar"
-                  style={previewCardHeight ? ({ "--preview-card-height": `${previewCardHeight}px` } as React.CSSProperties) : undefined}
-                >
-                <div className="space-y-4">
+              <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+                <aside className="order-2 border border-border bg-card lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain lg:custom-scrollbar">
+                  <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Options</h2>
+                  </div>
+                  <div className="space-y-5 p-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Select images</label>
                     <Tabs defaultValue="library" className="w-full">
@@ -886,12 +887,22 @@ const BackgroundGenerator = () => {
                          aria-label="Texture rotation"
                          className=""
                        />
-                       <div className="flex justify-between text-[10px] text-muted-foreground">
-                         <span>0°</span>
-                         <span>90°</span>
-                         <span>180°</span>
-                         <span>270°</span>
-                         <span>360°</span>
+                       <div className="relative mt-1 h-3.5 text-[10px] text-muted-foreground">
+                         {[0, 90, 180, 270, 360].map((deg) => (
+                           <button
+                             key={deg}
+                             type="button"
+                             onClick={() => {
+                               invalidateGeneration();
+                               setRotation([deg]);
+                             }}
+                             className="absolute -translate-x-1/2 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none"
+                             style={{ left: `calc(10px + (100% - 20px) * ${deg / 360})` }}
+                             aria-label={`Set rotation to ${deg} degrees`}
+                           >
+                             {deg}°
+                           </button>
+                         ))}
                        </div>
                      </div>
 
@@ -1053,17 +1064,19 @@ const BackgroundGenerator = () => {
                   </div>
 
                 </div>
-              </div>
+                </aside>
 
-                <div ref={previewCardRef} className="rounded-xl border border-border bg-card p-4 flex h-fit flex-col self-start md:col-span-2">
-                <div className="mb-4 text-center">
-                  <h3 className="text-lg ">Preview</h3>
-                </div>
+                <div ref={previewCardRef} className="order-1 border border-border bg-card">
+                  <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Preview</h2>
+                    <span className="text-xs text-muted-foreground">{previewWidth} × {previewHeight}</span>
+                  </div>
+                  <div className="p-4">
 
-                 <div
-                   className="relative flex w-full items-center justify-center overflow-hidden rounded-md bg-black/20"
-                   style={{ aspectRatio: `${previewWidth} / ${previewHeight}` }}
-                 >
+                  <div
+                    className="relative flex w-full items-center justify-center overflow-hidden border border-border/60 bg-black/30"
+                    style={{ aspectRatio: `${previewWidth} / ${previewHeight}` }}
+                  >
                     {outputMode === "video" && videoUrl ? (
                      <video
                        src={videoUrl}
@@ -1145,47 +1158,11 @@ const BackgroundGenerator = () => {
                     <span>Download Background</span>
                   </Button>
                 )}
-              </div>
-            </div>
-
-            <div className="mt-12 max-w-2xl mx-auto">
-              <h2 className="text-2xl mb-4 text-center">
-                How to Use
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div className="rounded-xl border border-border bg-card p-4 p-6">
-                  <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-xl">1</span>
                   </div>
-                  <h3 className="mb-2">Upload</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Upload images and adjust settings
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-border bg-card p-4 p-6">
-                  <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-xl">2</span>
-                  </div>
-                  <h3 className="mb-2">Adjust</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Customize spacing, opacity, and color in real-time
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-border bg-card p-4 p-6">
-                  <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-xl">3</span>
-                  </div>
-                  <h3 className="mb-2">Download</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Download your background and use it in your content
-                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
       </main>
 
       <Footer />
