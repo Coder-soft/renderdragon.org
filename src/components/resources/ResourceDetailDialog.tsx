@@ -155,8 +155,8 @@ const ResourceDetailDialog = ({
           </DialogTitle>
           <DialogDescription asChild>
             <div className="min-w-0 truncate text-sm text-muted-foreground">
-              <span className="capitalize">
-                {resource.category === 'minecraft-icons' ? 'Mcicons' : resource.category}
+              <span>
+                {resource.category === 'minecraft-icons' ? 'mcicons' : resource.category}
               </span>
               {resource.subcategory && (
                 <span className="text-muted-foreground/70"> · {resource.subcategory.replace(/\//g, ' / ')}</span>

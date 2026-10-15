@@ -344,9 +344,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCar
 
       <div className="flex justify-between items-start mb-3 gap-2">
         <div className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
-          <span className="capitalize">
+          <span>
             {resource.category === "minecraft-icons"
-              ? "Mcicons"
+              ? "mcicons"
               : resource.category}
           </span>
           {resource.subcategory && (
