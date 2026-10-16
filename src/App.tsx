@@ -84,6 +84,7 @@ const EditCreatorPackPage = lazy(() => import("@/pages/EditCreatorPackPage"));
 const CreatorPackPage = lazy(() => import("@/pages/CreatorPackPage"));
 const PartnerDashboard = lazy(() => import("@/pages/PartnerDashboard"));
 const OAuthConsent = lazy(() => import("@/pages/OAuthConsent"));
+const PartnerDocs = lazy(() => import("@/pages/PartnerDocs"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
@@ -245,6 +246,7 @@ const App = () => {
                     <Route path="/creator-packs/:slug/edit" element={<EditCreatorPackPage />} />
                     <Route path="/creator-packs/:slug" element={<CreatorPackPage />} />
                     <Route path="/partners/dashboard" element={<PartnerDashboard />} />
+                    <Route path="/partners/docs" element={<PartnerDocs />} />
                     <Route path="/oauth/consent" element={<OAuthConsent />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
