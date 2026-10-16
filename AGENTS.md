@@ -47,7 +47,8 @@ relevant fork issue by URL in the PR body instead. There is an existing open red
   that's why the browser gateway lives on `gateway.codersoft.xyz` instead of a `renderdragon.org` route.
 - **Workers** (sources in `workers/`):
   - `codersoft-api-router` → **`api.codersoft.xyz`** (Durable Object `AuthStore`). Verified request auth,
-    scopes/rate limits, failover, `__version`, `__admin/*`.
+    scopes/rate limits, ordered origin pools with per-origin circuit breaking (`RESOURCES_ORIGINS` /
+    `ASSETS_ORIGINS`), `__version`, `__admin/*`.
   - `codersoft-assets-gateway` → **`gateway.codersoft.xyz`** (holds `GATEWAY_SECRET`, minted browser
     sessions, CORS + `SameSite=None` cookies, proxies to the router).
 - **e3** (ssh alias `e3`, `home@192.168.100.30`, Debian): systemd service **`hamburger-api`** on

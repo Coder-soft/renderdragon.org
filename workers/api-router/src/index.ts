@@ -15,6 +15,10 @@ export interface Env {
   E3_RESOURCES_ORIGIN?: string;
   ASSETS_FALLBACK_ORIGIN: string;
   RESOURCES_FALLBACK_ORIGIN: string;
+  // Ordered origin pools per group (comma-separated). First entry is the primary, the
+  // rest are backups tried in order. Unset falls back to E3_* + *_FALLBACK_ORIGIN.
+  ASSETS_ORIGINS?: string;
+  RESOURCES_ORIGINS?: string;
   // Shared secret for router -> e3 request signing (set on both sides). Required in production.
   E3_SHARED_SECRET?: string;
   // Master key for the /__admin/* client-management API.
@@ -47,7 +51,39 @@ type Group = "assets" | "resources";
 
 const RESOURCE_PREFIXES = ["/categories", "/category", "/all", "/fonts", "/mcicons"];
 
-let e3DownUntil = 0;
+// Per-origin passive health: an origin that fails is skipped for a cooldown, then retried.
+const originDownUntil = new Map<string, number>();
+
+const isOriginDown = (origin: string): boolean => (originDownUntil.get(origin) ?? 0) > Date.now();
+const markOriginDown = (origin: string, cooldownMs: number): void => {
+  originDownUntil.set(origin, Date.now() + cooldownMs);
+};
+const markOriginUp = (origin: string): void => {
+  originDownUntil.delete(origin);
+};
+
+// Origins for a group in configured order (primary first).
+const configuredOrigins = (env: Env, group: Group): string[] => {
+  const configured = group === "resources" ? listEnv(env.RESOURCES_ORIGINS, []) : listEnv(env.ASSETS_ORIGINS, []);
+  const list = configured.length
+    ? configured
+    : group === "resources"
+      ? [
+          env.E3_RESOURCES_ORIGIN || env.E3_ORIGIN || DEFAULT_E3_ORIGIN,
+          env.RESOURCES_FALLBACK_ORIGIN || DEFAULT_RESOURCES_FALLBACK,
+        ]
+      : [env.E3_ORIGIN || DEFAULT_E3_ORIGIN, env.ASSETS_FALLBACK_ORIGIN || DEFAULT_ASSETS_FALLBACK];
+  return [...new Set(list.map(stripTrailingSlash).filter(Boolean))];
+};
+
+// Healthy origins first, down ones last so they still get a chance to recover.
+const orderedOrigins = (env: Env, group: Group): string[] => {
+  const origins = configuredOrigins(env, group);
+  return [
+    ...origins.filter((origin) => !isOriginDown(origin)),
+    ...origins.filter((origin) => isOriginDown(origin)),
+  ];
+};
 
 const stripTrailingSlash = (value: string): string => value.replace(/\/+$/, "");
 
@@ -193,44 +229,42 @@ async function handleAdmin(
 }
 
 async function fetchUpstream(env: Env, path: string): Promise<{ ok: boolean; status: number; text: string }> {
-  const group = classify(path);
-  const primary = stripTrailingSlash(
-    group === "resources"
-      ? env.E3_RESOURCES_ORIGIN || env.E3_ORIGIN || DEFAULT_E3_ORIGIN
-      : env.E3_ORIGIN || DEFAULT_E3_ORIGIN,
-  );
-  const fallback = stripTrailingSlash(
-    group === "resources"
-      ? env.RESOURCES_FALLBACK_ORIGIN || DEFAULT_RESOURCES_FALLBACK
-      : env.ASSETS_FALLBACK_ORIGIN || DEFAULT_ASSETS_FALLBACK,
-  );
+  const origins = orderedOrigins(env, classify(path));
   const timeoutMs = parseIntEnv(env.PRIMARY_TIMEOUT_MS, DEFAULT_PRIMARY_TIMEOUT_MS);
   const cooldownMs = parseIntEnv(env.FAILOVER_COOLDOWN_MS, DEFAULT_FAILOVER_COOLDOWN_MS);
-  const headers = new Headers({ accept: "application/json" });
 
-  if (Date.now() >= e3DownUntil) {
+  let last = { ok: false, status: 502, text: "" };
+  for (let i = 0; i < origins.length; i += 1) {
+    const origin = origins[i];
+    const isLast = i === origins.length - 1;
+    const controller = new AbortController();
+    const timer = isLast ? null : setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const primaryHeaders = new Headers(headers);
+      const headers = new Headers({ accept: "application/json" });
       if (env.E3_SHARED_SECRET) {
         const signature = await signToE3(env.E3_SHARED_SECRET, "GET", path, undefined);
-        signature.forEach((value, key) => primaryHeaders.set(key, value));
+        signature.forEach((value, key) => headers.set(key, value));
       }
-      const upstream = await fetch(`${primary}${path}`, {
-        headers: primaryHeaders,
+      const upstream = await fetch(`${origin}${path}`, {
+        headers,
         redirect: "manual",
-        signal: AbortSignal.timeout(timeoutMs),
+        signal: controller.signal,
       });
-      if (!isOriginDownStatus(upstream.status)) {
-        return { ok: upstream.ok, status: upstream.status, text: await upstream.text() };
+      if (isOriginDownStatus(upstream.status)) {
+        markOriginDown(origin, cooldownMs);
+        last = { ok: false, status: upstream.status, text: "" };
+        continue;
       }
-      e3DownUntil = Date.now() + cooldownMs;
+      markOriginUp(origin);
+      return { ok: upstream.ok, status: upstream.status, text: await upstream.text() };
     } catch {
-      e3DownUntil = Date.now() + cooldownMs;
+      markOriginDown(origin, cooldownMs);
+      last = { ok: false, status: 502, text: "" };
+    } finally {
+      if (timer !== null) clearTimeout(timer);
     }
   }
-
-  const upstream = await fetch(`${fallback}${path}`, { headers, redirect: "manual" });
-  return { ok: upstream.ok, status: upstream.status, text: await upstream.text() };
+  return last;
 }
 
 // Public, unauthenticated so visitors with a valid cache pay no Turnstile challenge:
@@ -293,8 +327,10 @@ export default {
     }
 
     if (url.pathname === "/__router/health") {
+      const health = (group: Group) =>
+        configuredOrigins(env, group).map((origin) => ({ origin, up: !isOriginDown(origin) }));
       return json(
-        { ok: true, e3: Date.now() >= e3DownUntil ? "up" : "down", authStore: Boolean(env.AUTH_STORE) },
+        { ok: true, authStore: Boolean(env.AUTH_STORE), origins: { assets: health("assets"), resources: health("resources") } },
         200,
         cors,
       );
@@ -332,59 +368,52 @@ export default {
     }
 
     const group = classify(url.pathname);
-    const primary = stripTrailingSlash(
-      group === "resources"
-        ? env.E3_RESOURCES_ORIGIN || env.E3_ORIGIN || DEFAULT_E3_ORIGIN
-        : env.E3_ORIGIN || DEFAULT_E3_ORIGIN,
-    );
-    const fallback = stripTrailingSlash(
-      group === "resources"
-        ? env.RESOURCES_FALLBACK_ORIGIN || DEFAULT_RESOURCES_FALLBACK
-        : env.ASSETS_FALLBACK_ORIGIN || DEFAULT_ASSETS_FALLBACK,
-    );
-
+    const origins = orderedOrigins(env, group);
+    const primary = configuredOrigins(env, group)[0];
     const timeoutMs = parseIntEnv(env.PRIMARY_TIMEOUT_MS, DEFAULT_PRIMARY_TIMEOUT_MS);
     const cooldownMs = parseIntEnv(env.FAILOVER_COOLDOWN_MS, DEFAULT_FAILOVER_COOLDOWN_MS);
     const target = `${url.pathname}${url.search}`;
-    const headers = forwardHeaders(request.headers);
+    const baseHeaders = forwardHeaders(request.headers);
 
     const e3Signature = env.E3_SHARED_SECRET
       ? await signToE3(env.E3_SHARED_SECRET, request.method, target, body)
       : null;
 
-    if (Date.now() >= e3DownUntil) {
+    for (let i = 0; i < origins.length; i += 1) {
+      const origin = origins[i];
+      const isLast = i === origins.length - 1;
+      // Time-box only until the first byte (the failover probe). Clearing the timer once
+      // headers arrive lets a large body stream to completion on the chosen origin.
+      const controller = new AbortController();
+      const timer = isLast ? null : setTimeout(() => controller.abort(), timeoutMs);
       try {
-        const primaryHeaders = new Headers(headers);
-        e3Signature?.forEach((value, key) => primaryHeaders.set(key, value));
-        const upstream = await fetch(`${primary}${target}`, {
+        const headers = new Headers(baseHeaders);
+        e3Signature?.forEach((value, key) => headers.set(key, value));
+        const upstream = await fetch(`${origin}${target}`, {
           method: request.method,
-          headers: primaryHeaders,
+          headers,
           body,
           redirect: "manual",
-          signal: AbortSignal.timeout(timeoutMs),
+          signal: controller.signal,
         });
 
-        if (!isOriginDownStatus(upstream.status)) {
-          if (!isBodyless && upstream.status < 400) ctx.waitUntil(invalidateVersion(env));
-          return applyCors(upstream, cors, "e3");
+        if (isOriginDownStatus(upstream.status)) {
+          console.warn(`${origin} returned ${upstream.status}; trying next origin`);
+          markOriginDown(origin, cooldownMs);
+          continue;
         }
 
-        console.warn(`e3 returned ${upstream.status}; failing over to ${fallback}`);
-        e3DownUntil = Date.now() + cooldownMs;
+        markOriginUp(origin);
+        if (!isBodyless && upstream.status < 400) ctx.waitUntil(invalidateVersion(env));
+        return applyCors(upstream, cors, origin === primary ? "e3" : "fallback");
       } catch (error) {
-        console.warn(`e3 unreachable (${String(error)}); failing over to ${fallback}`);
-        e3DownUntil = Date.now() + cooldownMs;
+        console.warn(`${origin} unreachable (${String(error)}); trying next origin`);
+        markOriginDown(origin, cooldownMs);
+      } finally {
+        if (timer !== null) clearTimeout(timer);
       }
     }
 
-    const upstream = await fetch(`${fallback}${target}`, {
-      method: request.method,
-      headers,
-      body,
-      redirect: "manual",
-    });
-
-    if (!isBodyless && upstream.status < 400) ctx.waitUntil(invalidateVersion(env));
-    return applyCors(upstream, cors, "fallback");
+    return json({ error: "upstream_unavailable" }, 502, cors);
   },
 };

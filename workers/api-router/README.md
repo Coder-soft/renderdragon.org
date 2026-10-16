@@ -1,13 +1,20 @@
 # codersoft-api-router
 
 Cloudflare Worker serving `https://api.codersoft.xyz`. Every endpoint is **authenticated**:
-a request must carry a valid HMAC-SHA256 signature (see below). It routes to three backends
-and fails over automatically when e3 is offline.
+a request must carry a valid HMAC-SHA256 signature (see below). It routes each request to an
+ordered pool of origins and fails over automatically.
 
-| Group | Paths | Primary | Backup |
-| --- | --- | --- | --- |
-| assets | `/api/assets` (upload/list) and anything not matched below | e3 home server | `assets-api-worker.powernplant101-c6b.workers.dev` |
-| resources | `/categories`, `/category/*`, `/all`, `/fonts`, `/mcicons*` | e3 home server | `hamburger-api.powernplant101-c6b.workers.dev` |
+| Group | Paths | Pool (first is primary) |
+| --- | --- | --- |
+| assets | `/api/assets` (upload/list) and anything not matched below | `assets-api-worker.powernplant101-c6b.workers.dev` |
+| resources | `/categories`, `/category/*`, `/all`, `/fonts`, `/mcicons*` | `hamburger.codersoft.xyz` (e3), then `hamburger-api.powernplant101-c6b.workers.dev` |
+
+Pools are set with `RESOURCES_ORIGINS` / `ASSETS_ORIGINS` (comma-separated, ordered). Each
+request tries the origins in order, skipping any recently failed one, and returns the first
+success. An origin that fails the failover probe (no first byte within `PRIMARY_TIMEOUT_MS`)
+or returns 5xx is marked down for `FAILOVER_COOLDOWN_MS` and retried last. Only the probe is
+time-boxed, so the chosen origin's response streams in full. A `502` is returned only when
+every origin fails. `GET /__router/health` reports per-origin state.
 
 ```
 browser → renderdragon.org/api/assets-gw/*   (workers/assets-gateway, holds the secret)
