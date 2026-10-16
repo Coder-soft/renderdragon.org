@@ -26,18 +26,19 @@ import {
 } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TwitterVerifiedIcon } from "@/components/partners/TwitterVerifiedIcon";
+import { CodeBlock } from "@/components/partners/CodeBlock";
 import Footer from "@/components/Footer";
 
 const API_BASE = "https://api.codersoft.xyz";
 const ISSUER = "https://bmywdrwjdqmrkafhiuwn.supabase.co/auth/v1";
 
-function Code({ children }: { children: string }) {
-  return (
-    <pre className="chamfer mt-3 overflow-x-auto border border-border bg-muted/60 p-4 text-xs leading-relaxed text-foreground">
-      <code className="font-mono">{children}</code>
-    </pre>
-  );
-}
+const CANON = `v1
+<METHOD>
+<PATH?QUERY>
+<CLIENT_ID>
+<TIMESTAMP>
+<NONCE>
+<SHA256_HEX(BODY)>`;
 
 const ENDPOINTS = [
   { path: "/all", returns: "Every category and asset in one response." },
@@ -164,13 +165,7 @@ export default function PartnerDocs() {
                   <p className="text-sm text-muted-foreground">
                     Sign this exact string, newlines included, and send it in three headers plus a nonce:
                   </p>
-                  <Code>{`v1
-<METHOD>
-<PATH?QUERY>
-<CLIENT_ID>
-<TIMESTAMP>
-<NONCE>
-<SHA256_HEX(BODY)>`}</Code>
+                  <CodeBlock code={CANON} />
                   <p className="text-sm text-muted-foreground">
                     Headers: <code className="font-mono">x-auth-client</code>,{" "}
                     <code className="font-mono">x-auth-timestamp</code>,{" "}
@@ -178,7 +173,7 @@ export default function PartnerDocs() {
                     <code className="font-mono">x-auth-signature</code>. The timestamp must be within
                     300 seconds. Send a User-Agent; requests without one are blocked by the edge.
                   </p>
-                  <Code>{MOCK}</Code>
+                  <CodeBlock code={MOCK} language="javascript" />
                 </CardContent>
               </Card>
 
@@ -280,7 +275,7 @@ export default function PartnerDocs() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Code>{OAUTH_RAW}</Code>
+                      <CodeBlock code={OAUTH_RAW} language="bash" />
                       <p className="mt-4 text-sm text-muted-foreground">
                         Validate access tokens with the project's JWKS at{" "}
                         <code className="font-mono">{ISSUER}/.well-known/jwks.json</code>. A confidential
@@ -301,7 +296,7 @@ export default function PartnerDocs() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Code>{OAUTH_SUPABASE}</Code>
+                      <CodeBlock code={OAUTH_SUPABASE} language="javascript" />
                       <p className="mt-4 text-sm text-muted-foreground">
                         Your Supabase project stores the RenderDragon session the same way it stores any
                         provider session, so `supabase.auth.getUser()` works as usual.
