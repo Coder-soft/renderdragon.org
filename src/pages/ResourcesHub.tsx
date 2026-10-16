@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback, lazy, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
@@ -45,6 +46,7 @@ const ResourcesHub = () => {
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
   const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
+  const [searchParams] = useSearchParams();
   const [musicLink, setMusicLink] = useState<{ resource: Resource; link: string } | null>(null);
 
   const {
@@ -159,13 +161,13 @@ const ResourcesHub = () => {
     }
   }, [selectedCategory]);
 
+  // Deep links from the account menu and shared links: /resources?tab=...
+  const tabParam = searchParams.get('tab');
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
     if (tabParam === 'favorites') setActiveTab('favorites');
     else if (tabParam === 'creator-packs') setActiveTab('creator-packs');
     else if (tabParam === 'music-packs') setActiveTab('music-packs');
-  }, []);
+  }, [tabParam]);
 
   // Deep link from a shared music link: /resources?track=<id>&file=<name>&url=<direct>
   const deepLinkHandled = useRef(false);

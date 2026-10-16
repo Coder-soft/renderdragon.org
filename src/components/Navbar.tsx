@@ -138,7 +138,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleShowFavorites = () => {
-    navigate('/account');
+    navigate('/resources?tab=favorites');
   };
 
   const handleMobileCollapsibleToggle = (name: string) => {

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { useAuth } from '@/hooks/useAuth';
-import { IconLogout, IconHeart, IconUser, IconSettings, IconBuilding } from '@tabler/icons-react';
+import { IconLogout, IconHeart, IconSettings, IconBuilding } from '@tabler/icons-react';
 import { useProfile } from '@/hooks/useProfile';
 import { toDisplayAvatarUrl } from '@/lib/avatar';
 import { usePartnerMembership } from '@/hooks/usePartnerMembership';
@@ -100,12 +100,6 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link to="/account/profile">
-            <IconUser className="mr-2 h-4 w-4" />
-            <span>Edit Profile</span>
-          </Link>
-        </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link to="/account">
             <IconSettings className="mr-2 h-4 w-4" />
