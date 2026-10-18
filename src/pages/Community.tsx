@@ -60,7 +60,7 @@ const SERVERS_DATA: DiscordServer[] = [
     id: 1,
     name: "Creator Coaster",
     description:
-      "Creator Coaster server will be your best friend through out your content creation journey, varying from assets up to professional editors & artists that are willing to help you no matter what! No matter what you need help in, we're down to help you by having active staff & helpers that would be pleased to help!",
+      "Asset makers, editors, and artists who pitch in when you get stuck. Busy server with active helpers.",
     members: 12500,
     inviteUrl: "https://discord.gg/uvWYV82f8J",
     image:
@@ -72,7 +72,7 @@ const SERVERS_DATA: DiscordServer[] = [
     id: 2,
     name: "Minecraft Design Hub",
     description:
-      "The Minecraft Design Hub is run by qualified designers with an extensive background in the GFX industry. We enjoy making designs, playing games and helping the community. In this community, you can purchase designs from our top notch designers.",
+      "GFX designers who take commissions and hang out between projects.",
     members: 6000,
     inviteUrl: "https://discord.gg/vYprQ9sK4v",
     image:
@@ -84,7 +84,7 @@ const SERVERS_DATA: DiscordServer[] = [
     id: 3,
     name: "Thumbnailers",
     description:
-      "Thumbnailers is a thriving community for Minecraft thumbnail designers. Whether you're a beginner or a pro, you'll find resources, feedback, and help to improve your skills and showcase your work. Join us to elevate your designs!",
+      "Thumbnail designers at every level. Post work, get feedback, and find resources.",
     members: 2500,
     inviteUrl: "https://discord.gg/4Q8MwTaSyh",
     image:
@@ -96,7 +96,7 @@ const SERVERS_DATA: DiscordServer[] = [
     id: 4,
     name: "EditHub",
     description:
-      "EditHub is the ultimate content creation hub for editors, designers, and creators looking to grow and improve. Whether you're searching for high-quality presets, assets, or expert advice, this server has everything you need in one place. Connect with like-minded individuals who are passionate about editing, content creation, and digital media.",
+      "Presets, assets, and editing advice in one server, with editors and designers who answer questions.",
     members: 1500,
     inviteUrl: "https://discord.gg/rrFFMAut3r",
     image:
@@ -108,7 +108,7 @@ const SERVERS_DATA: DiscordServer[] = [
     id: 5,
     name: "Renderdragon",
     description:
-      "Our official Discord server where you can suggest assets, contact us for questions or suggestions and more. We live by our community and we'd love to hear your feedback!",
+      "Our server. Suggest assets, report problems, or talk to the team.",
     members: 500,
     inviteUrl: "https://discord.gg/d9zxkkdBWV",
     image: "/renderdragon.png",
@@ -142,7 +142,7 @@ const defaultVideoCategories: VideoCategory[] = [
     id: 1,
     name: "How to Make Thumbnails",
     description:
-      "Learn how to create eye-catching Minecraft thumbnails that get clicks",
+      "Making Minecraft thumbnails that get clicked, from first sketch to final glow.",
     videos: [
       generateVideoData(
         "9QkyhxA38NU",
@@ -206,7 +206,7 @@ const defaultVideoCategories: VideoCategory[] = [
     id: 2,
     name: "How to Edit in Premiere Pro",
     description:
-      "Tutorials for editing Minecraft videos in Adobe Premiere Pro & After Effects",
+      "Cutting Minecraft videos in Premiere Pro and After Effects.",
     videos: [
       generateVideoData(
         "SAOm9_hY39I",
@@ -256,7 +256,7 @@ const defaultVideoCategories: VideoCategory[] = [
     id: 3,
     name: "Animation & Motion Graphics",
     description:
-      "Learn to create stunning animations and motion graphics for your videos",
+      "Blender animation and motion graphics for intros and overlays.",
     videos: [
       generateVideoData(
         "hxp2iRoZcQk",
@@ -335,12 +335,12 @@ const Community = () => {
         <title>Community - Renderdragon</title>
         <meta
           name="description"
-          content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators."
+          content="Discord servers and video tutorials for Minecraft thumbnail design, editing, and animation."
         />
         <meta property="og:title" content="Community - Renderdragon" />
         <meta
           property="og:description"
-          content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators."
+          content="Discord servers and video tutorials for Minecraft thumbnail design, editing, and animation."
         />
         <meta
           property="og:image"
@@ -360,17 +360,17 @@ const Community = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <Tabs defaultValue="videos" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-12 bg-background/80 backdrop-blur-sm border border-border p-1 rounded-lg">
+              <TabsList className="grid w-full grid-cols-2 mb-12 bg-background backdrop-blur-sm border border-border p-1 rounded-lg">
                 <TabsTrigger
                   value="videos"
-                  className="text-lg font-jetbrains-mono data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
+                  className="text-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
                 >
                   <IconPlayerPlay className="w-5 h-5 mr-2" />
                   Tutorials
                 </TabsTrigger>
                 <TabsTrigger
                   value="servers"
-                  className="text-lg font-jetbrains-mono data-[state=active]:bg-cow-purple data-[state=active]:text-white transition-all"
+                  className="text-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
                 >
                   <IconUsers className="w-5 h-5 mr-2" />
                   Servers
@@ -383,13 +383,13 @@ const Community = () => {
                     {[1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className="pixel-corners border border-border rounded-lg overflow-hidden bg-card/50 backdrop-blur-sm"
+                        className=" border border-border rounded-lg overflow-hidden bg-card backdrop-blur-sm"
                       >
                         <div className="bg-card p-6">
                           <Skeleton className="h-10 w-1/3 mb-3" />
                           <Skeleton className="h-5 w-2/3" />
                         </div>
-                        <div className="p-6 bg-background/60">
+                        <div className="p-6 bg-background">
                           <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                             {[...Array(4)].map((_, j) => (
                               <VideoCardSkeleton key={j} />
@@ -404,14 +404,14 @@ const Community = () => {
                     {videoCategories.map((category) => (
                       <div
                         key={category.id}
-                        className="border border-border rounded-lg overflow-hidden bg-card/50 backdrop-blur-sm"
+                        className="border border-border rounded-lg overflow-hidden bg-card backdrop-blur-sm"
                       >
                         <Collapsible
                           open={openCategories.includes(category.id)}
                           onOpenChange={() => toggleCategory(category.id)}
                         >
                           <CollapsibleTrigger asChild>
-                            <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/30 transition-colors">
+                            <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent transition-colors">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
                                    <h2 className="font-geist text-2xl">
@@ -419,7 +419,7 @@ const Community = () => {
                                   </h2>
                                   <Badge
                                     variant="secondary"
-                                    className="bg-cow-purple/10 text-cow-purple"
+                                    className="bg-primary/10 text-primary"
                                   >
                                     {category.videos.length} videos
                                   </Badge>
@@ -437,12 +437,12 @@ const Community = () => {
                             </div>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
-                            <div className="p-4 bg-background/60">
+                            <div className="p-4 bg-background">
                               <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                                 {category.videos.map((video) => (
                                   <div
                                     key={video.id}
-                                    className="min-w-[280px] max-w-[280px] bg-card border border-border rounded-lg overflow-hidden cursor-pointer hover:border-cow-purple transition-all group"
+                                    className="min-w-[280px] max-w-[280px] bg-card border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary transition-all group"
                                     onClick={() => setSelectedVideo(video)}
                                   >
                                     <div className="relative">
@@ -504,7 +504,7 @@ const Community = () => {
                       {servers.map((server) => (
                         <div
                           key={server.id}
-                          className="bg-card border border-border rounded-lg overflow-hidden p-6 flex flex-col h-full hover:shadow-lg hover:shadow-cow-purple/10 transition-all"
+                          className="bg-card border border-border rounded-lg overflow-hidden p-6 flex flex-col h-full hover:shadow-lg hover:shadow-primary/10 transition-all"
                         >
                           <div className="flex items-center gap-4 mb-4">
                             {server.image && (
@@ -512,14 +512,14 @@ const Community = () => {
                                 <img
                                   src={server.image}
                                   alt={server.name}
-                                  className="w-16 h-16 rounded-xl object-cover ring-2 ring-border group-hover:ring-cow-purple/30 transition-all"
+                                  className="w-16 h-16 rounded-xl object-cover ring-2 ring-border group-hover:ring-primary/30 transition-all"
                                   loading="lazy"
                                 />
                               </div>
                             )}
 
                             <div className="flex flex-col">
-                              <h3 className="text-xl font-jetbrains-mono">
+                              <h3 className="text-xl ">
                                 {server.name}
                               </h3>
                               <div className="flex items-center gap-2 mt-1">
@@ -551,7 +551,7 @@ const Community = () => {
 
                           <Button
                             onClick={() => handleJoinServer(server)}
-                            className="w-full pixel-btn-primary flex items-center justify-center"
+                            className="w-full inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center"
                           >
                             Join Server
                             <JoinServerIcon />
@@ -575,15 +575,15 @@ const Community = () => {
         open={!!selectedVideo}
         onOpenChange={(open) => !open && setSelectedVideo(null)}
       >
-        <DialogContent className="sm:max-w-5xl pixel-corners overflow-hidden max-h-[90vh] custom-scrollbar bg-background/95 backdrop-blur-sm">
+        <DialogContent className="sm:max-w-5xl  overflow-hidden max-h-[90vh] custom-scrollbar bg-background backdrop-blur-sm">
           <DialogHeader className="pb-4 border-b border-border/50">
-            <DialogTitle className="text-2xl font-jetbrains-mono text-cow-purple">
+            <DialogTitle className="text-2xl text-primary">
               {selectedVideo?.title}
             </DialogTitle>
             <DialogDescription className="flex items-center gap-3 text-base">
               <Badge
                 variant="secondary"
-                className="bg-cow-purple/10 text-cow-purple"
+                className="bg-primary/10 text-primary"
               >
                 {selectedVideo?.creator}
               </Badge>
@@ -609,7 +609,7 @@ const Community = () => {
             </div>
 
             <Button
-              className="w-full pixel-btn-primary py-3 text-base"
+              className="w-full inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 py-3 text-base"
               onClick={() => window.open(selectedVideo?.url, "_blank", "noopener,noreferrer")}
             >
               Watch on YouTube

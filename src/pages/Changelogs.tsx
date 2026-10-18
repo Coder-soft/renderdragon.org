@@ -37,9 +37,9 @@ export default function Changelogs() {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Changelogs - Renderdragon</title>
-        <meta name="description" content="See the latest improvements and updates to Renderdragon." />
+        <meta name="description" content="Every Renderdragon change in order, newest first. New tools, fixes, and asset library updates." />
         <meta property="og:title" content="Changelogs - Renderdragon" />
-        <meta property="og:description" content="See the latest improvements and updates to Renderdragon." />
+        <meta property="og:description" content="Every Renderdragon change in order, newest first. New tools, fixes, and asset library updates." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/changelogs" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -49,16 +49,16 @@ export default function Changelogs() {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-6 text-center">
-              <span className="text-cow-purple">Project</span> Changelogs
+            <h1 className="text-4xl md:text-5xl mb-6 text-center">
+              <span className="text-primary">Project</span> Changelogs
             </h1>
             <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" style={{ wordSpacing: '0.05em' }}>
-              Keep up with new features, improvements, and fixes as we ship them.
+              What shipped and when. New tools, fixes, and library updates, newest first.
             </p>
 
             {loading ? (
               <div className="flex items-center gap-3 text-muted-foreground">
-                <span className="inline-block w-5 h-5 rounded-full border-2 border-cow-purple border-t-transparent animate-spin" />
+                <span className="inline-block w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
                 <span>Loading changelog...</span>
               </div>
             ) : error ? (

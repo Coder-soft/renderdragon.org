@@ -13,9 +13,9 @@ const Generators = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Content Generators - Renderdragon</title>
-        <meta name="description" content="Generate social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators." />
+        <meta name="description" content="Make tweet screenshots, YouTube comments, and Minecraft nametags right in the browser." />
         <meta property="og:title" content="Content Generators - Renderdragon" />
-        <meta property="og:description" content="Generate social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators." />
+        <meta property="og:description" content="Make tweet screenshots, YouTube comments, and Minecraft nametags right in the browser." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/generators" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -27,13 +27,13 @@ const Generators = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-              Content <span className="text-cow-purple">Generators</span>
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              Content <span className="text-primary">Generators</span>
             </h1>
 
             <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
-              Create social media content, YouTube comments, and Minecraft nametags with our easy-to-use generators.
-              Perfect for content creators and Minecraft players.
+              Build tweet screenshots, YouTube comments, and Minecraft nametags right in your browser.
+              No design skills needed.
             </p>
 
             <Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading generator...</div>}>

@@ -48,7 +48,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 1,
     name: 'Creator Coaster',
-    description: "Creator Coaster server will be your best friend through out your content creation journey, varying from assets up to professional editors & artists that are willing to help you no matter what! No matter what you need help in, we're down to help you by having active staff & helpers that would be pleased to help!",
+    description: "Asset makers, editors, and artists who pitch in when you get stuck. Busy server with active helpers.",
     members: 12500,
     inviteUrl: 'https://discord.gg/uvWYV82f8J',
     image: 'https://cdn.discordapp.com/icons/1075932452842909806/a_40d64cc9e3aabcd7b42a6027a399d2e6.webp?size=100&quality=lossless',
@@ -57,7 +57,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 2,
     name: 'Minecraft Design Hub',
-    description: 'The Minecraft Design Hub is run by qualified designers with an extensive background in the GFX industry. We enjoy making designs, playing games and helping the community. In this community, you can purchase designs from our top notch designers.',
+    description: 'GFX designers who take commissions and hang out between projects.',
     members: 6000,
     inviteUrl: 'https://discord.gg/vYprQ9sK4v',
     image: 'https://cdn.discordapp.com/icons/972091816004444170/f4457c7980f91b0bbbc2ecb7af0f0ecf.webp?size=100&quality=lossless',
@@ -66,7 +66,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 3,
     name: 'Thumbnailers',
-    description: "Thumbnailers is a thriving community for Minecraft thumbnail designers. Whether you're a beginner or a pro, you'll find resources, feedback, and help to improve your skills and showcase your work. Join us to elevate your designs!",
+    description: "Thumbnail designers at every level. Post work, get feedback, and find resources.",
     members: 2500,
     inviteUrl: 'https://discord.gg/4Q8MwTaSyh',
     image: 'https://cdn.discordapp.com/icons/1102968474894082081/1f868f37cb129b50e27497984a7b020d.png?size=4096',
@@ -75,7 +75,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 4,
     name: 'EditHub',
-    description: "EditHub is the ultimate content creation hub for editors, designers, and creators looking to grow and improve. Whether you're searching for high-quality presets, assets, or expert advice, this server has everything you need in one place. Connect with like-minded individuals who are passionate about editing, content creation, and digital media.",
+    description: "Presets, assets, and editing advice in one server, with editors and designers who answer questions.",
     members: 1500,
     inviteUrl: 'https://discord.gg/rrFFMAut3r',
     image: 'https://cdn.discordapp.com/icons/1014715191075811328/a_609aa97aad2f2726480ffe8b5b15567c.webp',
@@ -84,7 +84,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 5,
     name: 'Renderdragon',
-    description: "Our official Discord server where you can suggest assets, contact us for questions or suggestions and more. We live by our community and we'd love to hear your feedback!",
+    description: "Our server. Suggest assets, report problems, or talk to the team.",
     members: 100,
     inviteUrl: 'https://discord.gg/d9zxkkdBWV',
     image: '/renderdragon.png',
@@ -107,7 +107,7 @@ const defaultVideoCategories: VideoCategory[] = [
   {
     id: 1,
     name: 'How to Make Thumbnails',
-    description: 'Learn how to create eye-catching Minecraft thumbnails that get clicks',
+    description: 'Making Minecraft thumbnails that get clicked, from first sketch to final glow',
     videos: [
       generateVideoData(
         '9QkyhxA38NU',
@@ -156,7 +156,7 @@ const defaultVideoCategories: VideoCategory[] = [
   {
     id: 2,
     name: 'How to Edit in Premiere Pro',
-    description: 'Tutorials for editing Minecraft videos in Adobe Premiere Pro & After Effects',
+    description: 'Cutting Minecraft videos in Premiere Pro and After Effects',
     videos: [
       generateVideoData(
         'yO52Tx60Keg',
@@ -199,7 +199,7 @@ const defaultVideoCategories: VideoCategory[] = [
   {
     id: 3,
     name: 'How to Edit in DaVinci Resolve',
-    description: 'Tutorials for editing Minecraft videos in DaVinci Resolve',
+    description: 'Cutting Minecraft videos in DaVinci Resolve',
     videos: [
       generateVideoData(
         'qDHnCFMZ9HA',
@@ -279,9 +279,9 @@ const Community = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Community - Renderdragon</title>
-        <meta name="description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
+        <meta name="description" content="Community Discord servers and video tutorials for Minecraft thumbnail design and editing." />
         <meta property="og:title" content="Community - Renderdragon" />
-        <meta property="og:description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
+        <meta property="og:description" content="Community Discord servers and video tutorials for Minecraft thumbnail design and editing." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/community" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -293,31 +293,31 @@ const Community = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-jetbrains-mono mb-8 text-center">
-              <span className="text-cow-purple">Creator</span> Community
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              <span className="text-primary">Creator</span> Community
             </h1>
 
             <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
-              Connect with other creators, learn from tutorials, and join our growing community.
-              From tutorials to Discord servers, we've got you covered.
+              Discord servers and tutorial channels we actually recommend, plus our own server for asset
+              suggestions and help.
             </p>
 
             <Tabs defaultValue="videos" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="videos" className="text-lg font-jetbrains-mono">YouTube Tutorials</TabsTrigger>
-                <TabsTrigger value="servers" className="text-lg font-jetbrains-mono">Discord Servers</TabsTrigger>
+                <TabsTrigger value="videos" className="text-lg ">YouTube Tutorials</TabsTrigger>
+                <TabsTrigger value="servers" className="text-lg ">Discord Servers</TabsTrigger>
               </TabsList>
 
               <TabsContent value="videos">
                 {isLoading ? (
                   <div className="space-y-8">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="pixel-corners border border-border rounded-md overflow-hidden">
+                      <div key={i} className=" border border-border rounded-md overflow-hidden">
                         <div className="bg-card p-4">
                           <Skeleton className="h-8 w-1/2 mb-2" />
                           <Skeleton className="h-4 w-3/4" />
                         </div>
-                        <div className="p-4 bg-background/80">
+                        <div className="p-4 bg-background">
                           <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                             {[...Array(4)].map((_, j) => <VideoCardSkeleton key={j} />)}
                           </div>
@@ -332,12 +332,12 @@ const Community = () => {
                         key={category.id}
                         open={openCategories.includes(category.id)}
                         onOpenChange={() => toggleCategory(category.id)}
-                        className="border border-border rounded-md pixel-corners overflow-hidden"
+                        className="border border-border rounded-md  overflow-hidden"
                       >
                         <CollapsibleTrigger asChild>
-                          <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/50 transition-colors">
+                          <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent transition-colors">
                             <div>
-                              <h2 className="text-2xl font-jetbrains-mono">{category.name}</h2>
+                              <h2 className="text-2xl ">{category.name}</h2>
                               <p className="text-muted-foreground text-sm mt-1">
                                 {category.description}
                               </p>
@@ -347,13 +347,13 @@ const Community = () => {
                           </div>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <div className="p-4 bg-background/80">
+                          <div className="p-4 bg-background">
                             <div className="relative">
                               <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                                 {category.videos.map(video => (
                                   <div
                                     key={video.id}
-                                    className="min-w-[300px] max-w-[300px] pixel-card cursor-pointer hover:border-primary transition-all group"
+                                    className="min-w-[300px] max-w-[300px] rounded-xl border border-border bg-card p-4 cursor-pointer hover:border-primary transition-all group"
                                     onClick={() => setSelectedVideo(video)}
                                   >
                                     <div className="relative rounded-md overflow-hidden mb-3">
@@ -407,7 +407,7 @@ const Community = () => {
                     {servers.map(server => (
                       <div
                         key={server.id}
-                        className="pixel-card overflow-hidden p-6 flex flex-col h-full"
+                        className="rounded-xl border border-border bg-card p-4 overflow-hidden p-6 flex flex-col h-full"
                       >
                         <div className="flex items-center gap-4 mb-4">
                           {server.image && (
@@ -422,7 +422,7 @@ const Community = () => {
                           )}
 
                           <div className="flex flex-col">
-                            <h3 className="text-xl font-jetbrains-mono">
+                            <h3 className="text-xl ">
                               {server.name}
                             </h3>
                             <div className="flex items-center gap-2 mt-1">
@@ -452,7 +452,7 @@ const Community = () => {
                         <div className="mt-4">
                           <Button
                             onClick={() => handleJoinServer(server)}
-                            className="w-full pixel-btn-primary flex items-center justify-center"
+                            className="w-full inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center"
                           >
                             Join Server
                             <JoinServerIcon />
@@ -473,9 +473,9 @@ const Community = () => {
 
       {/* Video Dialog */}
       <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideo(null)}>
-        <DialogContent className="sm:max-w-4xl pixel-corners overflow-y-auto max-h-[90vh] custom-scrollbar">
+        <DialogContent className="sm:max-w-4xl  overflow-y-auto max-h-[90vh] custom-scrollbar">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-jetbrains-mono">{selectedVideo?.title}</DialogTitle>
+            <DialogTitle className="text-2xl ">{selectedVideo?.title}</DialogTitle>
             <DialogDescription className="flex items-center gap-2">
               <Badge variant="secondary">
                 {selectedVideo?.creator}
@@ -501,7 +501,7 @@ const Community = () => {
             </div>
 
             <Button
-              className="w-full pixel-btn-primary"
+              className="w-full inline-flex items-center justify-center chamfer bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               onClick={() => window.open(selectedVideo?.url, '_blank', 'noopener,noreferrer')}
             >
               Watch on YouTube
