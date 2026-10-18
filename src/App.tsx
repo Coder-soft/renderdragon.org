@@ -34,7 +34,7 @@ const GlobalComponents = () => {
     <>
       <Seo
         title={`${routeName.replace(/\b\w/g, (letter) => letter.toUpperCase())} | RenderDragon`}
-        description={`Explore ${routeName} on RenderDragon, free tools and resources for Minecraft content creators.`}
+        description={`${routeName} on Renderdragon. Free tools and resources for Minecraft creators.`}
         path={location.pathname}
         robots={isPrivateRoute ? 'noindex, nofollow' : undefined}
       />
@@ -85,6 +85,8 @@ const CreatorPackPage = lazy(() => import("@/pages/CreatorPackPage"));
 const PartnerDashboard = lazy(() => import("@/pages/PartnerDashboard"));
 const OAuthConsent = lazy(() => import("@/pages/OAuthConsent"));
 const PartnerDocs = lazy(() => import("@/pages/PartnerDocs"));
+const ChibiMaker = lazy(() => import("@/pages/ChibiMaker"));
+const Status = lazy(() => import("@/pages/Status"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
@@ -199,10 +201,7 @@ const App = () => {
                       element={<AiTitleHelper />}
                     />
                     <Route path="/utilities" element={<Utils />} />
-                    <Route
-                      path="/player-renderer"
-                      element={<PlayerRenderer />}
-                    />
+                    <Route path="/player-renderer" element={<PlayerRenderer />} />
                     <Route path="/renderbot" element={<Renderbot />} />
                     <Route path="/account" element={<Account />} />
                     <Route path="/account/profile" element={
@@ -247,6 +246,8 @@ const App = () => {
                     <Route path="/creator-packs/:slug" element={<CreatorPackPage />} />
                     <Route path="/partners/dashboard" element={<PartnerDashboard />} />
                     <Route path="/partners/docs" element={<PartnerDocs />} />
+                    <Route path="/status" element={<Status />} />
+                    <Route path="/chibi-maker" element={<ChibiMaker />} />
                     <Route path="/oauth/consent" element={<OAuthConsent />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

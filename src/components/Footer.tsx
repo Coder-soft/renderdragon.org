@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { IconShoppingCart } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import Logo from './Logo';
-import HyperpingBadge from '@/components/ui/StatusBadge';
 
 const languageOptions = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -75,7 +74,7 @@ const Footer = () => {
             </Link>
 
             <p className="text-muted-foreground mb-6 max-w-md">
-              The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more.
+              Free music, sound effects, fonts, presets, and tools for Minecraft creators.
             </p>
 
             <div className="flex space-x-4 mb-3">
@@ -177,6 +176,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/chibi-maker" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Chibi Maker
+                </Link>
+              </li>
+              <li>
                 <Link to="/renderbot" className="text-muted-foreground hover:text-foreground transition-colors">
                   Renderbot
                 </Link>
@@ -218,7 +222,13 @@ const Footer = () => {
               Renderbot
             </Link>
 
-            <HyperpingBadge status="online" />
+            <Link
+              to="/status"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <span className="h-2 w-2 rounded-full bg-green-500" />
+              Status
+            </Link>
 
             <div className="text-muted-foreground text-sm">
               <span className="mr-4">Not associated with Mojang, AB.</span>
