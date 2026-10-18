@@ -1,6 +1,9 @@
 export const SITE_URL = "https://renderdragon.org";
 export const DEFAULT_OG_IMAGE = "https://i.ibb.co/60Mr2Psf/Document.png";
 
+// Uptime Kuma's RenderDragon status page, the public status page linked from the footer.
+export const STATUS_PAGE_URL = "https://status.codersoft.xyz/";
+
 const OG_IMAGE_DIMENSIONS: Record<string, { width: number; height: number }> = {
   [DEFAULT_OG_IMAGE]: { width: 640, height: 360 },
   "/renderdragon.png": { width: 900, height: 650 },
