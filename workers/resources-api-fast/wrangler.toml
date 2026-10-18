@@ -1,0 +1,19 @@
+name = "assets-api"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# All bindings are declared so a version upload keeps the worker's full
+# environment. Secrets (ADMIN_KEY, API_KEY, GITHUB_TOKEN, WEBHOOK_SECRET) are
+# inherited from the deployed version by wrangler's version upload.
+[[kv_namespaces]]
+binding = "RESOURCES_KV"
+id = "a399531203c442ef975292d7ce365a4a"
+
+[[kv_namespaces]]
+binding = "CREDITS_KV"
+id = "34f9ccdc9d2c4f308424c7859aa0bb62"
+
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 60, period = 60 }
