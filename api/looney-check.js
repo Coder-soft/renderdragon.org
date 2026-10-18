@@ -244,7 +244,7 @@ export const config = {
 
 class ValidationError extends Error {}
 
-export default async function handler(request) {
+export async function handler(request) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders(request) });
   }
@@ -318,3 +318,7 @@ export default async function handler(request) {
     return jsonResponse(request, { error: message }, status);
   }
 }
+
+// Vercel's Node.js runtime ignores a Response returned from a default-exported
+// function, so expose the Web `fetch` handler it recognizes instead.
+export default { fetch: handler };
