@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { IconShoppingCart } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import Logo from './Logo';
+import { STATUS_PAGE_URL } from '@/lib/site';
 
 const languageOptions = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -222,13 +223,15 @@ const Footer = () => {
               Renderbot
             </Link>
 
-            <Link
-              to="/status"
+            <a
+              href={STATUS_PAGE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <span className="h-2 w-2 rounded-full bg-green-500" />
               Status
-            </Link>
+            </a>
 
             <div className="text-muted-foreground text-sm">
               <span className="mr-4">Not associated with Mojang, AB.</span>

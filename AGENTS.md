@@ -59,6 +59,10 @@ relevant fork issue by URL in the PR body instead. There is an existing open red
 - **Data flow:** browser → `gateway.codersoft.xyz` (session, signs) → `api.codersoft.xyz` (verifies) →
   e3 `hamburger.codersoft.xyz` (resources catalog + files) / `assets-api-worker` (uploads) → on e3 down,
   fall back to `hamburger-api`/`assets-api-worker`.
+- **Uptime Kuma** on e3 (`louislam/uptime-kuma:2` container, host networking, loopback `:3001`, data in
+  `/home/home/uptime-kuma/data/kuma.db`, compose file next to it). It does all the monitoring behind
+  `/status`. Exposed publicly as **`kuma.codersoft.xyz`** through the same tunnel. Status page slug
+  `renderdragon` (id 2) holds the user-facing groups; slug `home` (id 1) holds e3 internals.
 
 ## Auth model (why "network manipulation" can't bypass)
 
@@ -145,6 +149,8 @@ ssh e3 'echo root | sudo -S -p "" systemctl restart hamburger-api'
 curl https://api.codersoft.xyz/__router/health
 curl https://gateway.codersoft.xyz/__version
 curl https://hamburger.codersoft.xyz/__health
+curl https://kuma.codersoft.xyz/api/status-page/renderdragon | head -c 200
+curl https://renderdragon.org/api/uptime | head -c 200
 ```
 
 - **Auto-update:** pushing to `Renderdragonorg/resources_renderdragon` fires its webhook →
@@ -159,6 +165,16 @@ curl https://hamburger.codersoft.xyz/__health
 
 ## Still-open / config-only (as of last touch)
 
+- The status page reads Uptime Kuma through `api/uptime.js` (defaults to `https://kuma.codersoft.xyz`,
+  slug `renderdragon`; override with `UPTIME_KUMA_URL` / `UPTIME_KUMA_PAGE`). Kuma's status-page API sends
+  **no CORS headers**, so the browser must go through that proxy rather than calling Kuma directly.
+- Monitor blurbs on `/status` are keyed by monitor name in `src/lib/status.ts`, because Kuma's public API
+  exposes names and types but not descriptions. A new monitor appears automatically and simply has no
+  blurb until the map is updated.
+- Kuma has no REST CRUD (its router only serves badges), so monitors are created in the Kuma UI or in
+  `kuma.db`. Hand-editing needs the container stopped and the box has no `sqlite3` CLI; use `python3`, or
+  copy `kuma.db*` to the Mac and query it there.
+- `looney.codersoft.xyz` answers Cloudflare error 1033, so the Looney check API monitor is red.
 - `VITE_TURNSTILE_SITE_KEY` must be set in the deploy env for anonymous asset sessions (logged-in users
   bypass Turnstile via their Supabase token).
 - OIDC asymmetric signing keys are not yet enabled in Supabase. `standardScopesFor` requests
