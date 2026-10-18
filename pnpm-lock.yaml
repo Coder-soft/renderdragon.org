@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@daidr/minecraft-skin-renderer':
+        specifier: ^0.3.2
+        version: 0.3.2
       '@distube/ytdl-core':
         specifier: ^4.16.12
         version: 4.16.12
@@ -467,6 +470,14 @@ packages:
 
   '@bytecodealliance/preview2-shim@0.17.6':
     resolution: {integrity: sha512-n3cM88gTen5980UOBAD6xDcNNL3ocTK8keab21bpx1ONdA+ARj7uD1qoFxOWCyKlkpSi195FH+GeAut7Oc6zZw==}
+
+  '@daidr/minecraft-skin-renderer@0.3.2':
+    resolution: {integrity: sha512-OxHI18ih6zABnFH3jhjHLeJNH0gbCiDcxYOSnQgCJ71HbEag0CeQDFFewYXBSPeUm9BwZr+tzSQk1S0hFk7wXQ==}
+    peerDependencies:
+      vue: ^3.3.0
+    peerDependenciesMeta:
+      vue:
+        optional: true
 
   '@distube/ytdl-core@4.16.12':
     resolution: {integrity: sha512-/NR8Jur1Q4E2oD+DJta7uwWu7SkqdEkhwERt7f4iune70zg7ZlLLTOHs1+jgg3uD2jQjpdk7RGC16FqstG4RsA==}
@@ -5157,6 +5168,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.28.5
 
   '@bytecodealliance/preview2-shim@0.17.6': {}
+
+  '@daidr/minecraft-skin-renderer@0.3.2': {}
 
   '@distube/ytdl-core@4.16.12':
     dependencies:
