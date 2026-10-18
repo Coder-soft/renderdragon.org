@@ -47,7 +47,7 @@ const TweetGenerator = () => {
               id="profilePicUrl"
               value={profilePicUrl}
               onChange={(e) => setProfilePicUrl(e.target.value)}
-              placeholder="e.g., https://via.placeholder.com/48"
+              placeholder="https://renderdragon.org/renderdragon.png"
               className=""
             />
           </div>

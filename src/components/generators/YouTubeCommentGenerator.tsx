@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import html2canvas from 'html2canvas';
 
 const YouTubeCommentGenerator = () => {
-  const [avatarUrl, setAvatarUrl] = useState('https://preview.redd.it/guys-gimme-a-good-femboy-pfp-the-most-up-voted-wins-image-v0-82657ojk9krd1.jpeg?width=640&crop=smart&auto=webp&s=08de7a1c960292cd603849514cbb0ca8f3c940cf');
+  const [avatarUrl, setAvatarUrl] = useState('https://renderdragon.org/renderdragon.png');
   const [userName, setUserName] = useState('Yamura');
   const [commentText, setCommentText] = useState('Sigma first!! 0:32 was the best part.');
   const [timeStamp, setTimeStamp] = useState('2 hours ago');
