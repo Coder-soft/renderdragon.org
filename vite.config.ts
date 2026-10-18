@@ -23,12 +23,6 @@ export default defineConfig(() => {
           secure: true,
           rewrite: (path) => path.replace(/^\/api\/assets-gw/, ''),
         },
-        '/api/status-router': {
-          target: 'https://api.codersoft.xyz',
-          changeOrigin: true,
-          secure: true,
-          rewrite: (path) => path.replace(/^\/api\/status-router/, ''),
-        },
         '/api/stats': {
           target: 'https://analytics.codersoft.xyz',
           changeOrigin: true,

@@ -12,6 +12,7 @@ import looneyCheckHandler from './api/looney-check.js';
 import { handler as musicLinkHandler } from './api/music-link.js';
 import { handler as trackHandler } from './api/track.js';
 import { handler as statsHandler } from './api/stats.js';
+import { handler as uptimeHandler } from './api/uptime.js';
 import { isAllowedOrigin } from './api/cors.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
@@ -85,6 +86,7 @@ app.all('/api/looney-check', createAdapter(looneyCheckHandler));
 app.all('/api/music-link', createAdapter(musicLinkHandler));
 app.all('/api/track', createAdapter(trackHandler));
 app.all('/api/stats', createAdapter(statsHandler));
+app.all('/api/uptime', createAdapter(uptimeHandler));
 // UploadThing route
 app.use(
   '/api/uploadthing',
