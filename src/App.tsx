@@ -15,6 +15,7 @@ import DonateButton from "@/components/DonateButton";
 import { AdBlockDetector } from "@/components/AdBlockDetector";
 import Navbar from "@/components/Navbar";
 import Seo from "@/components/Seo";
+import { STATUS_PAGE_URL } from "@/lib/site";
 
 // Routes that should never be indexed by search engines.
 const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/manage', '/partners/dashboard', '/oauth/consent'];
@@ -86,14 +87,22 @@ const PartnerDashboard = lazy(() => import("@/pages/PartnerDashboard"));
 const OAuthConsent = lazy(() => import("@/pages/OAuthConsent"));
 const PartnerDocs = lazy(() => import("@/pages/PartnerDocs"));
 const ChibiMaker = lazy(() => import("@/pages/ChibiMaker"));
-const Status = lazy(() => import("@/pages/Status"));
-
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
     <IconLoader2 className="w-12 h-12 animate-spin text-primary" />
     <p className="text-white/80">{message}</p>
   </div>
 );
+
+// The live status page is Uptime Kuma's own page, so /status hands visitors
+// over to it instead of rendering a second copy.
+const StatusRedirect = () => {
+  useEffect(() => {
+    window.location.replace(STATUS_PAGE_URL);
+  }, []);
+
+  return <LoadingFallback message="Opening status.codersoft.xyz…" />;
+};
 
 // Marks that a signed-in user has already been auto-redirected from the
 // homepage to /resources during the current browser session. Kept in
@@ -246,7 +255,7 @@ const App = () => {
                     <Route path="/creator-packs/:slug" element={<CreatorPackPage />} />
                     <Route path="/partners/dashboard" element={<PartnerDashboard />} />
                     <Route path="/partners/docs" element={<PartnerDocs />} />
-                    <Route path="/status" element={<Status />} />
+                    <Route path="/status" element={<StatusRedirect />} />
                     <Route path="/chibi-maker" element={<ChibiMaker />} />
                     <Route path="/oauth/consent" element={<OAuthConsent />} />
                     <Route path="*" element={<NotFound />} />
