@@ -6,7 +6,7 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-export default async function handler(req) {
+export async function handler(req) {
     if (req.method === 'OPTIONS') {
         return new Response(null, { status: 204, headers: corsHeaders });
     }
@@ -95,3 +95,7 @@ export default async function handler(req) {
         });
     }
 }
+
+// Vercel's Node.js runtime ignores a Response returned from a default-exported
+// function, so expose the Web `fetch` handler it recognizes instead.
+export default { fetch: handler };

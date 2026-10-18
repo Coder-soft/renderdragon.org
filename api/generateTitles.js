@@ -39,7 +39,7 @@ async function generateTitlesWithOpenRouter(description, creativity) {
   return data.choices[0].message.content;
 }
 
-export default async function handler(req) {
+export async function handler(req) {
   // Handle OPTIONS preflight request
   if (req.method === 'OPTIONS') {
     return new Response(null, {
@@ -133,3 +133,7 @@ export default async function handler(req) {
     });
   }
 }
+
+// Vercel's Node.js runtime ignores a Response returned from a default-exported
+// function, so expose the Web `fetch` handler it recognizes instead.
+export default { fetch: handler };

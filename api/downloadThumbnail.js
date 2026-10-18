@@ -24,7 +24,7 @@ function isAllowedThumbnailUrl(rawUrl) {
   return ALLOWED_THUMBNAIL_HOSTS.has(u.hostname.toLowerCase());
 }
 
-export default async function handler(req) {
+export async function handler(req) {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
@@ -89,4 +89,8 @@ export default async function handler(req) {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
-} 
+}
+
+// Vercel's Node.js runtime ignores a Response returned from a default-exported
+// function, so expose the Web `fetch` handler it recognizes instead.
+export default { fetch: handler };

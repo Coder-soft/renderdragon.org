@@ -154,4 +154,6 @@ export async function handler(request) {
   }
 }
 
-export default handler;
+// Vercel's Node.js runtime ignores a Response returned from a default-exported
+// function, so expose the Web `fetch` handler it recognizes instead.
+export default { fetch: handler };
