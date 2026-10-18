@@ -9,22 +9,22 @@ const features = [
   {
     icon: IconClipboard,
     title: 'Copy-Paste Anywhere',
-    description: 'Seamlessly copy and paste assets into any application with a single click. Works with all major design tools and editors.'
+    description: 'Copy an asset to your clipboard and paste it into whatever editor you use.'
   },
   {
     icon: IconLayout,
     title: 'Simple UI',
-    description: 'Clean and intuitive interface designed for efficiency. No clutter, no confusion - just the tools you need.'
+    description: 'One window, no clutter. Search, preview, and copy without leaving your work.'
   },
   {
     icon: IconBackground,
     title: 'Background Operation',
-    description: 'Runs quietly in the background without interrupting your workflow. Quick access from the system tray.'
+    description: 'Stays in the system tray, out of the way until you need an asset.'
   },
   {
     icon: IconBolt,
     title: 'Efficient & Fast',
-    description: 'Lightweight application optimized for speed. Minimal resource usage with maximum performance.'
+    description: 'Small download, light on memory, opens fast.'
   }
 ];
 
@@ -54,9 +54,9 @@ const NativeApplication = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Native Application - Renderdragon</title>
-        <meta name="description" content="Download the Renderdragon native application for seamless asset management. Copy-paste assets into any application with ease." />
+        <meta name="description" content="Download the Renderdragon app for Windows, macOS, and Linux. Copy an asset into any editor without leaving your work." />
         <meta property="og:title" content="Native Application - Renderdragon" />
-        <meta property="og:description" content="Download the Renderdragon native application for seamless asset management. Copy-paste assets into any application with ease." />
+        <meta property="og:description" content="Download the Renderdragon app for Windows, macOS, and Linux. Copy an asset into any editor without leaving your work." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/native-application" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -76,7 +76,7 @@ const NativeApplication = () => {
               <span className="text-primary">Native</span> Application
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A powerful desktop application for seamless asset management and integration with your favorite design tools
+              A desktop app that puts the asset library one click from your editor's clipboard.
             </p>
           </motion.div>
 

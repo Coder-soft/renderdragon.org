@@ -120,7 +120,7 @@ const Account = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>My Account - Renderdragon</title>
-        <meta name="description" content="Manage your Renderdragon account settings and profile information." />
+        <meta name="description" content="Change your display name, avatar, and bio, and manage the apps connected to your account." />
       </Helmet>
 
 

@@ -78,7 +78,7 @@ export function PartnerAppForm({ app, onSaved }: { app: PartnerApp; onSaved: () 
         inputId="app-redirects"
         value={redirectUris}
         onChange={setRedirectUris}
-        hint="Coordinate changes with us — they're mirrored to your OAuth client."
+        hint="Coordinate changes with us. They're mirrored to your OAuth client."
       />
 
       <Separator />

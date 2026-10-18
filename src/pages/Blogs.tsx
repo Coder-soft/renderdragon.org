@@ -98,7 +98,7 @@ export default function Blogs() {
         <div className="min-h-screen flex flex-col">
             <Helmet>
                 <title>Blogs - Renderdragon</title>
-                <meta name="description" content="Read the latest news and guides from Renderdragon." />
+                <meta name="description" content="Guides, announcements, and notes on Minecraft thumbnails, editing, and the asset library." />
             </Helmet>
 
 

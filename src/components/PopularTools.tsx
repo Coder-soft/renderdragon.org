@@ -18,7 +18,7 @@ const tools: Tool[] = [
   {
     id: 1,
     title: 'YouTube Tools',
-    description: 'Grab thumbnails, peek at analytics, and download videos for reference.',
+    description: 'Paste a link to see the views, likes, tags, and channel, then download the thumbnail.',
     icon: IconDownload,
     hoverIcon: IconBrandYoutube,
     path: '/youtube-downloader',
@@ -26,7 +26,7 @@ const tools: Tool[] = [
   {
     id: 2,
     title: 'Background Gen',
-    description: 'Generate stunning, unique backgrounds for your thumbnails in seconds.',
+    description: 'Build thumbnail backgrounds from patterns and textures. Export a PNG or a looping video.',
     icon: IconPhoto,
     backgroundImage: '/assets/minecraft-pattern-background.webp',
     path: '/background-generator',
@@ -34,7 +34,7 @@ const tools: Tool[] = [
   {
     id: 3,
     title: 'Player Renderer',
-    description: 'Render a 3D model of any Minecraft player skin. Pose it. Screenshot it.',
+    description: 'Render any Minecraft player as a head, bust, or full body.',
     icon: IconUser,
     hoverImage: 'https://vzge.me/face/1024/codersoft',
     path: '/player-renderer',
@@ -68,7 +68,7 @@ const PopularTools = () => {
             Creator <span className="text-primary">Tools</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground">
-            Built for the boring parts so you can focus on the fun.
+            The three people open most.
           </p>
         </motion.div>
 

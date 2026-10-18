@@ -86,7 +86,7 @@ const Testimonials = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground"
           >
-            Don't take our word for it — hear it from the people making the content.
+            Don't take our word for it. Hear it from the creators making the content.
           </motion.p>
         </div>
 

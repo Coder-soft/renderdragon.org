@@ -625,11 +625,11 @@ const BackgroundGenerator = () => {
     <div className="min-h-screen flex flex-col">
       <Seo
         title="Background Generator - Renderdragon"
-        description="Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art with our background generator tool."
+        description="Build Minecraft thumbnail backgrounds from patterns and textures, animate them, and export a PNG or video."
         path="/background-generator"
         jsonLd={softwareApplicationSchema({
           name: "Background Generator",
-          description: "Create unique and engaging backgrounds for your Minecraft YouTube thumbnails and channel art.",
+          description: "Build Minecraft thumbnail backgrounds from patterns and textures, then export a PNG or video.",
           path: "/background-generator",
           image: "/ogimg/background.png",
         })}

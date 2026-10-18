@@ -20,7 +20,7 @@ const cards = [
   {
     icon: IconHeadphones,
     title: "Free Resources",
-    description: "Music, SFX, fonts, presets, and animations. Ready to drop into your project — no paywalls, no signups.",
+    description: "Music, sound effects, fonts, presets, and animations. Free to download, no account needed.",
     tags: ["Music", "SFX", "Images", "Fonts"],
     tagIcons: [IconMusic, IconWaveSine, IconPhoto, IconTypography],
     link: "/resources",
@@ -30,7 +30,7 @@ const cards = [
   {
     icon: IconWand,
     title: "Powerful Tools",
-    description: "Generators, copyright checkers, renderers. Built to skip the boring parts so you can focus on the fun.",
+    description: "Nametag, comment, and tweet generators, a copyright checker, and player renderers.",
     tags: ["Generators", "Copyright", "Render Bot"],
     tagIcons: [IconWand, IconWaveSine, IconPhoto],
     link: "/generators",
@@ -40,7 +40,7 @@ const cards = [
   {
     icon: IconBook2,
     title: "Learn & Grow",
-    description: "Step-by-step guides from creators who actually make Minecraft content. No fluff, just signal.",
+    description: "Guides on scripting, copyright, AI, and finding a style, written by people who post Minecraft videos.",
     tags: ["Guides", "Tutorials", "Tips"],
     tagIcons: [IconBook2, IconBook2, IconBook2],
     link: "/guides",
@@ -64,7 +64,7 @@ const ValueProps = () => {
             <span className="text-primary">Nothing you don't.</span>
           </h2>
           <p className="text-xl md:text-2xl text-foreground/70 leading-tight">
-            Three pillars. One hub. Built so you can stop searching and start shipping.
+            One place for the assets, tools, and guides you'd otherwise hunt across ten tabs.
           </p>
         </div>
 

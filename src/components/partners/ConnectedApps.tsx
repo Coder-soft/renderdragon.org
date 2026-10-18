@@ -55,7 +55,7 @@ export function ConnectedApps() {
     <div className="space-y-4">
       <h3 className="text-lg text-primary">Connected apps</h3>
       <p className="text-sm text-muted-foreground">
-        Apps you've signed into with RenderDragon. Revoke any time — they lose access on their next request.
+        Apps you've signed into with RenderDragon. Revoke any time. They lose access on their next request.
       </p>
 
       {apps === null ? (

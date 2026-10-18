@@ -146,8 +146,8 @@ const NotFound = () => {
             className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto"
             variants={itemVariants}
           >
-            The page you're trying to reach doesn't exist — or it may have been
-            lost in the Nether. Try heading back or explore something new.
+            The page you're trying to reach doesn't exist, or it got lost in
+            the Nether. Try heading back or explore something new.
           </motion.p>
 
           <motion.div

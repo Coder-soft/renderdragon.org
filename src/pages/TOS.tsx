@@ -8,9 +8,9 @@ const TOS = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Terms of Service - Renderdragon</title>
-        <meta name="description" content="Read our Terms of Service to understand the rules and guidelines for using Renderdragon's tools and resources." />
+        <meta name="description" content="The rules for using Renderdragon, covering assets, accounts, user conduct, liability, and copyright claims." />
         <meta property="og:title" content="Terms of Service - Renderdragon" />
-        <meta property="og:description" content="Read our Terms of Service to understand the rules and guidelines for using Renderdragon's tools and resources." />
+        <meta property="og:description" content="The rules for using Renderdragon, covering assets, accounts, user conduct, liability, and copyright claims." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/tos" />
         <meta name="twitter:card" content="summary_large_image" />

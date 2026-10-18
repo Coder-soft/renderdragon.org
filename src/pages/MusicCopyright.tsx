@@ -20,11 +20,11 @@ const MusicCopyright = () => {
   return <div className="flex min-h-screen flex-col">
     <Seo
       title="Looney Checks - Music Copyright Checker | Renderdragon"
-      description="Research music licensing and copyright signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself."
+      description="Check a Spotify track, a catalog song, or your own audio file for copyright and licensing problems before you publish."
       path="/gappa"
       jsonLd={softwareApplicationSchema({
         name: "Looney Checks",
-        description: "Research music licensing and copyright signals before you publish.",
+        description: "Check music for copyright and licensing problems before you publish.",
         path: "/gappa",
         image: "/ogimg/copyright.png",
         category: "UtilitiesApplication",
@@ -32,7 +32,7 @@ const MusicCopyright = () => {
     />
     <main className="flex-grow cow-grid-bg bg-background px-4 pb-20 pt-28">
       <div className="container mx-auto max-w-6xl">
-         <div className="mx-auto max-w-3xl text-center"><h1 className="text-2xl font-bold leading-relaxed sm:text-3xl md:text-5xl"><span className="text-primary">Looney</span> Checks</h1><p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">Research music licensing signals before you publish. Check a Spotify track, catalog music, or an audio file you upload yourself.</p></div>
+         <div className="mx-auto max-w-3xl text-center"><h1 className="text-2xl font-bold leading-relaxed sm:text-3xl md:text-5xl"><span className="text-primary">Looney</span> Checks</h1><p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">Check a Spotify track, a site music file, or your own upload for licensing signals before you publish.</p></div>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
           <section className=" min-w-0 overflow-hidden border-2 border-foreground/10 bg-card shadow-sm">

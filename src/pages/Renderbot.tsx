@@ -9,7 +9,7 @@ const Renderbot = () => (
   <div className="min-h-screen flex flex-col">
     <Helmet>
       <title>Renderbot - Discord Bot for Minecraft Content Creators</title>
-      <meta name="description" content="Renderbot is a Discord bot for content creators. Join the official RenderDragon Discord server to use it." />
+      <meta name="description" content="Renderbot runs inside the official Renderdragon Discord server. Join to use it, nothing to install." />
       <meta property="og:title" content="Renderbot - Renderdragon" />
       <meta property="og:description" content="Join the official RenderDragon Discord server to use Renderbot." />
       <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />

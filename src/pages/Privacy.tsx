@@ -9,9 +9,9 @@ const Privacy = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Privacy Policy - Renderdragon</title>
-        <meta name="description" content="Learn about how we protect your privacy and handle your data at Renderdragon." />
+        <meta name="description" content="What Renderdragon collects, how we use it, cookies and analytics, and how to exercise your data rights." />
         <meta property="og:title" content="Privacy Policy - Renderdragon" />
-        <meta property="og:description" content="Learn about how we protect your privacy and handle your data at Renderdragon." />
+        <meta property="og:description" content="What Renderdragon collects, how we use it, cookies and analytics, and how to exercise your data rights." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/privacy" />
         <meta name="twitter:card" content="summary_large_image" />

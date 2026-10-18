@@ -28,7 +28,7 @@ const Guides: Guide[] = [
     id: 1,
     title: "Advanced Scriptwriting Guide",
     description:
-      "Learn how to write ideal scripts including hooks, retains, informs, satisfies, and finally persuades the audience towards an action.",
+      "Script structure, from the hook to the call to action.",
     category: "scriptwriting",
     difficulty: "advanced",
     markdownUrl: "/guides/scriptwriting.md",
@@ -37,7 +37,7 @@ const Guides: Guide[] = [
     id: 2,
     title: "How to use AI in Content creation",
     description:
-      "Learn how to use AI tools to enhance your content creation process for free.",
+      "Where AI helps your workflow and where it just makes a mess.",
     category: "artificial intelligence",
     difficulty: "intermediate",
     markdownUrl: "/guides/AI.md",
@@ -46,7 +46,7 @@ const Guides: Guide[] = [
     id: 3,
     title: "Good question, bad question",
     description:
-      "Learn how to properly ask for help and get people to notice you.",
+      "How to ask for help so people actually answer.",
     category: "communication",
     difficulty: "beginner",
     markdownUrl: "/guides/questions.md",
@@ -55,7 +55,7 @@ const Guides: Guide[] = [
     id: 4,
     title: "Copyright, what's that?",
     description:
-      "Learn how copyright works and how it affects your content creation process.",
+      "How copyright works and what it means for the videos you publish.",
     category: "copyright",
     difficulty: "intermediate",
     markdownUrl: "/guides/copyright.md",
@@ -64,7 +64,7 @@ const Guides: Guide[] = [
     id: 5,
     title: "Things you should ask yourself when Creating Content",
     description:
-      "Learn how to ask yourself the right questions to improve your content creation process.",
+      "The questions worth asking before you record anything.",
     category: "content creation",
     difficulty: "beginner",
     markdownUrl: "/guides/thingstoask.md",
@@ -72,7 +72,7 @@ const Guides: Guide[] = [
   {
     id: 6,
     title: "How to find your voice",
-    description: "Learn how to find your voice and style in content creation.",
+    description: "Finding a style that's yours instead of a copy of someone else's.",
     category: "content creation",
     difficulty: "intermediate",
     markdownUrl: "/guides/voice.md",
@@ -123,12 +123,12 @@ const GuidesPage = () => {
         <title>Guides - Renderdragon</title>
         <meta
           name="description"
-          content="Access comprehensive guides and tutorials for Minecraft content creation, including scriptwriting, editing, and AI tools."
+          content="Opinionated guides on scriptwriting, AI tools, copyright, and finding your voice as a Minecraft creator."
         />
         <meta property="og:title" content="Guides - Renderdragon" />
         <meta
           property="og:description"
-          content="Access comprehensive guides and tutorials for Minecraft content creation, including scriptwriting, editing, and AI tools."
+          content="Opinionated guides on scriptwriting, AI tools, copyright, and finding your voice as a Minecraft creator."
         />
         <meta
           property="og:image"
@@ -155,8 +155,8 @@ const GuidesPage = () => {
               className="text-center text-muted-foreground mb-12 max-w-xl mx-auto leading-relaxed"
               style={{ wordSpacing: "0.05em" }}
             >
-              Step-by-step tutorials to help you level up your Minecraft content
-              creation skills. From beginner basics to advanced techniques.
+              Guides on the parts of content creation nobody teaches: scripting, copyright, AI, and finding
+              your voice.
             </p>
 
             {isLoading ? (

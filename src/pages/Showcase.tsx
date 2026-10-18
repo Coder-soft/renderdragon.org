@@ -378,7 +378,7 @@ const ShowcasePage: React.FC = () => {
       <div className="container mx-auto px-4 pt-28 pb-12">
         <Helmet>
           <title>Showcase | Renderdragon</title>
-          <meta name="description" content="Share your art with images and videos." />
+          <meta name="description" content="Post your Minecraft art, thumbnails, videos, and audio, then see what other creators made." />
         </Helmet>
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-6">
           <h1 className="text-3xl md:text-4xl ">Community <span className="text-primary">Assets</span></h1>

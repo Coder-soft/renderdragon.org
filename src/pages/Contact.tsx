@@ -129,12 +129,12 @@ const Contact = () => {
         <title>Contact - Renderdragon</title>
         <meta
           name="description"
-          content="Get in touch with the Renderdragon team for support, feedback, or business inquiries. We're here to help Minecraft content creators succeed."
+          content="Email the team about bugs, takedowns, partnerships, or anything else. We're volunteers, but we usually reply within 48 hours."
         />
         <meta property="og:title" content="Contact - Renderdragon" />
         <meta
           property="og:description"
-          content="Get in touch with the Renderdragon team for support, feedback, or business inquiries. We're here to help Minecraft content creators succeed."
+          content="Email the team about bugs, takedowns, partnerships, or anything else. We're volunteers, but we usually reply within 48 hours."
         />
         <meta
           property="og:image"

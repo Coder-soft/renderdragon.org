@@ -23,7 +23,7 @@ const DiscordPopup = ({ isOpen, onClose, onNeverShowAgain }: DiscordPopupProps) 
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary">Join our Discord</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Join our Discord server to get the latest updates, share your creations, and connect with other creators.
+              Updates, feedback, and asset suggestions all happen in our Discord.
             </DialogDescription>
           </DialogHeader>
           <div className="my-4 flex justify-center">

@@ -102,7 +102,7 @@ export default function BlogView() {
         <div className="min-h-screen flex flex-col">
             <Seo
                 title={`${blog.title} - Renderdragon Blog`}
-                description={`Read ${blog.title} on the Renderdragon blog — free tools and resources for Minecraft content creators.`}
+                description={`Read ${blog.title} on the Renderdragon blog, plus free tools and resources for Minecraft creators.`}
                 path={`/blogs/${slug}`}
                 type="article"
                 jsonLd={[

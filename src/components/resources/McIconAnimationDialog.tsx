@@ -424,7 +424,7 @@ const AnimationStudio = ({ resource }: { resource: Resource }) => {
           <p className="text-[11px] text-muted-foreground leading-relaxed">
             Video exports as WebM (or MP4 where supported) and is recorded as one loop.
             {background === 'transparent' &&
-              ' Transparency is preserved in browsers that support alpha video — otherwise the background renders black.'}
+              ' Transparency is preserved in browsers that support alpha video. Otherwise the background renders black.'}
           </p>
         </section>
       </div>

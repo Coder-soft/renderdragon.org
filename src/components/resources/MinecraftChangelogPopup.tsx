@@ -42,7 +42,7 @@ const MinecraftChangelogPopup = () => {
 
           <div className="space-y-3 text-sm text-muted-foreground">
             <p className="text-foreground/80 font-medium">
-              We've integrated the Minecraft Creator-Safe Playlist API directly into the Resources Hub. Browse, search, and play Minecraft music tracks by album — all in one place.
+              The Minecraft Creator-Safe Playlist API now runs inside the Resources Hub. Browse, search, and play music tracks by album without leaving the site.
             </p>
 
             <div>

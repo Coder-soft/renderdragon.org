@@ -19,19 +19,19 @@ const cardVariants: any = {
 const partners = [
   {
     name: "Creators' Kingdom",
-    description: 'A community for creators to collaborate and grow together.',
+    description: 'A creator community for finding collaborators on projects.',
     logo: "/assets/ca.png",
     url: "https://bsky.app/profile/creatorskingdom.bsky.social",
   },
   {
     name: "Proger's Kitchen",
-    description: 'A place for Minecraft content creators to share their creations and get feedback.',
+    description: 'Minecraft creators sharing work and giving each other feedback.',
     logo: "/assets/progerskitchen.webp",
     url: "https://discord.gg/wXhHe5bVgz",
   },
   {
     name: "Moon SMP",
-    description: 'A friendly and welcoming Minecraft SMP server.',
+    description: 'A Minecraft SMP server open to the community.',
     logo: "/assets/image.png",
     url: "https://discord.gg/Vj5K9efp7G",
   },

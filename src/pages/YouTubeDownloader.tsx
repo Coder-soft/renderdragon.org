@@ -261,11 +261,11 @@ const YouTubeDownloader: React.FC = () => {
     <div className="min-h-screen flex flex-col">
       <Seo
         title="YouTube Tools - Download Thumbnails & Stats | Renderdragon"
-        description="Inspect YouTube video details and download thumbnails for fair use and educational purposes. View channel, stats, duration, and more."
+        description="Paste a YouTube link to see the channel, views, likes, duration, and tags, then download the thumbnail."
         path="/youtube-downloader"
         jsonLd={softwareApplicationSchema({
           name: "YouTube Tools",
-          description: "Inspect YouTube video details and download thumbnails for fair use and educational purposes.",
+          description: "Check a YouTube video's stats and download its thumbnail.",
           path: "/youtube-downloader",
           image: "/ogimg/index.png",
           category: "UtilitiesApplication",
@@ -280,8 +280,8 @@ const YouTubeDownloader: React.FC = () => {
             </h1>
 
             <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
-              Inspect YouTube videos and download thumbnails for content creation purposes. Always respect copyright laws and only use content
-              you have permission to use.
+              Paste a link to see the stats and tags, then download the thumbnail. Only use content you have
+              permission to use.
             </p>
 
             <Alert className="mb-8 ">

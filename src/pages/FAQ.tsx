@@ -10,33 +10,33 @@ const FAQ_GROUPS: { title: string; entries: FaqEntry[] }[] = [
   {
     title: 'General Questions',
     entries: [
-      { question: "Is everything on Renderdragon really free?", answer: "Yes! All resources, tools, and guides on Renderdragon are 100% free to use. We believe in making content creation accessible to everyone." },
-      { question: "Do I need to credit Renderdragon when using resources?", answer: "While crediting is not required, it's always appreciated! A simple mention helps spread the word and supports our mission to help more creators." },
+      { question: "Is everything on Renderdragon really free?", answer: "Yes. Every resource, tool, and guide on Renderdragon is free to use." },
+      { question: "Do I need to credit Renderdragon when using resources?", answer: "No, but it helps. A mention or a link gets the site in front of more creators." },
       { question: "Can I use resources for commercial projects?", answer: "Yes, you can use our resources in your commercial projects unless specifically stated otherwise on the resource page." },
     ],
   },
   {
     title: 'Technical Questions',
     entries: [
-      { question: "What file formats do you support?", answer: "We provide resources in various formats including PNG, MP3, WAV, PSD, and more. Each resource specifies its available formats." },
-      { question: "Are the tools compatible with my device?", answer: "Our tools are web-based and work on any modern browser, regardless of your operating system (Windows, Mac, Linux, etc.)." },
-      { question: "What if I encounter technical issues?", answer: "If you experience any technical problems, please reach out through our Discord server or contact page. Our team is here to help!" },
+      { question: "What file formats do you support?", answer: "PNG, MP3, WAV, and PSD among others. Each resource lists the formats it ships in." },
+      { question: "Are the tools compatible with my device?", answer: "The tools run in the browser, so any modern browser on Windows, macOS, or Linux works." },
+      { question: "What if I encounter technical issues?", answer: "Ask in our Discord or use the contact page and we'll take a look." },
     ],
   },
   {
     title: 'Resource Usage',
     entries: [
-      { question: "Can I modify the resources?", answer: "Yes, you're free to modify our resources to suit your needs. We encourage creativity!" },
-      { question: "Are there any usage restrictions?", answer: "The only restriction is reselling or redistributing our resources as-is. Please don't claim our resources as your own or share them on other platforms." },
-      { question: "What about copyright claims?", answer: "We strive to provide copyright-safe resources, but it's always good practice to check the specific terms for each resource, especially for music and sound effects." },
+      { question: "Can I modify the resources?", answer: "Yes. Edit, crop, recolour, whatever the project needs." },
+      { question: "Are there any usage restrictions?", answer: "Don't resell or reupload resources as they are, and don't claim them as your own." },
+      { question: "What about copyright claims?", answer: "We check what we can, but read the terms on the resource page before you publish, especially for music and sound effects." },
     ],
   },
   {
     title: 'Contact & Support',
     entries: [
-      { question: "How can I get help?", answer: "Join our Discord server for quick support, or use the Contact page for specific inquiries. We typically respond within 48 hours." },
-      { question: "Can I suggest new features or resources?", answer: "Absolutely! We love hearing from our community. Share your suggestions on our Discord server or through the Contact page." },
-      { question: "How can I support Renderdragon?", answer: "The best ways to support us are spreading the word, giving credit when using our resources, and considering a donation if you'd like to contribute financially." },
+      { question: "How can I get help?", answer: "Join our Discord for quick answers, or use the contact page. We usually reply within 48 hours." },
+      { question: "Can I suggest new features or resources?", answer: "Yes. Post them in Discord or send them through the contact page." },
+      { question: "How can I support Renderdragon?", answer: "Tell other creators about it, credit us when you use our stuff, or donate if you can." },
     ],
   },
 ];
@@ -57,7 +57,7 @@ const FAQ = () => {
     <div className="min-h-screen flex flex-col">
       <Seo
         title="FAQ - Renderdragon"
-        description="Find answers to frequently asked questions about Renderdragon's tools, services, and resources for Minecraft content creators."
+        description="Answers on free assets, credits, commercial use, file formats, and copyright claims, plus how to get help."
         path="/faq"
         jsonLd={faqSchema}
       />

@@ -48,7 +48,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 1,
     name: 'Creator Coaster',
-    description: "Creator Coaster server will be your best friend through out your content creation journey, varying from assets up to professional editors & artists that are willing to help you no matter what! No matter what you need help in, we're down to help you by having active staff & helpers that would be pleased to help!",
+    description: "Asset makers, editors, and artists who pitch in when you get stuck. Busy server with active helpers.",
     members: 12500,
     inviteUrl: 'https://discord.gg/uvWYV82f8J',
     image: 'https://cdn.discordapp.com/icons/1075932452842909806/a_40d64cc9e3aabcd7b42a6027a399d2e6.webp?size=100&quality=lossless',
@@ -57,7 +57,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 2,
     name: 'Minecraft Design Hub',
-    description: 'The Minecraft Design Hub is run by qualified designers with an extensive background in the GFX industry. We enjoy making designs, playing games and helping the community. In this community, you can purchase designs from our top notch designers.',
+    description: 'GFX designers who take commissions and hang out between projects.',
     members: 6000,
     inviteUrl: 'https://discord.gg/vYprQ9sK4v',
     image: 'https://cdn.discordapp.com/icons/972091816004444170/f4457c7980f91b0bbbc2ecb7af0f0ecf.webp?size=100&quality=lossless',
@@ -66,7 +66,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 3,
     name: 'Thumbnailers',
-    description: "Thumbnailers is a thriving community for Minecraft thumbnail designers. Whether you're a beginner or a pro, you'll find resources, feedback, and help to improve your skills and showcase your work. Join us to elevate your designs!",
+    description: "Thumbnail designers at every level. Post work, get feedback, and find resources.",
     members: 2500,
     inviteUrl: 'https://discord.gg/4Q8MwTaSyh',
     image: 'https://cdn.discordapp.com/icons/1102968474894082081/1f868f37cb129b50e27497984a7b020d.png?size=4096',
@@ -75,7 +75,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 4,
     name: 'EditHub',
-    description: "EditHub is the ultimate content creation hub for editors, designers, and creators looking to grow and improve. Whether you're searching for high-quality presets, assets, or expert advice, this server has everything you need in one place. Connect with like-minded individuals who are passionate about editing, content creation, and digital media.",
+    description: "Presets, assets, and editing advice in one server, with editors and designers who answer questions.",
     members: 1500,
     inviteUrl: 'https://discord.gg/rrFFMAut3r',
     image: 'https://cdn.discordapp.com/icons/1014715191075811328/a_609aa97aad2f2726480ffe8b5b15567c.webp',
@@ -84,7 +84,7 @@ const SERVERS_DATA: DiscordServer[] = [
   {
     id: 5,
     name: 'Renderdragon',
-    description: "Our official Discord server where you can suggest assets, contact us for questions or suggestions and more. We live by our community and we'd love to hear your feedback!",
+    description: "Our server. Suggest assets, report problems, or talk to the team.",
     members: 100,
     inviteUrl: 'https://discord.gg/d9zxkkdBWV',
     image: '/renderdragon.png',
@@ -107,7 +107,7 @@ const defaultVideoCategories: VideoCategory[] = [
   {
     id: 1,
     name: 'How to Make Thumbnails',
-    description: 'Learn how to create eye-catching Minecraft thumbnails that get clicks',
+    description: 'Making Minecraft thumbnails that get clicked, from first sketch to final glow',
     videos: [
       generateVideoData(
         '9QkyhxA38NU',
@@ -156,7 +156,7 @@ const defaultVideoCategories: VideoCategory[] = [
   {
     id: 2,
     name: 'How to Edit in Premiere Pro',
-    description: 'Tutorials for editing Minecraft videos in Adobe Premiere Pro & After Effects',
+    description: 'Cutting Minecraft videos in Premiere Pro and After Effects',
     videos: [
       generateVideoData(
         'yO52Tx60Keg',
@@ -199,7 +199,7 @@ const defaultVideoCategories: VideoCategory[] = [
   {
     id: 3,
     name: 'How to Edit in DaVinci Resolve',
-    description: 'Tutorials for editing Minecraft videos in DaVinci Resolve',
+    description: 'Cutting Minecraft videos in DaVinci Resolve',
     videos: [
       generateVideoData(
         'qDHnCFMZ9HA',
@@ -279,9 +279,9 @@ const Community = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Community - Renderdragon</title>
-        <meta name="description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
+        <meta name="description" content="Community Discord servers and video tutorials for Minecraft thumbnail design and editing." />
         <meta property="og:title" content="Community - Renderdragon" />
-        <meta property="og:description" content="Join our community of Minecraft content creators. Find helpful tutorials, guides, and Discord servers to connect with other creators." />
+        <meta property="og:description" content="Community Discord servers and video tutorials for Minecraft thumbnail design and editing." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/community" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -298,8 +298,8 @@ const Community = () => {
             </h1>
 
             <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
-              Connect with other creators, learn from tutorials, and join our growing community.
-              From tutorials to Discord servers, we've got you covered.
+              Discord servers and tutorial channels we actually recommend, plus our own server for asset
+              suggestions and help.
             </p>
 
             <Tabs defaultValue="videos" className="w-full">

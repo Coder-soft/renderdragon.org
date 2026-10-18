@@ -77,11 +77,11 @@ const AiTitleHelper = () => {
     <div className="min-h-screen flex flex-col">
       <Seo
         title="AI Title Helper - Renderdragon"
-        description="Generate engaging, SEO-friendly YouTube video titles with AI. Free for Minecraft creators, no signup required."
+        description="Turn a video idea into YouTube title options. Free, no signup, built for Minecraft creators."
         path="/ai-title-helper"
         jsonLd={softwareApplicationSchema({
           name: "AI Title Helper",
-          description: "Generate engaging, SEO-friendly YouTube video titles with AI.",
+          description: "Turn a video idea into YouTube title options.",
           path: "/ai-title-helper",
           image: "/ogimg/aititlehelper.png",
           category: "UtilitiesApplication",
@@ -91,7 +91,7 @@ const AiTitleHelper = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl ">AI Title Helper</h1>
-            <p className="text-neutral-300 mt-2 ">Generate multiple short, SEO-friendly YouTube titles. Only the titles are shown below.</p>
+            <p className="text-neutral-300 mt-2 ">A few title variants per idea. Only the titles are shown below.</p>
           </div>
 
           <form onSubmit={onSubmit} className="bg-background border border-border  p-4 md:p-6 shadow-xl">

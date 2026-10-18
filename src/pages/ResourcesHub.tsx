@@ -393,9 +393,9 @@ const ResourcesHub = () => {
     <div className="min-h-screen flex flex-col relative">
       <Helmet>
         <title>Resources Hub</title>
-        <meta name="description" content="Explore a vast collection of resources for RenderDragon." />
+        <meta name="description" content="Browse and download Minecraft music, sound effects, packs, and creator assets. Filter by mood, save favorites, and search the catalog." />
         <meta property="og:title" content="Resources Hub" />
-        <meta property="og:description" content="Explore a vast collection of resources for RenderDragon." />
+        <meta property="og:description" content="Browse and download Minecraft music, sound effects, packs, and creator assets. Filter by mood, save favorites, and search the catalog." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/resources" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -411,7 +411,7 @@ const ResourcesHub = () => {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-center">Resources Hub</h1>
-            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto ">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
+            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto ">Browse the catalog, filter by mood or category, and download what you need.</p>
           </motion.div>
 
           <motion.div

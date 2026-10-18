@@ -18,119 +18,119 @@ interface Utility {
 const utilities: Utility[] = [
   {
     name: 'SkinMC',
-    description: 'Website with great tools for Minecraft skins, totems, achievement maker, and more',
+    description: 'Skin editor, totem builder, achievement maker, and other Minecraft tools',
     url: 'https://skinmc.net/',
     category: 'websites',
     isFree: true
   },
   {
     name: 'GIMP',
-    description: 'Free and open source image editor, great Photoshop alternative',
+    description: 'Free open source image editor, and the closest free replacement for Photoshop',
     url: 'https://www.gimp.org/',
     category: 'graphic-design',
     isFree: true
   },
   {
     name: 'Adobe Photoshop',
-    description: 'Industry-standard image editing software',
+    description: 'The image editor most thumbnail artists work in. Paid subscription.',
     url: 'https://www.adobe.com/products/photoshop.html',
     category: 'graphic-design',
     isFree: false
   },
   {
     name: 'Photopea',
-    description: 'Free online image editor with Photoshop-like features',
+    description: 'Photoshop-style editing in the browser. Opens PSD files, free with ads',
     url: 'https://www.photopea.com/',
     category: 'graphic-design',
     isFree: true
   },
   {
     name: 'Affinity by Canva',
-    description: 'Free graphic tool, made for every type of graphic task',
+    description: 'Vector and raster design in one app',
     url: 'https://www.affinity.studio/',
     category: 'graphic-design',
     isFree: true
   },
   {
     name: 'Kdenlive',
-    description: 'Free and open source video editor, great Premiere Pro alternative',
+    description: 'Free open source video editor for Windows, macOS, and Linux',
     url: 'https://kdenlive.org/',
     category: 'editing',
     isFree: true
   },
   {
     name: 'DaVinci Resolve',
-    description: 'Professional video editing software with a generous free version',
+    description: 'Editing, colour, and audio in one suite. The free version covers most projects.',
     url: 'https://www.blackmagicdesign.com/products/davinciresolve/',
     category: 'editing',
     isFree: true
   },
   {
     name: 'Premiere Pro',
-    description: 'Industry-standard video editing software',
+    description: 'What most Minecraft editors cut in. Paid subscription.',
     url: 'https://www.adobe.com/products/premiere.html',
     category: 'editing',
     isFree: false
   },
   {
     name: 'CapCut',
-    description: 'Easy-to-use basic video editing software with a free version',
+    description: 'Quick cuts, captions, and templates with a free tier',
     url: 'https://www.capcut.com/',
     category: 'editing',
     isFree: true
   },
   {
     name: 'Complementary Shaders',
-    description: 'Complementary shaders but optimized settings for thumbnails by Proger',
+    description: 'Complementary shaders with settings tuned for thumbnail screenshots. Config by Proger',
     url: 'https://www.mediafire.com/file/kahvc3lduezt9v0/extract_me_and_put_all_files_in_shaderpacks_folder.zip/file',
     category: 'minecraft-shaders',
     isFree: true
   },
   {
     name: 'Bloop Shaders',
-    description: 'A shader aimed at maximum speed while maintaining good visuals. Scalable from low to high end computers.',
+    description: 'Built for frame rate first, and still looks good at low settings.',
     url: 'https://modrinth.com/shader/bloop-shaders',
     category: 'minecraft-shaders',
     isFree: true
   },
   {
     name: 'Vanilletix Shaders',
-    description: 'A shader pack that improves graphics while maintaining vanilla style',
+    description: 'Keeps the vanilla look and improves the lighting',
     url: 'https://modrinth.com/shader/vanilletix',
     category: 'minecraft-shaders',
     isFree: true
   },
   {
     name: 'MC VHS',
-    description: 'A shader that emulates the look of old VHS recordings with realistic effects',
+    description: 'Makes Minecraft look like a VHS recording, tracking lines included',
     url: 'https://modrinth.com/shader/mc-vhs',
     category: 'minecraft-shaders',
     isFree: true
   },
   {
     name: 'Exposa Shaders',
-    description: 'Shaders that aim for a nice mix of natural and fantasy visuals',
+    description: 'Natural lighting that leans into fantasy where it looks better',
     url: 'https://modrinth.com/shader/exposa-shaders',
     category: 'minecraft-shaders',
     isFree: true
   },
   {
     name: "Seltop's NewNPC mod",
-    description: 'Adds new NPCs to Minecraft with customizable skins and behaviors - great for thumbnails',
+    description: 'Add NPCs with custom skins and behaviour, useful for thumbnail scenes',
     url: 'https://modrinth.com/mod/seltops-newnpcs-mod/',
     category: 'minecraft-mods',
     isFree: true
   },
   {
     name: '3D Skin Layers',
-    description: 'Adds 3D skin layers to Minecraft',
+    description: 'Renders the skin overlay in 3D, so hats and jackets stand out',
     url: 'https://modrinth.com/mod/3dskinlayers/version/GeQIXZBw',
     category: 'minecraft-mods',
     isFree: true
   },
   {
     name: 'Easy NPC',
-    description: 'Adds NPCs to Minecraft with customizable skins and behaviors - alternative to NewNPC mod',
+    description: 'Add NPCs with custom skins and behaviour, with an easier setup than NewNPC',
     url: 'https://modrinth.com/mod/easy-npc',
     category: 'minecraft-mods',
     isFree: true
@@ -183,9 +183,9 @@ const Utils = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Useful Utilities - Renderdragon</title>
-        <meta name="description" content="Discover essential utilities for Minecraft content creators. Find video editing, recording, and streaming software recommendations." />
+        <meta name="description" content="Video and image editors, shaders, and mods we use to make Minecraft videos and thumbnails." />
         <meta property="og:title" content="Useful Utilities - Renderdragon" />
-        <meta property="og:description" content="Discover essential utilities for Minecraft content creators. Find video editing, recording, and streaming software recommendations." />
+        <meta property="og:description" content="Video and image editors, shaders, and mods we use to make Minecraft videos and thumbnails." />
         <meta property="og:image" content="https://i.ibb.co/60Mr2Psf/Document.png" />
         <meta property="og:url" content="https://renderdragon.org/utilities" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -205,7 +205,7 @@ const Utils = () => {
             Useful <span className="text-primary">Utilities</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            A curated collection of free and premium utilities to enhance your content creation workflow
+            Tools we recommend for editing images and video, plus shaders and mods for filming in Minecraft.
           </p>
         </motion.div>
 

@@ -16,7 +16,7 @@ const WhySection = () => {
             Why <span className="text-primary">RenderDragon</span>?
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground">
-            Every other "free resource" site makes you sign up, watch an ad, or sit through a download timer. We don't.
+            Other free resource sites want a signup, an ad view, or a timer before you download. This one doesn't.
           </p>
         </div>
 

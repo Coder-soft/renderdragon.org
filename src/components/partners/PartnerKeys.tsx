@@ -191,7 +191,7 @@ export function PartnerKeys({
           <DialogHeader>
             <DialogTitle>Your new key</DialogTitle>
             <DialogDescription>
-              Copy the secret now — it won't be shown again. Store it as a server-side secret.
+              Copy the secret now. It won't be shown again, so store it as a server-side secret.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 py-2">

@@ -110,7 +110,7 @@ export default function PartnerDocs() {
         <title>Partner integration guide | RenderDragon</title>
         <meta
           name="description"
-          content="How partners use the RenderDragon asset API and add RenderDragon sign-in to their app."
+          content="Get a partner key, call the Renderdragon asset API, and add Renderdragon sign-in to your app."
         />
       </Helmet>
 

@@ -46,7 +46,7 @@ const Hero = () => {
           variants={fadeUp}
           className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 leading-relaxed"
         >
-          Free music, SFX, fonts, presets, and editing tools — all in one place.
+          Free music, SFX, fonts, presets, and editing tools in one place.
           Built for Minecraft YouTubers who'd rather film than file-cabinet.
         </motion.p>
 
